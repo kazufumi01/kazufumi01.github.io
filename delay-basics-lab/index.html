@@ -357,5 +357,10 @@ loadPreset('slap');
 </div>
 <!-- ===== Seesaa記事に貼り付け：ここまで ===== -->
 
+<script>
+(function(){if(window.parent===window)return;var last=0;
+function send(){var h=Math.ceil(document.documentElement.scrollHeight);if(Math.abs(h-last)<2)return;last=h;window.parent.postMessage({type:'jpk-lab-height',height:h},'*')}
+if(window.ResizeObserver)new ResizeObserver(send).observe(document.body);window.addEventListener('load',send);setTimeout(send,300)})();
+</script>
 </body>
 </html>
