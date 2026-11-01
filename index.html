@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Audio Anatomy Labs — learn mixing tools by taking them apart</title>
+<meta name="description" content="Free, browser-based labs that take audio processors apart: hear and see what compressors, saturators and level meters really do, with real DSP running in your browser. No sign-up.">
+<meta name="theme-color" content="#0d6575">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Audio Anatomy Labs">
+<meta property="og:title" content="Audio Anatomy Labs — learn mixing tools by taking them apart">
+<meta property="og:description" content="Free browser labs for compressors, saturators and level meters: real DSP, live graphs, and the C++ behind it. No sign-up.">
+<meta property="og:url" content="https://kazufumi01.github.io/">
+<meta property="og:image" content="https://kazufumi01.github.io/comp-lab/en/ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://kazufumi01.github.io/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;700;800&display=swap">
+<style>
+:root{
+  --bg:#e6e9ed; --panel:#f6f7f9; --ink:#16202b; --muted:#566271; --line:#c8cfd7;
+  --accent:#0d6575; --warm:#b5652a; --on-accent:#fff;
+  --font-ui:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d;
+  --accent:#55b7c5; --warm:#e09a5c; --on-accent:#0a1a1d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d;
+  --accent:#55b7c5; --warm:#e09a5c; --on-accent:#0a1a1d; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.65}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left,0px)) 56px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:40px}
+.lang{flex:none;white-space:nowrap;font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
+.lang:hover{border-color:var(--accent);color:var(--accent)}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.04;letter-spacing:-.02em;font-weight:800;margin:14px 0 18px;max-width:14ch}
+.lead{font-size:clamp(17px,2.2vw,20px);color:var(--muted);max-width:56ch;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0;padding:0;list-style:none}
+.facts li{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 12px;color:var(--muted)}
+h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:56px 0 16px}
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.app{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+.app:hover{border-color:var(--accent);transform:translateY(-2px)}
+.app img{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;border-bottom:1px solid var(--line)}
+.app .body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.app h3{margin:0;font-size:22px;letter-spacing:-.01em}
+.app p{margin:0;color:var(--muted);font-size:15px}
+.app ul{margin:4px 0 0;padding-left:1.1em;font-size:14px;color:var(--muted)}
+.app .go{margin-top:auto;padding-top:10px;font-weight:700;color:var(--accent)}
+.soon{display:flex;flex-direction:column;justify-content:center;gap:6px;border:1px dashed var(--line);border-radius:10px;padding:24px;color:var(--muted)}
+.soon b{color:var(--ink);font-size:18px}
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+.why div{border-top:2px solid var(--ink);padding-top:12px}
+.why b{display:block;font-size:17px;margin-bottom:4px}
+.why p{margin:0;color:var(--muted);font-size:15px}
+.foot{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.foot p{margin:0;max-width:80ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">Johan Plus Kei · Audio Anatomy Labs</p>
+    <a class="lang" href="https://jpk.seesaa.net/article/521891797.html" hreflang="ja" lang="ja">日本語</a>
+  </header>
+
+  <section>
+    <p class="eyebrow">Free · No sign-up · Runs in your browser</p>
+    <h1>Learn mixing tools by taking them apart.</h1>
+    <p class="lead">Each lab runs a real audio processor in your browser and opens it up: move a parameter, hear the change, and watch the gain, curves, harmonics and meters move with it. The processor labs end with the same DSP written in C++, as a bridge to building your own plugin.</p>
+    <ul class="facts"><li>Web Audio · AudioWorklet</li><li>Live graphs</li><li>C++ / JUCE bridge</li><li>Headphones recommended</li></ul>
+  </section>
+
+  <h2>Labs</h2>
+  <div class="apps">
+    <a class="app" href="https://kazufumi01.github.io/comp-lab/en/">
+      <img src="https://kazufumi01.github.io/comp-lab/en/ogp.png" alt="Compressor Anatomy Lab: transfer curve with the live operating point" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">Dynamics</p>
+        <h3>Compressor Anatomy Lab</h3>
+        <p>Threshold, ratio, knee, attack, release, peak vs RMS detection, feed-forward vs feedback — each one taken apart and explained.</p>
+        <ul><li>Gain-reduction timeline and live transfer curve</li><li>Clickable signal-flow diagram</li><li>Presets from vocal to NY parallel</li></ul>
+        <span class="go">Open the lab →</span>
+      </div>
+    </a>
+    <a class="app" href="https://kazufumi01.github.io/sat-lab/en/">
+      <img src="https://kazufumi01.github.io/sat-lab/en/ogp.png" alt="Saturator Anatomy Lab: harmonic spectrum of a tube circuit" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">Saturation</p>
+        <h3>Saturator Anatomy Lab</h3>
+        <p>What do “warm” and “thick” actually mean? Six circuits — tape, tube, transformer, transistor, diode, hard clip — shown as harmonics.</p>
+        <ul><li>Even / odd harmonic bars from a test tone</li><li>Aliasing you can see, and oversampling that fixes it</li><li>Delta listen: hear only what the circuit adds</li></ul>
+        <span class="go">Open the lab →</span>
+      </div>
+    </a>
+    <a class="app" href="https://kazufumi01.github.io/meter-lab/en/">
+      <img src="https://kazufumi01.github.io/meter-lab/en/ogp.png" alt="Meter Bridge: an analog-style VU meter" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">Metering</p>
+        <h3>Meter Bridge</h3>
+        <p>One signal, six meters — VU, Peak, True Peak, RMS, PPM and LUFS side by side, so you can see why the same “−18” means different things.</p>
+        <ul><li>Live VU needles, bar meters and a 10-second history</li><li>Seven guided experiments with expected readings</li><li>Integrated, LRA, PLR and inter-sample peaks</li></ul>
+        <span class="go">Open the lab →</span>
+      </div>
+    </a>
+    <div class="soon">
+      <p class="eyebrow">In progress</p>
+      <b>Delay labs</b>
+      <span>Classic delay uses, and how tape, BBD and early digital delays actually worked.</span>
+    </div>
+  </div>
+
+  <h2>Why these labs</h2>
+  <div class="why">
+    <div><b>See the inside, not just the knobs</b><p>Gain reduction, transfer curves, harmonic spectra and signal flow update as you play, so cause and effect are visible.</p></div>
+    <div><b>Fair listening</b><p>Level matching, bypass and delta listening are built in, so you judge the process — not just loudness.</p></div>
+    <div><b>Real numbers</b><p>Every parameter comes with typical settings and the formula behind it, written for students, not marketing.</p></div>
+    <div><b>Free for classrooms</b><p>No account, no install. Open the link on any laptop and teach with it.</p></div>
+  </div>
+
+  <footer class="foot">
+    <p>Made by Kazufumi Nishida (Johan Plus Kei), a producer, mix engineer and music technology teacher in Japan. The companion articles are on the <a href="https://jpk.seesaa.net/article/521891797.html" hreflang="ja">Japanese blog</a>.</p>
+    <p>The DSP in these labs is an educational implementation. It does not reproduce any specific hardware or plugin; product names are trademarks of their respective owners.</p>
+  </footer>
+</div>
+</body>
+</html>
