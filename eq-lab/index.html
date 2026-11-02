@@ -85,6 +85,8 @@ canvas{display:block;width:100%;border-radius:4px;background:var(--bg)}
 .sc-head{display:flex;justify-content:space-between;align-items:center;gap:6px 12px;flex-wrap:wrap;margin-bottom:6px;min-height:30px}
 #eqc{height:470px;touch-action:none;cursor:crosshair}
 #irc{height:210px}
+.toplinks{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#labs{text-decoration:none;display:inline-flex;align-items:center}
 .brandrow{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .irexp{margin-top:8px}
 .sc-side .ro{margin-top:10px}
@@ -158,7 +160,7 @@ footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:
 <div class="wrap">
   <header class="top">
     <div class="brand">
-      <div class="brandrow"><p class="eyebrow">Equalizer / Phase · Group Delay · Pre-ringing</p><button class="btn sm" id="lang" type="button" lang="en">English</button></div>
+      <div class="brandrow"><p class="eyebrow">Equalizer / Phase · Group Delay · Pre-ringing</p><div class="toplinks"><a class="btn sm" id="labs" href="https://kazufumi01.github.io/" target="_blank" rel="noopener" data-en="All labs ↗">ラボ一覧 ↗</a><button class="btn sm" id="lang" type="button" lang="en">English</button></div></div>
       <h1 data-en="EQ Anatomy Lab">EQ解剖ラボ</h1>
       <p data-en="The same EQ curve can behave differently in time depending on how it is built. Switch between zero latency, analog-matched and linear phase, and hear and see what happens to phase, group delay, the impulse response and pre-ringing. Headphones recommended; start with a low volume.">同じEQカーブでも、処理の方式で「時間の動き」が変わります。ゼロレイテンシー、アナログ一致、リニア位相の3方式を切り替えて、位相・群遅延・インパルスレスポンス・プリリンギングを聴いて見て比べるアプリです。ヘッドホン推奨。最初は音量控えめで。</p>
       <a class="blog" href="https://jpk.seesaa.net/article/521891797.html" target="_blank" rel="noopener" data-en="Effects article index (Japanese) →">エフェクター記事メニュー →</a>
@@ -623,7 +625,7 @@ const DEF=()=>[
   {on:true,type:'hs',f:10000,g:2,q:0.707,slope:24},
   {on:false,type:'bell',f:1000,g:0,q:1,slope:24},
   {on:false,type:'hc',f:18000,g:0,q:0.707,slope:24}];
-const S={bands:DEF(),qMode:'const',mode:'iir',res:'mid',sel:2,phTab:'phase',phLay:'overlay',phRange:{phase:180,gd:5},irView:'db',irZoom:50,hit:'kick',trView:'over',trMatch:true,bypass:false,delta:false,autoGain:true};
+const S={bands:DEF(),qMode:'const',mode:'iir',res:'mid',sel:2,phTab:'phase',phLay:'overlay',phRange:{phase:360,gd:5},irView:'db',irZoom:50,hit:'kick',trView:'over',trMatch:true,bypass:false,delta:false,autoGain:true};
 const FR=[];for(let i=0;i<=480;i++)FR.push(FMIN*Math.pow(FMAX/FMIN,i/480));
 let model,cur,ghost,gIIR,imp=null,pr={db:-Infinity,ms:0},actual=null,trc=null,heavyT=0,audioT=0;
 
@@ -1032,6 +1034,16 @@ async function play(){await ensureCtx();if(ctx.state!=='running')await ctx.resum
 function stop(){stopSource();playing=false;if(live)live.on=false;$('#play').textContent=Lg('▶ 再生','▶ Play');cancelAnimationFrame(raf);drawEQ();}
 $('#play').addEventListener('click',()=>playing?stop():play().catch(()=>status(Lg('音声を開始できませんでした。iPhoneはマナーモードを解除してから再生してください。','Audio could not start. On iPhone, turn off silent mode and try again.'))));
 $('#src').addEventListener('change',()=>{if(playing)startSource();});
+// Space bar plays / stops from anywhere on the page, even after clicking other buttons or menus
+const typing=el=>el&&(el.isContentEditable||(el.tagName==='INPUT'&&!['range','button','checkbox','radio','file','submit'].includes(el.type))||el.tagName==='TEXTAREA');
+document.addEventListener('keydown',e=>{
+  if(e.code!=='Space'&&e.key!==' ')return;if(typing(e.target)||e.ctrlKey||e.metaKey||e.altKey)return;
+  e.preventDefault();e.stopPropagation(); // no page scroll, no click on the focused button
+  if(e.repeat)return;
+  const a=document.activeElement;if(a&&a!==document.body&&a.tagName!=='CANVAS')a.blur();
+  playing?stop():play().catch(()=>{});
+},true);
+document.addEventListener('keyup',e=>{if((e.code==='Space'||e.key===' ')&&!typing(e.target)){e.preventDefault();e.stopPropagation();}},true);
 $('#file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;await ensureCtx();
   try{fileBuf=await ctx.decodeAudioData(await f.arrayBuffer());let o=$('#src option[value=file]');if(!o){o=document.createElement('option');o.value='file';$('#src').appendChild(o);}fileName=f.name;o.textContent=Lg('ファイル：','File: ')+f.name;$('#src').value='file';status(Lg('「'+f.name+'」を読み込みました。','Loaded “'+f.name+'”.'));if(playing)startSource();else play();}
   catch(err){status(Lg('このファイルは読み込めませんでした。WAV・MP3・AACなどの音声ファイルを選んでください。','This file could not be read. Choose an audio file such as WAV, MP3 or AAC.'));}});
