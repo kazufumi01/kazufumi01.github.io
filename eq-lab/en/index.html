@@ -83,6 +83,9 @@ canvas{display:block;width:100%;border-radius:4px;background:var(--bg)}
 @media (max-width:940px){.scope-grid{grid-template-columns:minmax(0,1fr)}}
 .sc-main,.sc-side{min-width:0}
 .sc-head{display:flex;justify-content:space-between;align-items:center;gap:6px 12px;flex-wrap:wrap;margin-bottom:6px;min-height:30px}
+.phl,.phr{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.phr{margin-left:auto;justify-content:flex-end}
+.eqhint{margin:0 0 6px}
 #eqc{height:470px;touch-action:none;cursor:crosshair}
 #irc{height:210px}
 .toplinks{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
@@ -192,8 +195,11 @@ footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:
     </div>
     <div class="scope-grid">
       <div class="sc-main">
-        <div class="sc-head"><span class="lbl" id="eqhint" data-en="Dot: frequency & gain / width handles: Q / Shift + up-down: Q / double-click: add or switch off">点：周波数・ゲイン ／ 幅ハンドル：Q ／ Shift＋上下：Q ／ ダブルクリック：追加・オフ</span>
-          <div class="modes"><div class="seg" id="phtab" role="group" aria-label="位相の表示内容" data-en-aria="Phase display"><button type="button" data-v="phase" aria-pressed="true" data-en="Phase">位相</button><button type="button" data-v="gd" data-en="Group delay">群遅延</button></div><div class="seg" id="phlay" role="group" aria-label="位相の表示位置" data-en-aria="Phase position"><button type="button" data-v="overlay" aria-pressed="true" data-en="Overlay">重ねる</button><button type="button" data-v="split" data-en="Split">分ける</button></div><div class="seg" id="phrange" role="group" aria-label="位相の目盛り範囲" data-en-aria="Phase scale"></div></div></div>
+        <p class="lbl eqhint" id="eqhint" data-en="Dot: frequency &amp; gain / width handles: Q / Shift + up-down: Q / double-click: add or switch off">点：周波数・ゲイン ／ 幅ハンドル：Q ／ Shift＋上下：Q ／ ダブルクリック：追加・オフ</p>
+        <div class="sc-head">
+          <div class="phl"><span class="lbl" data-en="Phase / group delay plot:">位相・群遅延の表示：</span><div class="seg" id="phlay" role="group" aria-label="位相の表示位置" data-en-aria="Phase plot position"><button type="button" data-v="overlay" aria-pressed="true" data-en="Overlay on the EQ curve">EQカーブに重ねる</button><button type="button" data-v="split" data-en="Separate plot below">下に分ける</button></div></div>
+          <div class="phr"><div class="seg" id="phtab" role="group" aria-label="位相の表示内容" data-en-aria="Phase display"><button type="button" data-v="phase" aria-pressed="true" data-en="Phase">位相</button><button type="button" data-v="gd" data-en="Group delay">群遅延</button></div><div class="seg" id="phrange" role="group" aria-label="位相の目盛り範囲" data-en-aria="Phase scale"></div></div>
+        </div>
         <canvas id="eqc" tabindex="0" aria-label="上段はEQの振幅特性、下段は位相または群遅延。点をドラッグして周波数とゲイン、幅ハンドルでQを変更できます" data-en-aria="EQ magnitude with phase or group delay. Drag a dot to set frequency and gain, drag the width handles to set Q"></canvas>
         <div class="legend">
           <span><i style="background:var(--accent)"></i><span data-en="Current mode">今の方式</span></span>
@@ -625,7 +631,7 @@ const DEF=()=>[
   {on:true,type:'hs',f:10000,g:2,q:0.707,slope:24},
   {on:false,type:'bell',f:1000,g:0,q:1,slope:24},
   {on:false,type:'hc',f:18000,g:0,q:0.707,slope:24}];
-const S={bands:DEF(),qMode:'const',mode:'iir',res:'mid',sel:2,phTab:'phase',phLay:'overlay',phRange:{phase:360,gd:5},irView:'db',irZoom:50,hit:'kick',trView:'over',trMatch:true,bypass:false,delta:false,autoGain:true};
+const S={bands:DEF(),qMode:'const',mode:'iir',res:'mid',sel:2,phTab:'phase',phLay:'overlay',phRange:{phase:360,gd:20},irView:'db',irZoom:50,hit:'kick',trView:'over',trMatch:true,bypass:false,delta:false,autoGain:true};
 const FR=[];for(let i=0;i<=480;i++)FR.push(FMIN*Math.pow(FMAX/FMIN,i/480));
 let model,cur,ghost,gIIR,imp=null,pr={db:-Infinity,ms:0},actual=null,trc=null,heavyT=0,audioT=0;
 
@@ -748,7 +754,7 @@ function drawEQ(){
   // lane titles
   x.font='700 11px '+col('--font-ui');x.textAlign='left';x.textBaseline='top';x.fillStyle=col('--muted');
   const phName=S.phTab==='gd'?Lg('群遅延（ms）','Group delay (ms)'):Lg('位相（度）','Phase (deg)');
-  if(L.over){x.fillText(Lg('振幅（dB・左の目盛り）','Magnitude (dB, left scale)'),PAD.l+4,L.amp.t+3);x.fillStyle=col('--phase');x.textAlign='right';x.fillText(phName+Lg('・右の目盛り',', right scale'),w-PAD.r-48,L.amp.t+3);x.textAlign='left';x.fillStyle=col('--muted');}
+  if(L.over){x.fillText(Lg('振幅（dB・左の目盛り）','Magnitude (dB, left scale)'),PAD.l+4,L.amp.t+3);x.fillStyle=col('--phase');x.textAlign='right';x.fillText(phName+Lg('・右の目盛り',', right scale'),w-PAD.r-84,L.amp.t+3);x.textAlign='left';x.fillStyle=col('--muted');}
   else{x.fillText(Lg('振幅（dB）','Magnitude (dB)'),PAD.l+4,L.amp.t+3);x.fillStyle=col('--phase');x.fillText(phName,PAD.l+4,L.ph.t+3);x.fillStyle=col('--muted');}
   if(S.bypass){x.textAlign='left';x.fillText(Lg('バイパス中','Bypassed'),PAD.l+4,L.amp.t+18);}
 }
