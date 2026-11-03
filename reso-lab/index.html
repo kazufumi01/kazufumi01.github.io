@@ -2,6 +2,9 @@
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="soothe2のようなレゾナンス・サプレッサーが、何を検出して、どこを、どれだけ、どの速さで削っているのかを、ブラウザ内で動くDSPと可視化で分解して学ぶ無料の学習アプリ。仕込んだレゾナンスで答え合わせができるテスト音源付き。">
 <meta name="theme-color" content="#0f1117">
+<link rel="alternate" hreflang="ja" href="https://kazufumi01.github.io/reso-lab/">
+<link rel="alternate" hreflang="en" href="https://kazufumi01.github.io/reso-lab/en/">
+<link rel="alternate" hreflang="x-default" href="https://kazufumi01.github.io/reso-lab/en/">
 <link rel="canonical" href="https://kazufumi01.github.io/reso-lab/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
@@ -16,7 +19,7 @@
 <meta name="twitter:title" content="レゾナンス解剖ラボ">
 <meta name="twitter:description" content="soothe2のようなレゾナンス・サプレッサーが、何を検出して、どこを、どれだけ、どの速さで削っているのかを、ブラウザ内で動くDSPと可視化で分解して学ぶ無料の学習アプリ。仕込んだレゾナンスで答え合わせができるテスト音源付き。">
 <meta name="twitter:image" content="https://kazufumi01.github.io/reso-lab/ogp.png">
-<style>[hidden]{display:none!important}body{margin:0}</style>
+<style>[hidden]{display:none!important}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 <title>レゾナンス解剖ラボ</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,6 +62,8 @@ button, select, input { font: inherit; color: inherit; }
 .brand p { margin: 8px 0 0; color: var(--muted); max-width: 60ch; font-size: 14px; }
 .source { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 select.btn { padding-right: 8px; }
+.lang { flex: none; white-space: nowrap; font-size: 12.5px; font-weight: 700; text-decoration: none; color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
+.lang:hover { border-color: var(--rose); color: var(--rose); }
 .source .name { font-size: 12px; color: var(--muted); max-width: 34ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
 .btn:hover { border-color: var(--muted); }
@@ -204,6 +209,7 @@ footer { color: var(--muted); font-size: 12px; border-top: 1px solid var(--line)
       <p>soothe2のような「レゾナンス・サプレッサー」が、何を検出して、どこを、どれだけ、どの速さで削っているのか。レゾナンスを仕込んだ合成ボイス・シンセ・ピンクノイズや、手持ちの音源で、目と耳で分解して確かめるための教材です。</p>
     </div>
     <div class="source">
+      <a class="lang" href="https://kazufumi01.github.io/reso-lab/en/" hreflang="en" lang="en">English</a>
       <span class="name" id="srcName">デモ素材を読み込み中…</span>
       <select class="btn" id="srcSel" aria-label="素材">
         <option value="voice-fixed">合成ボイス＋固定レゾナンス</option>
