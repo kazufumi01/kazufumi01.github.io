@@ -64,11 +64,12 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
 .music{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
 .music iframe{display:block;width:100%;height:352px;border:0;border-radius:12px;background:var(--panel)}
 .music .lead{font-size:16px;margin:0 0 16px}
-.links{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 0!important;padding:0!important;list-style:none}
 .links a{display:inline-block;padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);font-weight:700;font-size:14px;text-decoration:none;transition:border-color .15s,color .15s}
 .links a:hover{border-color:var(--accent);color:var(--accent)}
 .links a.main{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .links a.main:hover{color:var(--on-accent);opacity:.9}
+.music.one{grid-template-columns:1fr}
 @media (max-width:760px){.music{grid-template-columns:1fr}}
 .foot{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 .foot p{margin:0;max-width:80ch}
@@ -160,19 +161,30 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
         <span class="go">Open the lab →</span>
       </div>
     </a>
-  </div>
-
-  <h2>Plug-ins</h2>
-  <div class="apps">
     <a class="app" href="https://github.com/kazufumi01/DelayBasicsLab/releases/latest">
+      <img src="https://kazufumi01.github.io/assets/ogp-delay-basics-lab-plugin.png" alt="Delay Basics Lab plug-in, free beta: echo timeline" loading="lazy">
       <div class="body">
-        <p class="eyebrow">Delay · AU / VST3 / Standalone <span class="beta">Beta</span></p>
+        <p class="eyebrow">Plug-in · AU / VST3 / Standalone <span class="beta">Beta</span></p>
         <h3>Delay Basics Lab — plug-in</h3>
         <p>The Delay Basics Lab as a free plug-in for your DAW: the same seven presets, echo timeline and lessons, in Japanese and English.</p>
-        <ul><li>macOS 11+ (Apple Silicon / Intel) — zip for manual install, or .pkg installer</li><li>Windows 10 / 11 (64-bit) — builds, but not yet tested on a real Windows machine</li><li>Free beta · not notarized, so see the install guide on the download page</li></ul>
+        <ul><li>macOS 11+ (Apple Silicon / Intel): manual zip or .pkg installer</li><li>Windows 10 / 11: builds, but not yet tested on a real machine</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
         <span class="go">Download the beta →</span>
       </div>
     </a>
+    <div class="app">
+      <img src="https://kazufumi01.github.io/assets/ogp-music.png" alt="Johan Plus Kei: Spotify, Apple Music, X, Instagram" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">Music · Follow</p>
+        <h3>Johan Plus Kei</h3>
+        <p>The producer behind these labs makes dream pop, indie pop and post-rock. Listen, or follow along.</p>
+        <ul class="links">
+          <li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Spotify ↗</a></li>
+          <li><a class="main" href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music ↗</a></li>
+          <li><a href="https://x.com/johanpluskei" target="_blank" rel="noopener me">X ↗</a></li>
+          <li><a href="https://www.instagram.com/johanpluskei" target="_blank" rel="noopener me">Instagram ↗</a></li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <h2>Why these labs</h2>
@@ -183,18 +195,9 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
     <div><b>Free for classrooms</b><p>No account, no install. Open the link on any laptop and teach with it.</p></div>
   </div>
 
-  <h2>Music</h2>
-  <div class="music">
+  <h2>Listen</h2>
+  <div class="music one">
     <iframe data-testid="embed-iframe" src="https://open.spotify.com/embed/artist/30PV2gqUbDDwvuWtKaok0x?utm_source=generator&amp;si=6bcf5f0939e1448d" title="Johan Plus Kei on Spotify" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    <div>
-      <p class="lead">These labs are made by the producer behind <b>Johan Plus Kei</b>. If you like how they sound, listen to the music too — dream pop, indie pop and post-rock.</p>
-      <ul class="links">
-        <li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Spotify ↗</a></li>
-        <li><a class="main" href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music ↗</a></li>
-        <li><a href="https://x.com/johanpluskei" target="_blank" rel="noopener me">X (Twitter) ↗</a></li>
-        <li><a href="https://www.instagram.com/johanpluskei" target="_blank" rel="noopener me">Instagram ↗</a></li>
-      </ul>
-    </div>
   </div>
 
   <footer class="foot">
