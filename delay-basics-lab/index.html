@@ -78,6 +78,7 @@ background:var(--bg);color:var(--ink);border-radius:16px;padding:20px 18px 22px;
 .dl1-tempo{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .dl1-tempo div{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:6px 8px;font-size:12px;color:var(--mute)}
 .dl1-tempo b{display:block;color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
+.dl1-dl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:12px 0 0!important}.dl1-dl b{color:var(--ink)}.dl1-dl small{display:block;color:var(--mute);font-size:12px}.dl1-dlbtn{margin-left:auto;white-space:nowrap;font-weight:800;text-decoration:none!important;color:#1a1305!important;background:var(--acc);border-radius:8px;padding:6px 12px}
 .dl1-foot{font-size:12px;color:var(--mute);margin-top:14px}
 @media (max-width:560px){.dl1{padding:16px 12px}.dl1-grid{grid-template-columns:1fr}.dl1-tempo{grid-template-columns:repeat(2,1fr)}.dl1-card dl{grid-template-columns:1fr}.dl1-card dt{margin-top:4px}.dl1-table th{width:auto}}
 .dl1-lang{float:right;margin:-2px 0 0 10px;font-size:12px;font-weight:700;text-decoration:none!important;color:var(--ink)!important;border:1px solid var(--line);border-radius:99px;padding:1px 10px;line-height:1.6}.dl1-lang:hover{border-color:var(--acc);color:var(--acc)!important}
@@ -87,6 +88,8 @@ background:var(--bg);color:var(--ink);border-radius:16px;padding:20px 18px 22px;
 <div class="dl1-kicker">DELAY LEARNING LAB 01</div>
 <h3 class="dl1-title">ディレイ基本用途ラボ</h3>
 <p class="dl1-lead">プリセットを押して再生。音の変化と「やまびこの並び方（下のタイムライン）」を見比べながら、ディレイの基本用途を体で覚えます。ヘッドホン推奨・最初は音量控えめで。</p>
+<div class="dl1-card dl1-dl"><div><b>プラグイン版（ベータ）を無料配布中</b><span class="dl1-tag">Beta</span><small>AU / VST3 / Standalone ・ Mac：zip（手動）または pkg（インストーラー）・ Windows：ビルドのみ確認、実機では未検証</small></div><a class="dl1-dlbtn" href="https://github.com/kazufumi01/DelayBasicsLab/releases/latest" target="_blank" rel="noopener">ダウンロード ↗</a></div>
+
 
 <div class="dl1-transport">
   <button class="dl1-play" data-act="play">▶ 再生</button>
