@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reverb Lab — IR Analyzer</title>
+<style>
+:root{color-scheme:dark;--bg:#101416;--panel:#1a2225;--panel2:#202a2e;--line:#344247;--text:#e8eeee;--muted:#9aabad;--accent:#55d6b0;--accent2:#78a9ff;--warn:#e8c477}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,sans-serif}
+header{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:16px}
+h1{font-size:20px;margin:0;letter-spacing:.04em}header p{margin:3px 0 0;color:var(--muted);font-size:12px}
+main{max-width:1450px;margin:auto;padding:20px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr);gap:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.panel h2{font-size:14px;margin:0 0 12px;color:#dce8e6;letter-spacing:.04em}
+.wide{grid-column:1/-1}.subtle{color:var(--muted);font-size:12px}
+.upload{border:1px dashed #58716d;border-radius:10px;padding:18px;text-align:center;background:#17201f}
+input[type=file]{max-width:100%;color:var(--muted)}button{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:8px;padding:9px 13px;cursor:pointer}
+button.primary{background:#174b40;border-color:#287e69;color:#dffff6}button:hover{border-color:var(--accent)}
+canvas{display:block;width:100%;height:180px;background:#11191b;border:1px solid #2b393d;border-radius:8px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.metric{background:var(--panel2);border-radius:8px;padding:11px}.metric small{display:block;color:var(--muted);font-size:11px}.metric strong{font-size:20px;font-variant-numeric:tabular-nums}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.control{background:var(--panel2);padding:10px;border-radius:8px}.control label{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#cbd7d5}
+input[type=range]{width:100%;accent-color:var(--accent);margin:10px 0 2px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.status{padding:9px 11px;background:#17201f;border-radius:8px;color:var(--muted);font-size:12px;margin-top:10px}
+select{background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:8px;border-radius:7px}
+footer{max-width:1450px;margin:0 auto;padding:0 20px 24px;color:var(--muted);font-size:11px}
+.devtag{display:inline-block;margin-top:8px;padding:3px 8px;border:1px solid #806b38;border-radius:5px;color:#e8c477;font-size:11px;letter-spacing:.06em}
+@media(max-width:850px){main{grid-template-columns:1fr}.wide{grid-column:auto}.metrics{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><div><h1>REVERB LAB <span style="color:var(--accent)">/</span> 01</h1><p>Impulse Response Analysis · Algorithmic Reverb Matching</p><span class="devtag">DEVELOPMENT BUILD · PROTOTYPE v0.1</span></div><span class="subtle">Local processing</span></header>
+<main>
+<section class="panel wide">
+<h2>01 / REFERENCE IR</h2>
+<div class="upload">
+  <input id="file" type="file" accept=".wav,audio/wav,audio/*">
+  <div class="subtle" style="margin-top:7px">WAV / AIFF等の音声ファイルを読み込み（推奨：モノラルまたはステレオIR）</div>
+  <div id="filename" class="subtle">ファイル未選択</div>
+</div>
+<div class="actions"><button id="playIR">IRを試聴</button><button id="stop">停止</button><button id="analyze" class="primary">解析する</button></div>
+<div class="status" id="status">IRファイルを読み込んでください。解析はブラウザ内で行われ、音声データは送信されません。</div>
+</section>
+<section class="panel">
+<h2>02 / TIME DOMAIN</h2>
+<canvas id="wave" width="1000" height="260"></canvas>
+<div class="subtle">Waveform · 横軸：時間 / 縦軸：振幅</div>
+</section>
+<section class="panel">
+<h2>03 / ENERGY DECAY CURVE</h2>
+<canvas id="decay" width="1000" height="260"></canvas>
+<div class="subtle">Schroeder Integration · 相対レベル（dB）</div>
+</section>
+<section class="panel wide">
+<h2>04 / MEASUREMENTS</h2>
+<div class="metrics">
+<div class="metric"><small>Duration</small><strong id="duration">—</strong><small>seconds</small></div>
+<div class="metric"><small>Peak position</small><strong id="peak">—</strong><small>milliseconds</small></div>
+<div class="metric"><small>EDT estimate</small><strong id="edt">—</strong><small>seconds</small></div>
+<div class="metric"><small>T20 estimate</small><strong id="t20">—</strong><small>seconds</small></div>
+</div>
+<p class="subtle">EDT：0〜−10 dBの傾斜から60 dB相当へ外挿。T20：−5〜−25 dBの傾斜から外挿。短いIRやノイズの多いIRでは推定値が不安定になります。</p>
+</section>
+<section class="panel">
+<h2>05 / ALGORITHM REVERB</h2>
+<div class="controls">
+<div class="control"><label>Pre-delay <b id="preVal">25 ms</b></label><input id="pre" type="range" min="0" max="100" value="25"></div>
+<div class="control"><label>Decay <b id="decVal">2.0 s</b></label><input id="dec" type="range" min=".2" max="6" step=".1" value="2"></div>
+<div class="control"><label>Diffusion <b id="diffVal">65 %</b></label><input id="diff" type="range" min="0" max="100" value="65"></div>
+<div class="control"><label>HF Damping <b id="dampVal">45 %</b></label><input id="damp" type="range" min="0" max="100" value="45"></div>
+</div>
+<div class="actions"><button id="make" class="primary">アルゴリズムIRを生成</button><button id="playAlg">アルゴリズムIRを試聴</button></div>
+<div class="status" id="algStatus">簡易Schroederモデル。パラメーターを変更してIRの減衰・密度の変化を確認できます。</div>
+</section>
+<section class="panel">
+<h2>06 / A/B LISTENING</h2>
+<p class="subtle">同じ短いテスト信号をReference IRとAlgorithm IRで畳み込み、残響を比較します。</p>
+<div class="actions"><button id="abRef">A · Reference IR</button><button id="abAlg">B · Algorithm</button><button id="abTest" class="primary">テスト信号を再生</button></div>
+<div class="status">注：この試作版は学習・方向性確認用です。自動マッチングや厳密な音響測定はまだ実装していません。</div>
+</section>
+</main>
+<footer>Reverb Lab prototype · 解析・音声生成はローカルブラウザ内で処理します。IRは直接音の位置合わせやノイズ除去を行わずに解析するため、測定値は参考値です。</footer>
+<script>
+let ctx, irBuffer=null, algBuffer=null, currentSource=null;
+const $=id=>document.getElementById(id);
+function audio(){if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}
+function stop(){if(currentSource){try{currentSource.stop()}catch(e){}currentSource=null}}
+function setStatus(s){$('status').textContent=s}
+function drawEmpty(){['wave','decay'].forEach(id=>{let c=$(id),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.fillStyle='#11191b';x.fillRect(0,0,c.width,c.height);x.fillStyle='#829391';x.font='24px sans-serif';x.fillText('Load an impulse response',30,130)})}
+drawEmpty();
+$('file').addEventListener('change',async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{let b=await f.arrayBuffer();irBuffer=await audio().decodeAudioData(b);$('filename').textContent=f.name+' · '+irBuffer.numberOfChannels+' ch · '+irBuffer.sampleRate+' Hz';setStatus('読み込み完了。解析するボタンを押してください。');$('duration').textContent=irBuffer.duration.toFixed(2);drawWave(irBuffer);analyze();}
+ catch(err){setStatus('読み込みに失敗しました。WAV形式のファイルを確認してください。');}
+});
+function drawWave(buf){
+ const c=$('wave'),g=c.getContext('2d'),w=c.width,h=c.height;g.clearRect(0,0,w,h);g.fillStyle='#11191b';g.fillRect(0,0,w,h);grid(g,w,h);
+ let d=buf.getChannelData(0),step=Math.max(1,Math.floor(d.length/w));g.strokeStyle='#55d6b0';g.lineWidth=1;g.beginPath();
+ for(let x=0;x<w;x++){let mn=1,mx=-1;for(let j=0;j<step;j++){let v=d[x*step+j]||0;mn=Math.min(mn,v);mx=Math.max(mx,v)}g.moveTo(x,h/2-mx*h*.44);g.lineTo(x,h/2-mn*h*.44)}g.stroke();
+}
+function grid(g,w,h){g.strokeStyle='#29373b';g.lineWidth=1;for(let i=1;i<5;i++){g.beginPath();g.moveTo(0,h*i/5);g.lineTo(w,h*i/5);g.stroke()}}
+function analyze(){
+ if(!irBuffer)return;
+ const d=mono(irBuffer),sr=irBuffer.sampleRate,n=d.length;
+ let peak=0,pi=0;for(let i=0;i<n;i++)if(Math.abs(d[i])>peak){peak=Math.abs(d[i]);pi=i}
+ $('peak').textContent=(pi/sr*1000).toFixed(1);
+ let edc=new Float64Array(n),sum=0;for(let i=n-1;i>=0;i--){sum+=d[i]*d[i];edc[i]=sum}
+ let top=edc[0]||1,db=new Float32Array(n);for(let i=0;i<n;i++)db[i]=10*Math.log10(Math.max(edc[i]/top,1e-12));
+ drawDecay(db,sr);
+ $('duration').textContent=(n/sr).toFixed(2);
+ $('edt').textContent=estimate(db,sr,0,-10);
+ $('t20').textContent=estimate(db,sr,-5,-25);
+ setStatus('解析完了。グラフと測定値を確認してください。');
+}
+function mono(buf){let n=buf.length,out=new Float32Array(n);for(let ch=0;ch<buf.numberOfChannels;ch++){let a=buf.getChannelData(ch);for(let i=0;i<n;i++)out[i]+=a[i]/buf.numberOfChannels}return out}
+function estimate(db,sr,hi,lo){
+ let a=-1,b=-1;for(let i=0;i<db.length;i++){if(a<0&&db[i]<=hi)a=i;if(a>=0&&db[i]<=lo){b=i;break}}
+ if(a<0||b<=a)return 'N/A';
+ let slope=(db[b]-db[a])/((b-a)/sr);if(slope>=0)return 'N/A';return ( -60/slope).toFixed(2);
+}
+function drawDecay(db,sr){
+ const c=$('decay'),g=c.getContext('2d'),w=c.width,h=c.height;g.clearRect(0,0,w,h);g.fillStyle='#11191b';g.fillRect(0,0,w,h);
+ g.strokeStyle='#344247';g.fillStyle='#9aabad';g.font='20px sans-serif';
+ for(let dbv=0;dbv>=-60;dbv-=10){let y=(0-dbv)/60*h;g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();g.fillText(dbv+' dB',8,Math.max(18,y-5))}
+ g.strokeStyle='#78a9ff';g.lineWidth=2;g.beginPath();let stride=Math.max(1,Math.floor(db.length/w));for(let x=0;x<w;x++){let v=db[Math.min(db.length-1,x*stride)];let y=Math.min(h,Math.max(0,-v/60*h));if(x===0)g.moveTo(x,y);else g.lineTo(x,y)}g.stroke();
+}
+function playBuffer(buf){if(!buf)return;stop();let a=audio(),s=a.createBufferSource();s.buffer=buf;s.connect(a.destination);s.start();currentSource=s;s.onended=()=>{if(currentSource===s)currentSource=null}}
+$('playIR').onclick=()=>playBuffer(irBuffer);$('stop').onclick=stop;$('analyze').onclick=analyze;
+['pre','dec','diff','damp'].forEach(id=>$(id).addEventListener('input',()=>{let v=$(id).value;$({pre:'preVal',dec:'decVal',diff:'diffVal',damp:'dampVal'}[id]).textContent=id==='pre'?v+' ms':id==='dec'?Number(v).toFixed(1)+' s':v+' %'}));
+function makeSchroeder(){
+ const sr=audio().sampleRate,decay=+$('dec').value,pre=+$('pre').value/1000,diff=+$('diff').value/100,damp=+$('damp').value/100;
+ const len=Math.min(sr*8,Math.ceil(sr*(decay+pre+1))),out=new Float32Array(len);
+ const delays=[.0297,.0371,.0411,.0437].map(x=>Math.round(x*sr));
+ const gains=delays.map(n=>Math.pow(10,-3*n/(sr*decay)));
+ let combs=delays.map((delay,k)=>{let b=new Float32Array(len),lp=0,coef=.12+damp*.82;for(let i=0;i<len;i++){let input=i===0?1:0;let y=input+(i>=delay?b[i-delay]*gains[k]:0);lp=lp*(coef)+(y*(1-coef));b[i]=lp;}return b});
+ for(let i=0;i<len;i++)out[i]=combs.reduce((s,b)=>s+b[i],0)*.25;
+ for(let stage=0;stage<2;stage++){let delay=Math.round((.0053+stage*.0031)*sr),g=.25+diff*.48,b=new Float32Array(len);for(let i=0;i<len;i++){let x=out[i],del=i>=delay?b[i-delay]:0,y=del-g*x;b[i]=x+g*y;out[i]=y;}}
+ let start=Math.round(pre*sr),final=new Float32Array(len+start);final.set(out,start);
+ let max=0;for(let x of final)max=Math.max(max,Math.abs(x));if(max)for(let i=0;i<final.length;i++)final[i]*=.8/max;
+ let b=audio().createBuffer(1,final.length,sr);b.copyToChannel(final,0);algBuffer=b;
+ $('algStatus').textContent='生成完了 · '+decay.toFixed(1)+' s decay / '+Math.round(diff*100)+'% diffusion / '+Math.round(damp*100)+'% damping';
+}
+$('make').onclick=()=>{makeSchroeder();drawWave(algBuffer)};
+$('playAlg').onclick=()=>{if(!algBuffer)makeSchroeder();playBuffer(algBuffer)};
+function createTest(){let a=audio(),sr=a.sampleRate,n=sr*2,b=a.createBuffer(1,n,sr),d=b.getChannelData(0);for(let i=0;i<sr*.08;i++){let env=Math.exp(-i/(sr*.018));d[i]=(Math.random()*2-1)*env*.65+Math.sin(2*Math.PI*180*i/sr)*env*.2}return b}
+async function convolveAndPlay(ir){
+ if(!ir)return;
+ const sr=ir.sampleRate,offline=new OfflineAudioContext(1,Math.min(sr*8,ir.length+sr*2),sr);
+ let source=offline.createBufferSource();source.buffer=createTest();let conv=offline.createConvolver();
+ let monoIR=offline.createBuffer(1,ir.length,sr),dat=mono(ir);monoIR.copyToChannel(dat,0);conv.buffer=monoIR;source.connect(conv);conv.connect(offline.destination);source.start();
+ let rendered=await offline.startRendering();playBuffer(rendered);
+}
+$('abRef').onclick=()=>convolveAndPlay(irBuffer);
+$('abAlg').onclick=()=>{if(!algBuffer)makeSchroeder();convolveAndPlay(algBuffer)};
+$('abTest').onclick=()=>{if(!irBuffer){setStatus('先にReference IRを読み込んでください。');return}convolveAndPlay(irBuffer)};
+</script>
+</body></html>
