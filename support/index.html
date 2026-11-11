@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Support the labs — Audio Anatomy Labs</title>
+<meta name="description" content="Audio Anatomy Labs and the plug-ins are free. If they help your mixing or your classes, you can support development with a one-time tip via PayPal.">
+<meta name="theme-color" content="#0d6575">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Audio Anatomy Labs">
+<meta property="og:title" content="Support the labs — Audio Anatomy Labs">
+<meta property="og:description" content="Free browser labs for compressors, saturators, EQs, resonance suppressors, delays and level meters: real DSP and live graphs. No sign-up.">
+<meta property="og:url" content="https://kazufumi01.github.io/support/">
+<meta property="og:image" content="https://kazufumi01.github.io/comp-lab/en/ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://kazufumi01.github.io/support/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;700;800&display=swap">
+<style>
+:root{
+  --bg:#e6e9ed; --panel:#f6f7f9; --ink:#16202b; --muted:#566271; --line:#c8cfd7;
+  --accent:#0d6575; --warm:#b5652a; --on-accent:#fff;
+  --font-ui:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d;
+  --accent:#55b7c5; --warm:#e09a5c; --on-accent:#0a1a1d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d;
+  --accent:#55b7c5; --warm:#e09a5c; --on-accent:#0a1a1d; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.65}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left,0px)) 56px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:40px}
+.lang{flex:none;white-space:nowrap;font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
+.lang:hover{border-color:var(--accent);color:var(--accent)}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.04;letter-spacing:-.02em;font-weight:800;margin:14px 0 18px;max-width:14ch}
+.lead{font-size:clamp(17px,2.2vw,20px);color:var(--muted);max-width:56ch;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0;padding:0;list-style:none}
+.facts li{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 12px;color:var(--muted)}
+h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:56px 0 16px}
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.app{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+.app:hover{border-color:var(--accent);transform:translateY(-2px)}
+.app img{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;border-bottom:1px solid var(--line)}
+.app .body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.app h3{margin:0;font-size:22px;letter-spacing:-.01em}
+.app p{margin:0;color:var(--muted);font-size:15px}
+.app ul{margin:4px 0 0;padding-left:1.1em;font-size:14px;color:var(--muted)}
+.app .go{margin-top:auto;padding-top:10px;font-weight:700;color:var(--accent)}
+.beta{display:inline-block;margin-left:6px;padding:0 8px;border-radius:999px;background:var(--warm);color:var(--on-accent);font-weight:500;letter-spacing:.06em}
+.soon{display:flex;flex-direction:column;justify-content:center;gap:6px;border:1px dashed var(--line);border-radius:10px;padding:24px;color:var(--muted)}
+.soon b{color:var(--ink);font-size:18px}
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
+.why div{border-top:2px solid var(--ink);padding-top:12px}
+.why b{display:block;font-size:17px;margin-bottom:4px}
+.why p{margin:0;color:var(--muted);font-size:15px}
+.music{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
+.music iframe{display:block;width:100%;height:352px;border:0;border-radius:12px;background:var(--panel)}
+.music .lead{font-size:16px;margin:0 0 16px}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 0!important;padding:0!important;list-style:none}
+.links a{display:inline-block;padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);font-weight:700;font-size:14px;text-decoration:none;transition:border-color .15s,color .15s}
+.links a:hover{border-color:var(--accent);color:var(--accent)}
+.links a.main{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.links a.main:hover{color:var(--on-accent);opacity:.9}
+.music.one{grid-template-columns:1fr}
+@media (max-width:760px){.music{grid-template-columns:1fr}}
+.foot{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.foot p{margin:0;max-width:80ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;max-width:720px}
+.card p{margin:0 0 12px}
+.ja{margin-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow"><a href="../" style="color:inherit;text-decoration:none">Johan Plus Kei · Audio Anatomy Labs</a></p>
+    <a class="lang" href="#ja" hreflang="ja" lang="ja">日本語</a>
+  </header>
+  <section>
+    <p class="eyebrow">Support</p>
+    <h1>Keep the labs free.</h1>
+    <p class="lead">Every lab and plug-in here is free, with no ads and no sign-up, and I plan to keep it that way for students and teachers. If one of them helped your mix or your class, a small tip pays for the time it takes to build, test and translate the next one.</p>
+  </section>
+  <h2>How to support</h2>
+  <div class="card">
+    <p>One-time tip, any amount, via PayPal (card payments work too):</p>
+    <ul class="links"><li><a class="main" href="https://paypal.me/johanpluskei" target="_blank" rel="noopener">Tip via PayPal ↗</a></li></ul>
+    <p style="margin-top:16px;color:var(--muted);font-size:14px">Other ways that help just as much: share a lab with a friend or your class, report bugs on GitHub, or listen to <a href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">my music on Spotify</a>.</p>
+  </div>
+  <div class="ja" id="ja" lang="ja">
+    <h2>支援のお願い</h2>
+    <div class="card">
+      <p>Audio Anatomy Labs のブラウザ版ラボとプラグインはすべて無料で、広告も登録もありません。学生や先生が気軽に使えるよう、今後も無料で続けるつもりです。</p>
+      <p>ミックスや授業で役に立ったら、PayPal から金額自由の投げ銭で開発を支えていただけるとうれしいです（カード払いも可）。</p>
+      <ul class="links"><li><a class="main" href="https://paypal.me/johanpluskei" target="_blank" rel="noopener">PayPal で支援する ↗</a></li></ul>
+      <p style="margin-top:16px;color:var(--muted);font-size:14px">お金以外でも、友人や授業でのシェア、GitHub での不具合報告、<a href="https://jpk.seesaa.net/article/521891797.html">ブログ</a>や Spotify での試聴も大きな支えになります。</p>
+    </div>
+  </div>
+  <footer class="foot">
+    <p>Made by Kazufumi Nishida (Johan Plus Kei). Tips are voluntary gifts and do not buy a license, support contract or feature request priority.</p>
+  </footer>
+</div>
+</body>
+</html>
