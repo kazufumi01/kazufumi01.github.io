@@ -4,81 +4,102 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Audio Anatomy Labs — learn mixing tools by taking them apart</title>
-<meta name="description" content="Free, browser-based labs that take audio processors apart: hear and see what compressors, saturators, EQs, resonance suppressors, delays and level meters really do, with real DSP running in your browser. No sign-up.">
-<meta name="theme-color" content="#0d6575">
+<meta name="description" content="Free browser labs and free VST3 / AU plug-ins that open up compressors, saturators, EQs, resonance suppressors, delays and meters. No sign-up.">
+<meta name="theme-color" content="#ebe3cf">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="Audio Anatomy Labs">
 <meta property="og:title" content="Audio Anatomy Labs — learn mixing tools by taking them apart">
-<meta property="og:description" content="Free browser labs for compressors, saturators, EQs, resonance suppressors, delays and level meters: real DSP and live graphs. No sign-up.">
+<meta property="og:description" content="Free VST3 / AU plug-ins, remade study notes and browser labs. Learn mixing tools by taking them apart.">
 <meta property="og:url" content="https://kazufumi01.github.io/">
-<meta property="og:image" content="https://kazufumi01.github.io/comp-lab/en/ogp.png">
+<meta property="og:image" content="https://kazufumi01.github.io/comp-note/en/ogp.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://kazufumi01.github.io/">
 <link rel="alternate" hreflang="en" href="https://kazufumi01.github.io/">
 <link rel="alternate" hreflang="ja" href="https://kazufumi01.github.io/ja/">
+<link rel="alternate" hreflang="x-default" href="https://kazufumi01.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@600&display=swap">
 <style>
 :root{
-  --bg:#e6e9ed; --panel:#f6f7f9; --ink:#16202b; --muted:#566271; --line:#c8cfd7;
-  --accent:#0d6575; --warm:#b5652a; --on-accent:#fff;
-  --font-ui:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --paper:#ebe3cf; --page:#f6f0e1; --ink:#2a241d; --muted:#6f6455; --line:#c9b994; --rule:#ddd0b2;
+  --red:#9b3f24; --blue:#2c4a6e; --on:#f6f0e1;
+  --serif:"EB Garamond","Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  --ui:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace; color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d;
-  --accent:#55b7c5; --warm:#e09a5c; --on-accent:#0a1a1d; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d;
-  --accent:#55b7c5; --warm:#e09a5c; --on-accent:#0a1a1d; color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.65}
-a{color:var(--accent)}
-.wrap{max-width:1080px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left,0px)) 56px}
-.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:40px}
-.lang{flex:none;white-space:nowrap;font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:3px 12px}
-.lang:hover{border-color:var(--accent);color:var(--accent)}
-h1{font-size:clamp(34px,6vw,58px);line-height:1.04;letter-spacing:-.02em;font-weight:800;margin:14px 0 18px;max-width:14ch}
-.lead{font-size:clamp(17px,2.2vw,20px);color:var(--muted);max-width:56ch;margin:0}
-.facts{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0;padding:0;list-style:none}
-.facts li{font-family:var(--font-mono);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 12px;color:var(--muted)}
-h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:56px 0 16px}
-.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
-.app{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
-.app:hover{border-color:var(--accent);transform:translateY(-2px)}
-.app img{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;border-bottom:1px solid var(--line)}
-.app .body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
-.app h3{margin:0;font-size:22px;letter-spacing:-.01em}
-.app p{margin:0;color:var(--muted);font-size:15px}
-.app ul{margin:4px 0 0;padding-left:1.1em;font-size:14px;color:var(--muted)}
-.app .go{margin-top:auto;padding-top:10px;font-weight:700;color:var(--accent)}
-.beta{display:inline-block;margin-left:6px;padding:0 8px;border-radius:999px;background:var(--warm);color:var(--on-accent);font-weight:500;letter-spacing:.06em}
-.soon{display:flex;flex-direction:column;justify-content:center;gap:6px;border:1px dashed var(--line);border-radius:10px;padding:24px;color:var(--muted)}
-.soon b{color:var(--ink);font-size:18px}
-.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
-.why div{border-top:2px solid var(--ink);padding-top:12px}
-.why b{display:block;font-size:17px;margin-bottom:4px}
-.why p{margin:0;color:var(--muted);font-size:15px}
-.music{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
-.music iframe{display:block;width:100%;height:352px;border:0;border-radius:12px;background:var(--panel)}
-.music .lead{font-size:16px;margin:0 0 16px}
-.links{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 0!important;padding:0!important;list-style:none}
-.links a{display:inline-block;padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);font-weight:700;font-size:14px;text-decoration:none;transition:border-color .15s,color .15s}
-.links a:hover{border-color:var(--accent);color:var(--accent)}
-.links a.main{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-.links a.main:hover{color:var(--on-accent);opacity:.9}
-.music.one{grid-template-columns:1fr}
-@media (max-width:760px){.music{grid-template-columns:1fr}}
-.jump{display:flex;flex-wrap:wrap;gap:8px;margin:32px 0 0}
-.jump a{font-size:14px;font-weight:700;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--panel)}
-.jump a:hover{border-color:var(--accent);color:var(--accent)}
-.note{color:var(--muted);font-size:15px;max-width:80ch;margin:-4px 0 16px}
-.foot{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
-.foot p{margin:0;max-width:80ch}
+body{margin:0;color:var(--ink);font-family:var(--ui);font-size:15.5px;line-height:1.75;background-color:var(--paper);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .16 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 30%,transparent 55%,rgba(120,90,50,.10) 100%);
+  background-attachment:fixed}
+a{color:var(--blue)}
+.wrap{max-width:1100px;margin:0 auto;padding:28px max(18px,env(safe-area-inset-left)) 56px max(18px,env(safe-area-inset-right))}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--ink)}
+.lang{flex:none;white-space:nowrap;font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);border:1px solid var(--ink);padding:2px 12px}
+.lang:hover{background:var(--ink);color:var(--on)}
+.title{text-align:center;padding:54px 0 34px;border-bottom:3px double var(--ink)}
+.title .eyebrow{letter-spacing:.3em}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,6vw,60px);line-height:1.18;letter-spacing:.02em;margin:16px 0 18px}
+.lead{max-width:58ch;margin:0 auto;color:var(--muted);font-size:16.5px}
+.orn{display:block;text-align:center;color:var(--red);font-size:20px;margin:16px 0 0;letter-spacing:.6em}
+/* table of contents */
+.toc{max-width:680px;margin:36px auto 10px;padding:22px 28px;background:var(--page);border:1px solid var(--line);outline:1px solid var(--line);outline-offset:-6px}
+.toc h2{font-family:var(--serif);font-size:20px;text-align:center;margin:0 0 10px;letter-spacing:.3em;font-weight:600}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc li a{display:flex;align-items:baseline;gap:10px;padding:6px 2px;text-decoration:none;color:var(--ink)}
+.toc li a:hover b{color:var(--red)}
+.toc .n{font-family:var(--serif);color:var(--red);min-width:5.2em;font-size:15px}
+.toc b{font-family:var(--serif);font-size:18px;font-weight:600;white-space:nowrap}
+.toc .dots{flex:1;border-bottom:1px dotted var(--muted);transform:translateY(-5px);min-width:20px}
+.toc small{color:var(--muted);font-size:13px;text-align:right}
+/* chapters */
+.chap{text-align:center;margin:76px 0 26px}
+.chap .n{font-family:var(--serif);color:var(--red);font-size:16px;letter-spacing:.3em}
+.chap h2{font-family:var(--serif);font-size:clamp(28px,4vw,38px);font-weight:600;margin:4px 0 2px;letter-spacing:.06em}
+.chap .sub{color:var(--muted);margin:0;font-size:14.5px}
+.chap::after{content:"";display:block;width:140px;margin:16px auto 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);height:3px}
+.note{color:var(--muted);font-size:14.5px;max-width:80ch;margin:0 auto 22px;text-align:center}
+/* cards (structure unchanged) */
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.app{display:flex;flex-direction:column;background:var(--page);border:1px solid var(--line);text-decoration:none;color:inherit;position:relative;box-shadow:0 1px 0 rgba(80,60,30,.08)}
+.app::after{content:"";position:absolute;inset:5px;border:1px solid var(--rule);pointer-events:none}
+a.app:hover{border-color:var(--ink)}
+a.app:hover::after{border-color:var(--line)}
+.app img{display:block;width:calc(100% - 20px);margin:10px 10px 0;aspect-ratio:1200/630;object-fit:cover;border:1px solid var(--line);filter:sepia(.22) saturate(.82) contrast(.97)}
+.app .body{padding:16px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.app h3{margin:0;font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:.01em;line-height:1.35}
+.app p{margin:0;color:var(--muted);font-size:14.5px}
+.app ul{margin:4px 0 0;padding-left:1.1em;font-size:13.5px;color:var(--muted)}
+.app .go{margin-top:auto;padding-top:10px;font-family:var(--serif);font-weight:600;font-size:16px;color:var(--red)}
+.beta{display:inline-block;margin-left:6px;padding:0 7px;border:1px solid var(--red);color:var(--red);font-weight:500;letter-spacing:.06em}
+.soon{display:flex;flex-direction:column;justify-content:center;gap:6px;border:1px dashed var(--muted);padding:26px;color:var(--muted);text-align:center}
+.soon b{font-family:var(--serif);color:var(--ink);font-size:19px;font-weight:600}
+/* request slip */
+.ask{position:relative;max-width:820px;margin:34px auto 0;padding:20px 26px 20px 30px;background:#efe4c8;border:1px solid var(--line);border-left:4px solid var(--red)}
+.ask h3{font-family:var(--serif);font-size:18px;margin:0 0 4px;font-weight:600;letter-spacing:.06em}
+.ask h3::before{content:"❦ ";color:var(--red)}
+.ask p{margin:0 0 12px;font-size:14.5px}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.links a{display:inline-block;padding:7px 15px;border:1px solid var(--ink);background:var(--page);color:var(--ink);font-weight:700;font-size:14px;text-decoration:none}
+.links a:hover{background:var(--hl,#e9dcb9)}
+.links a.main{background:var(--ink);color:var(--on)}
+.links a.main:hover{background:var(--red);border-color:var(--red)}
+/* afterword */
+.after{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+.after .col{background:var(--page);border:1px solid var(--line);outline:1px solid var(--rule);outline-offset:-6px;padding:22px 24px}
+.after h3{font-family:var(--serif);font-size:20px;font-weight:600;margin:0 0 6px;letter-spacing:.04em}
+.after p{margin:0 0 12px;color:var(--muted);font-size:14.5px}
+.after .sep{border:0;border-top:1px dotted var(--muted);margin:18px 0}
+.after iframe{display:block;width:100%;height:352px;border:0;border-radius:12px;background:var(--page)}
+@media (max-width:820px){.after{grid-template-columns:1fr}}
+.foot{margin-top:60px;padding-top:16px;border-top:3px double var(--ink);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px;text-align:center}
+.foot p{margin:0 auto;max-width:80ch}
+.colophon{font-family:var(--serif);letter-spacing:.2em;color:var(--ink)}
+@media (max-width:560px){body{font-size:15px}.toc{padding:16px 16px}.toc small{display:none}.ask{padding:16px 16px 16px 20px}.links a{padding:9px 14px}}
 </style>
 </head>
 <body>
@@ -88,16 +109,80 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
     <a class="lang" href="https://kazufumi01.github.io/ja/" hreflang="ja" lang="ja">日本語</a>
   </header>
 
-  <section>
+  <section class="title">
     <p class="eyebrow">Free · No sign-up · Runs in your browser</p>
-    <h1>Learn mixing tools by taking them apart.</h1>
+    <h1>Learn mixing tools<br>by taking them apart.</h1>
     <p class="lead">Each lab runs a real audio processor in your browser and opens it up: move a parameter, hear the change, and watch the gain, curves, harmonics and meters move with it.</p>
-    <ul class="facts"><li>Web Audio · AudioWorklet</li><li>Live graphs</li><li>Headphones recommended</li></ul>
+    <span class="orn" aria-hidden="true">❦</span>
   </section>
 
-    <nav class="jump"><a href="#labs">Browser labs</a><a href="#plugins">VST3 / AU plug-ins</a><a href="#about">Music &amp; support</a></nav>
+  <nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#plugins"><span class="n">Chapter I</span><b>Plug-ins</b><span class="dots"></span><small>Free VST3 / AU for your DAW</small></a></li><li><a href="#notes"><span class="n">Chapter II</span><b>Study notes</b><span class="dots"></span><small>The remakes — see, read and hear</small></a></li><li><a href="#labs"><span class="n">Chapter III</span><b>The original labs</b><span class="dots"></span><small>The first browser versions</small></a></li><li><a href="#after"><span class="n">Afterword</span><b>Afterword</b><span class="dots"></span><small>Music, follow and support</small></a></li></ol></nav>
 
-  <h2 id="labs">Browser labs — open and play, nothing to install</h2>
+  <header class="chap" id="plugins"><span class="n">Chapter I</span><h2>Plug-ins</h2><p class="sub">Free VST3 / AU for your DAW</p></header>
+  <p class="note">macOS 11+ (Apple Silicon / Intel) is tested in Ableton Live. Windows 10 / 11 builds are made automatically but are untested on real hardware. Each download page has install steps in English and Japanese.</p>
+  <div class="apps">
+    <a class="app" href="https://github.com/kazufumi01/EQAnatomyLab2/releases/latest">
+      <img src="https://kazufumi01.github.io/assets/eqa2-analog.png" alt="EQ Anatomy Lab 2 VST/AU plug-in: an analog EQ model panel expanded into ordinary EQ bands on the graph" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free</span></p>
+        <h3>EQ Anatomy Lab 2 1.0 — plug-in</h3>
+        <p>Play with this EQ and you will know which EQ you actually need. Nine analog EQ models with their own panels and circuits, and one button that lays any of them out as ordinary bands, so you can see what a classic EQ is really made of. Plus zero latency, analog and linear phase, dynamic EQ, M/S, transient/body and a resonance suppressor, with every display and meter explained where you point.</p>
+        <ul><li>Models based on the Pultec EQP-1A, Neve 1073, SSL 4000, API 550A, Manley Massive Passive, Maag EQ4 and more</li><li>Analog EQ models expand into up to 24 bands you can still drive from the panel</li><li>Reference curve C: drop any audio file to see its average balance</li><li>Presets by use and by analog type, 15 skins</li><li>macOS 11+ (Apple Silicon / Intel); Windows 10 / 11 builds but is untested on real hardware</li></ul>
+        <span class="go">Get it free →</span>
+      </div>
+    </a>
+    <a class="app" href="https://github.com/kazufumi01/CompAnatomyLab2/releases/latest">
+      <img src="https://kazufumi01.github.io/assets/ca2-panel.png" alt="Compressor Anatomy Lab 2 VST/AU plug-in: a FET compressor panel shown over the seven-block signal flow" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free</span></p>
+        <h3>Compressor Anatomy Lab 2 β — plug-in</h3>
+        <p>Build a compressor from seven blocks and hear why a FET, an opto, a vari-mu and a VCA sound different. Twenty-one models with hardware-style panels, an IDEAL switch that isolates each unit's character, 26 lessons and ear training.</p>
+        <ul><li>Models based on the 1176, LA-2A, Fairchild 670, SSL bus compressor, dbx 160, API 2500, Distressor, Neve 2254 and more</li><li>Gain reduction, spectrum, harmonics, sidechain filter and loudness (LUFS, true peak, PSR / PLR) on screen</li><li>Limiter, clipper, spectral, upward, OTT and gain riding for comparison</li><li>macOS 11+ (Apple Silicon / Intel); Windows 10 / 11 builds but is untested on real hardware</li></ul>
+        <span class="go">Get it free →</span>
+      </div>
+    </a>
+    <a class="app" href="https://github.com/kazufumi01/DelayBasicsLab/releases/latest">
+      <img src="https://kazufumi01.github.io/assets/ogp-delay-basics-lab-plugin.png" alt="Delay Basics Lab VST/AU plug-in, limited-time free beta: echo timeline" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free beta · limited time</span></p>
+        <h3>Delay Basics Lab — plug-in</h3>
+        <p>The Delay Basics Lab as a VST3 / AU plug-in for your DAW: the same seven presets, echo timeline and lessons, in Japanese and English.</p>
+        <ul><li>macOS 11+ (Apple Silicon / Intel): manual zip or .pkg installer</li><li>Windows 10 / 11: builds, but not yet tested on a real machine</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
+        <span class="go">Get the free beta →</span>
+      </div>
+    </a>
+    <a class="app" href="https://github.com/kazufumi01/EQAnatomyLab/releases/latest">
+      <img src="https://kazufumi01.github.io/assets/ogp-eq-anatomy-lab-plugin.png" alt="EQ Anatomy Lab VST/AU plug-in: see and hear what your EQ is doing" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free beta · limited time</span></p>
+        <h3>EQ Anatomy Lab — plug-in (previous)</h3>
+        <p>The first EQ plug-in, superseded by EQ Anatomy Lab 2 but still available. An EQ you can see and hear. Watch the phase move, audition the pre-ringing, solo Mid or Side, and split transients from body, with 22 hands-on lessons and an ear-training game built in.</p>
+        <ul><li>6 bands, all dynamic-capable, with a per-band saturator and delta listening</li><li>macOS 11+ (Apple Silicon / Intel); Windows 10 / 11 builds but is untested on real hardware</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
+        <span class="go">Get the free beta →</span>
+      </div>
+    </a>
+  </div>
+  <aside class="ask"><h3>A small request</h3><p>If the plug-ins help you, please give the music of Johan Plus Kei — the producer who makes them — a listen. A Spotify follow or a playlist add helps the next release more than anything.</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Follow / add to a playlist on Spotify ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Favourite on Apple Music ↗</a></li></ul></aside>
+
+  <header class="chap" id="notes"><span class="n">Chapter II</span><h2>Study notes</h2><p class="sub">The remakes — see, read and hear</p></header>
+  <p class="note">A series remaking the labs so they work better in class and on a phone. More notes are on the way.</p>
+  <div class="apps">
+    <a class="app" href="https://kazufumi01.github.io/comp-note/en/">
+      <img src="https://kazufumi01.github.io/comp-note/en/ogp.png" alt="Compressor Study Note: timeline, transfer curve, single-hit zoom and peak/RMS on one screen" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">Dynamics · Study note <span class="beta">New</span></p>
+        <h3>Compressor Study Note</h3>
+        <p>A remake of the Compressor Anatomy Lab. Move a control and six graphs move together with a plain-language reading of what the sound is doing — so the effect is readable even with the sound off, in class or on the train.</p>
+        <ul><li>On desktop, every graph, control and note fits on one screen; on a phone it reads as a scrolling notebook</li><li>Single-hit zoom, peak vs average, and dashed “before” overlays</li><li>Overlay VCA, FET, opto and vari-mu, FF/FB or Peak/RMS with the same settings</li></ul>
+        <span class="go">Open the note →</span>
+      </div>
+    </a>
+    <div class="soon"><b>The next note is in progress</b><span>EQ, saturation, delay, resonance and metering will each be remade as a study note.</span></div>
+  </div>
+  <aside class="ask"><h3>Between notes</h3><p>Done studying? Rest your ears with a track. Saving one you like to your library or a playlist means a lot.</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Listen on Spotify ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Listen on Apple Music ↗</a></li></ul></aside>
+
+  <header class="chap" id="labs"><span class="n">Chapter III</span><h2>The original labs</h2><p class="sub">The first browser versions</p></header>
+  <p class="note">The first browser versions of the labs. They stay at the same addresses after the remakes.</p>
   <div class="apps">
     <a class="app" href="https://kazufumi01.github.io/comp-lab/en/">
       <img src="https://kazufumi01.github.io/comp-lab/en/ogp.png" alt="Compressor Anatomy Lab: transfer curve with the live operating point" loading="lazy">
@@ -170,95 +255,35 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
       </div>
     </a>
   </div>
+  <aside class="ask"><h3>For teachers and students</h3><p>The labs stay free, with no ads. Playing the music, saving a favourite and sharing these pages is the best support.</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Play on Spotify ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Favourite on Apple Music ↗</a></li></ul></aside>
 
-  <h2 id="plugins">VST3 / AU plug-ins — free downloads for your DAW</h2>
-  <p class="note">macOS 11+ (Apple Silicon / Intel) is tested in Ableton Live. Windows 10 / 11 builds are made automatically but are untested on real hardware. Each download page has install steps in English and Japanese.</p>
-  <div class="apps">
-    <a class="app" href="https://github.com/kazufumi01/EQAnatomyLab2/releases/latest">
-      <img src="https://kazufumi01.github.io/assets/eqa2-analog.png" alt="EQ Anatomy Lab 2 VST/AU plug-in: an analog EQ model panel expanded into ordinary EQ bands on the graph" loading="lazy">
-      <div class="body">
-        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free</span></p>
-        <h3>EQ Anatomy Lab 2 1.0 — plug-in</h3>
-        <p>Play with this EQ and you will know which EQ you actually need. Nine analog EQ models with their own panels and circuits, and one button that lays any of them out as ordinary bands, so you can see what a classic EQ is really made of. Plus zero latency, analog and linear phase, dynamic EQ, M/S, transient/body and a resonance suppressor, with every display and meter explained where you point.</p>
-        <ul><li>Models based on the Pultec EQP-1A, Neve 1073, SSL 4000, API 550A, Manley Massive Passive, Maag EQ4 and more</li><li>Analog EQ models expand into up to 24 bands you can still drive from the panel</li><li>Reference curve C: drop any audio file to see its average balance</li><li>Presets by use and by analog type, 15 skins</li><li>macOS 11+ (Apple Silicon / Intel); Windows 10 / 11 builds but is untested on real hardware</li></ul>
-        <span class="go">Get it free →</span>
-      </div>
-    </a>
-    <a class="app" href="https://github.com/kazufumi01/CompAnatomyLab2/releases/latest">
-      <img src="https://kazufumi01.github.io/assets/ca2-panel.png" alt="Compressor Anatomy Lab 2 VST/AU plug-in: a FET compressor panel shown over the seven-block signal flow" loading="lazy">
-      <div class="body">
-        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free</span></p>
-        <h3>Compressor Anatomy Lab 2 β — plug-in</h3>
-        <p>Build a compressor from seven blocks and hear why a FET, an opto, a vari-mu and a VCA sound different. Twenty-one models with hardware-style panels, an IDEAL switch that isolates each unit's character, 26 lessons and ear training.</p>
-        <ul><li>Models based on the 1176, LA-2A, Fairchild 670, SSL bus compressor, dbx 160, API 2500, Distressor, Neve 2254 and more</li><li>Gain reduction, spectrum, harmonics, sidechain filter and loudness (LUFS, true peak, PSR / PLR) on screen</li><li>Limiter, clipper, spectral, upward, OTT and gain riding for comparison</li><li>macOS 11+ (Apple Silicon / Intel); Windows 10 / 11 builds but is untested on real hardware</li></ul>
-        <span class="go">Get it free →</span>
-      </div>
-    </a>
-    <a class="app" href="https://github.com/kazufumi01/DelayBasicsLab/releases/latest">
-      <img src="https://kazufumi01.github.io/assets/ogp-delay-basics-lab-plugin.png" alt="Delay Basics Lab VST/AU plug-in, limited-time free beta: echo timeline" loading="lazy">
-      <div class="body">
-        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free beta · limited time</span></p>
-        <h3>Delay Basics Lab — plug-in</h3>
-        <p>The Delay Basics Lab as a VST3 / AU plug-in for your DAW: the same seven presets, echo timeline and lessons, in Japanese and English.</p>
-        <ul><li>macOS 11+ (Apple Silicon / Intel): manual zip or .pkg installer</li><li>Windows 10 / 11: builds, but not yet tested on a real machine</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
-        <span class="go">Get the free beta →</span>
-      </div>
-    </a>
-    <a class="app" href="https://github.com/kazufumi01/EQAnatomyLab/releases/latest">
-      <img src="https://kazufumi01.github.io/assets/ogp-eq-anatomy-lab-plugin.png" alt="EQ Anatomy Lab VST/AU plug-in: see and hear what your EQ is doing" loading="lazy">
-      <div class="body">
-        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free beta · limited time</span></p>
-        <h3>EQ Anatomy Lab — plug-in (previous)</h3>
-        <p>The first EQ plug-in, superseded by EQ Anatomy Lab 2 but still available. An EQ you can see and hear. Watch the phase move, audition the pre-ringing, solo Mid or Side, and split transients from body, with 22 hands-on lessons and an ear-training game built in.</p>
-        <ul><li>6 bands, all dynamic-capable, with a per-band saturator and delta listening</li><li>macOS 11+ (Apple Silicon / Intel); Windows 10 / 11 builds but is untested on real hardware</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
-        <span class="go">Get the free beta →</span>
-      </div>
-    </a>
-  </div>
-
-  <h2 id="about">Music &amp; support</h2>
-  <div class="apps">
-    <div class="app">
-      <img src="https://kazufumi01.github.io/assets/ogp-music.png" alt="Johan Plus Kei: Spotify, Apple Music, X, Instagram" loading="lazy">
-      <div class="body">
-        <p class="eyebrow">Music · Follow</p>
-        <h3>Johan Plus Kei</h3>
-        <p>The producer behind these labs makes dream pop, indie pop and post-rock. Listen, or follow along.</p>
-        <ul class="links">
-          <li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Spotify ↗</a></li>
-          <li><a class="main" href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music ↗</a></li>
-          <li><a href="https://x.com/johanpluskei" target="_blank" rel="noopener me">X ↗</a></li>
-          <li><a href="https://www.instagram.com/johanpluskei" target="_blank" rel="noopener me">Instagram ↗</a></li>
-        </ul>
-      </div>
+  <header class="chap" id="after"><span class="n">Afterword</span><h2>Afterword</h2><p class="sub">Music, follow and support</p></header>
+  <div class="after">
+    <div class="col">
+      <h3>Johan Plus Kei</h3>
+      <p>Thank you for reading this far. These labs are made by Johan Plus Kei (Kazufumi Nishida), a producer of dream pop, indie pop and post-rock in Japan. New labs and new music are announced on X and Instagram.</p>
+      <h3 style="font-size:16px">Follow</h3>
+      <ul class="links">
+        <li><a class="main" href="https://x.com/johanpluskei" target="_blank" rel="noopener me">X ↗</a></li>
+        <li><a class="main" href="https://www.instagram.com/johanpluskei" target="_blank" rel="noopener me">Instagram ↗</a></li>
+        <li><a href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Spotify ↗</a></li>
+        <li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music ↗</a></li>
+        <li><a href="https://linktr.ee/jpk01" target="_blank" rel="noopener">All links ↗</a></li>
+        <li><a href="https://jpk.seesaa.net/article/521891797.html" target="_blank" rel="noopener" hreflang="ja">Article index (Japanese blog) ↗</a></li>
+      </ul>
+      <hr class="sep">
+      <h3>Support the work</h3>
+      <p>Everything stays free, with no ads and no sign-up. If the labs help you, a one-time tip of any amount keeps them going (PayPal, cards accepted).</p>
+      <ul class="links"><li><a class="main" href="https://paypal.me/johanpluskei" target="_blank" rel="noopener">Tip via PayPal ↗</a></li><li><a href="https://kazufumi01.github.io/support/">Other ways to help →</a></li></ul>
     </div>
-    <div class="app">
-      <div class="body">
-        <p class="eyebrow">Support</p>
-        <h3>Like the labs? Play &amp; share</h3>
-        <p><b>If you like the labs, please play my music and share these pages</b> with friends and classmates — that helps the most, and keeps everything free, with no ads or sign-up. Tips via PayPal are welcome too.</p>
-        <ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Play on Spotify ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music ↗</a></li><li><a href="https://linktr.ee/jpk01" target="_blank" rel="noopener">All links ↗</a></li><li><a href="https://x.com/johanpluskei" target="_blank" rel="noopener me">X ↗</a></li><li><a href="https://www.instagram.com/johanpluskei" target="_blank" rel="noopener me">Instagram ↗</a></li></ul>
-        <ul class="links" style="margin-top:10px!important"><li><a href="https://paypal.me/johanpluskei" target="_blank" rel="noopener">Tip via PayPal ↗</a></li><li><a href="https://kazufumi01.github.io/support/">Other ways to help →</a></li></ul>
-      </div>
+    <div>
+      <iframe data-testid="embed-iframe" src="https://open.spotify.com/embed/artist/30PV2gqUbDDwvuWtKaok0x?utm_source=generator&amp;si=6bcf5f0939e1448d" title="Johan Plus Kei on Spotify" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
-  </div>
-
-  <h2>Why these labs</h2>
-  <div class="why">
-    <div><b>See the inside, not just the knobs</b><p>Gain reduction, transfer curves, harmonic spectra and signal flow update as you play, so cause and effect are visible.</p></div>
-    <div><b>Fair listening</b><p>Level matching, bypass and delta listening are built in, so you judge the process — not just loudness.</p></div>
-    <div><b>Real numbers</b><p>Every parameter comes with typical settings and the formula behind it, written for students, not marketing.</p></div>
-    <div><b>Free for classrooms</b><p>No account, no install. Open the link on any laptop and teach with it.</p></div>
-  </div>
-
-  <h2>Listen</h2>
-  <div class="music one">
-    <iframe data-testid="embed-iframe" src="https://open.spotify.com/embed/artist/30PV2gqUbDDwvuWtKaok0x?utm_source=generator&amp;si=6bcf5f0939e1448d" title="Johan Plus Kei on Spotify" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   </div>
 
   <footer class="foot">
-    <p>Made by Kazufumi Nishida (Johan Plus Kei), a producer, mix engineer and music technology teacher in Japan — content and explanations by me, built with help from AI coding tools (Claude). The companion articles are on the <a href="https://jpk.seesaa.net/article/521891797.html" hreflang="ja">Japanese blog</a>.</p>
-    <p>Enjoying the labs? Please play my music and share these pages — that helps the most! (<a href="https://linktr.ee/jpk01">all links</a>) Tips via PayPal are welcome too (<a href="https://kazufumi01.github.io/support/">support page</a>).</p>
+    <p class="colophon">Audio Anatomy Labs</p>
+    <p>Made by Kazufumi Nishida (Johan Plus Kei), a producer, mix engineer and music technology teacher in Japan — content and explanations by me, built with help from AI coding tools (Claude).</p>
     <p>The DSP in these labs is an educational implementation. It does not reproduce any specific hardware or plugin; product names are trademarks of their respective owners.</p>
   </footer>
 </div>
