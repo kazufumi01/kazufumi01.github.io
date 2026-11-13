@@ -88,6 +88,14 @@ a.app:hover::after{border-color:var(--line)}
 .links a:hover{background:var(--hl,#e9dcb9)}
 .links a.main{background:var(--ink);color:var(--on)}
 .links a.main:hover{background:var(--red);border-color:var(--red)}
+/* utilities: small cards */
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.tool{display:flex;flex-direction:column;gap:3px;background:var(--page);border:1px solid var(--line);padding:8px 10px 12px;text-decoration:none;color:inherit;position:relative}
+.tool:hover{border-color:var(--ink)}
+.tool img{width:100%;aspect-ratio:1200/630;object-fit:cover;border:1px solid var(--line);filter:sepia(.25) saturate(.8);margin-bottom:6px}
+.tool .tv{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--red)}
+.tool b{font-family:var(--serif);font-size:17px;font-weight:600}
+.tool .td{font-size:12.5px;color:var(--muted);line-height:1.55}
 /* afterword */
 .after{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
 .after .col{background:var(--page);border:1px solid var(--line);outline:1px solid var(--rule);outline-offset:-6px;padding:22px 24px}
@@ -116,7 +124,7 @@ a.app:hover::after{border-color:var(--line)}
     <span class="orn" aria-hidden="true">❦</span>
   </section>
 
-  <nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#plugins"><span class="n">Chapter I</span><b>Plug-ins</b><span class="dots"></span><small>Free VST3 / AU for your DAW</small></a></li><li><a href="#notes"><span class="n">Chapter II</span><b>Study notes</b><span class="dots"></span><small>The remakes — see, read and hear</small></a></li><li><a href="#labs"><span class="n">Chapter III</span><b>The original labs</b><span class="dots"></span><small>The first browser versions</small></a></li><li><a href="#after"><span class="n">Afterword</span><b>Afterword</b><span class="dots"></span><small>Music, follow and support</small></a></li></ol></nav>
+  <nav class="toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#plugins"><span class="n">Chapter I</span><b>Plug-ins</b><span class="dots"></span><small>Free VST3 / AU for your DAW</small></a></li><li><a href="#notes"><span class="n">Chapter II</span><b>Study notes</b><span class="dots"></span><small>The remakes — see, read and hear</small></a></li><li><a href="#labs"><span class="n">Chapter III</span><b>The original labs</b><span class="dots"></span><small>The first browser versions</small></a></li><li><a href="#tools"><span class="n">Appendix</span><b>Utilities</b><span class="dots"></span><small>Songcraft Lab composition series</small></a></li><li><a href="#after"><span class="n">Afterword</span><b>Afterword</b><span class="dots"></span><small>Music, follow and support</small></a></li></ol></nav>
 
   <header class="chap" id="plugins"><span class="n">Chapter I</span><h2>Plug-ins</h2><p class="sub">Free VST3 / AU for your DAW</p></header>
   <p class="note">macOS 11+ (Apple Silicon / Intel) is tested in Ableton Live. Windows 10 / 11 builds are made automatically but are untested on real hardware. Each download page has install steps in English and Japanese.</p>
@@ -335,6 +343,17 @@ a.app:hover::after{border-color:var(--line)}
     </a>
   </div>
   <aside class="ask"><h3>For teachers and students</h3><p>The labs stay free, with no ads. Playing the music, saving a favourite and sharing these pages is the best support.</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Play on Spotify ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Favourite on Apple Music ↗</a></li></ul></aside>
+
+  <header class="chap" id="tools"><span class="n">Appendix</span><h2>Utilities</h2><p class="sub">Songcraft Lab composition series</p></header>
+  <p class="note">A composition practice series: build melody, chords, bass and drums step by step and take them into your DAW as MIDI. Song data carries over between the apps. (Japanese only)</p>
+  <div class="tools">
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/first-song.html"><img src="https://kazufumi01.github.io/songcraft/first-song.png" alt="First Song" loading="lazy"><span class="tv">Vol.1</span><b>First Song</b><span class="td">Pick a key and progression, add bass, melody and drums for 8 bars; export MIDI.</span></a>
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/hum-to-song.html"><img src="https://kazufumi01.github.io/songcraft/hum-to-song.png" alt="Hum to Song" loading="lazy"><span class="tv">Vol.2</span><b>Hum to Song</b><span class="td">Record a hummed melody, turn it into MIDI, find the key and add chords.</span></a>
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/key-finder.html"><img src="https://kazufumi01.github.io/songcraft/key-finder.png" alt="Key Finder" loading="lazy"><span class="tv">Vol.2 module</span><b>Key Finder</b><span class="td">Find the key of a melody, step by step, six ways.</span></a>
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/call-response.html"><img src="https://kazufumi01.github.io/songcraft/call-response.png" alt="Call & Response" loading="lazy"><span class="tv">Vol.3</span><b>Call & Response</b><span class="td">Write a 2-bar call and its answer, twice, for 8 bars.</span></a>
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/riff-lab.html"><img src="https://kazufumi01.github.io/songcraft/riff-lab.png" alt="Riff Lab" loading="lazy"><span class="tv">Vol.4</span><b>Riff Lab</b><span class="td">Build a riff, test it on loop, fit bass and drums, then add a melody.</span></a>
+  </div>
+  <aside class="ask"><h3>For songwriters</h3><p>Between songs, have a listen to Johan Plus Kei, who makes this site. If you like a track, add it to a playlist or your favourites.</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Listen & save on Spotify ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Listen on Apple Music ↗</a></li></ul></aside>
 
   <header class="chap" id="after"><span class="n">Afterword</span><h2>Afterword</h2><p class="sub">Music, follow and support</p></header>
   <div class="after">

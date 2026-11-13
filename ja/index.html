@@ -88,6 +88,14 @@ a.app:hover::after{border-color:var(--line)}
 .links a:hover{background:var(--hl,#e9dcb9)}
 .links a.main{background:var(--ink);color:var(--on)}
 .links a.main:hover{background:var(--red);border-color:var(--red)}
+/* utilities: small cards */
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.tool{display:flex;flex-direction:column;gap:3px;background:var(--page);border:1px solid var(--line);padding:8px 10px 12px;text-decoration:none;color:inherit;position:relative}
+.tool:hover{border-color:var(--ink)}
+.tool img{width:100%;aspect-ratio:1200/630;object-fit:cover;border:1px solid var(--line);filter:sepia(.25) saturate(.8);margin-bottom:6px}
+.tool .tv{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--red)}
+.tool b{font-family:var(--serif);font-size:17px;font-weight:600}
+.tool .td{font-size:12.5px;color:var(--muted);line-height:1.55}
 /* afterword */
 .after{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
 .after .col{background:var(--page);border:1px solid var(--line);outline:1px solid var(--rule);outline-offset:-6px;padding:22px 24px}
@@ -116,7 +124,7 @@ a.app:hover::after{border-color:var(--line)}
     <span class="orn" aria-hidden="true">❦</span>
   </section>
 
-  <nav class="toc" aria-label="目次"><h2>目次</h2><ol><li><a href="#plugins"><span class="n">第一章</span><b>プラグイン</b><span class="dots"></span><small>DAW で使える無料の VST3 / AU</small></a></li><li><a href="#notes"><span class="n">第二章</span><b>スタディノート</b><span class="dots"></span><small>リメイク版 — 見て・読んで・聴いて学ぶ</small></a></li><li><a href="#labs"><span class="n">第三章</span><b>これまでのラボ</b><span class="dots"></span><small>最初に公開したブラウザ版</small></a></li><li><a href="#after"><span class="n">巻末</span><b>あとがき</b><span class="dots"></span><small>音楽・フォロー・支援</small></a></li></ol></nav>
+  <nav class="toc" aria-label="目次"><h2>目次</h2><ol><li><a href="#plugins"><span class="n">第一章</span><b>プラグイン</b><span class="dots"></span><small>DAW で使える無料の VST3 / AU</small></a></li><li><a href="#notes"><span class="n">第二章</span><b>スタディノート</b><span class="dots"></span><small>リメイク版 — 見て・読んで・聴いて学ぶ</small></a></li><li><a href="#labs"><span class="n">第三章</span><b>これまでのラボ</b><span class="dots"></span><small>最初に公開したブラウザ版</small></a></li><li><a href="#tools"><span class="n">付録</span><b>ユーティリティ</b><span class="dots"></span><small>作曲シリーズ Songcraft Lab</small></a></li><li><a href="#after"><span class="n">巻末</span><b>あとがき</b><span class="dots"></span><small>音楽・フォロー・支援</small></a></li></ol></nav>
 
   <header class="chap" id="plugins"><span class="n">第一章</span><h2>プラグイン</h2><p class="sub">DAW で使える無料の VST3 / AU</p></header>
   <p class="note">macOS 11 以降（Apple Silicon / Intel）は Ableton Live で動作確認済み。Windows 10 / 11 版は自動ビルドのみで、実機では未検証です。各ダウンロードページに日本語・英語のインストール手順があります。</p>
@@ -335,6 +343,17 @@ a.app:hover::after{border-color:var(--line)}
     </a>
   </div>
   <aside class="ask"><h3>授業で使ってくださる方へ</h3><p>ラボはすべて無料・広告なしで続けています。曲の再生とお気に入り登録、ページのシェアがいちばんの応援です。</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Spotify で再生 ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music でお気に入り ↗</a></li></ul></aside>
+
+  <header class="chap" id="tools"><span class="n">付録</span><h2>ユーティリティ</h2><p class="sub">作曲シリーズ Songcraft Lab</p></header>
+  <p class="note">メロディ・コード・ベース・ドラムを順に作り、MIDIでDAWに持ち込む作曲練習のシリーズです。曲データは同じサイト内のアプリ同士で受け渡せます。</p>
+  <div class="tools">
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/first-song.html"><img src="https://kazufumi01.github.io/songcraft/first-song.png" alt="First Song" loading="lazy"><span class="tv">Vol.1</span><b>First Song</b><span class="td">キーとコード進行を選び、ベース・メロディ・ドラムを足して8小節を完成。MIDIで書き出し。</span></a>
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/hum-to-song.html"><img src="https://kazufumi01.github.io/songcraft/hum-to-song.png" alt="Hum to Song" loading="lazy"><span class="tv">Vol.2</span><b>Hum to Song</b><span class="td">鼻歌を録音してMIDIにし、キーを特定してコードを付ける。</span></a>
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/key-finder.html"><img src="https://kazufumi01.github.io/songcraft/key-finder.png" alt="Key Finder" loading="lazy"><span class="tv">Vol.2 module</span><b>Key Finder</b><span class="td">メロディのキーを6つの方法で順に判別する練習。</span></a>
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/call-response.html"><img src="https://kazufumi01.github.io/songcraft/call-response.png" alt="Call & Response" loading="lazy"><span class="tv">Vol.3</span><b>Call & Response</b><span class="td">2小節の問いと答えを2往復して8小節を作る。</span></a>
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/riff-lab.html"><img src="https://kazufumi01.github.io/songcraft/riff-lab.png" alt="Riff Lab" loading="lazy"><span class="tv">Vol.4</span><b>Riff Lab</b><span class="td">リフを作り、ループ耐久テスト、ベースとドラム、メロディを乗せる。</span></a>
+  </div>
+  <aside class="ask"><h3>作曲の参考に</h3><p>曲作りの合間に、このサイトを作っている Johan Plus Kei の曲もどうぞ。気に入ったら、プレイリストやお気に入りに入れてもらえるとうれしいです。</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Spotify で聴く・保存 ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music で聴く ↗</a></li></ul></aside>
 
   <header class="chap" id="after"><span class="n">巻末</span><h2>あとがき</h2><p class="sub">音楽・フォロー・支援</p></header>
   <div class="after">

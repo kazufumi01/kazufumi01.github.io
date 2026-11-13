@@ -1,0 +1,943 @@
+<!doctype html><html lang="ja"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><div style="font:12px/1.6 system-ui,sans-serif;padding:6px max(12px,env(safe-area-inset-left));display:flex;gap:14px;flex-wrap:wrap"><a href="https://kazufumi01.github.io/ja/#tools" style="color:inherit;opacity:.75">← Audio Anatomy Labs 目次</a><span style="opacity:.6">Songcraft Lab：<a href="first-song.html" style="color:inherit">First Song</a> · <a href="hum-to-song.html" style="color:inherit">Hum to Song</a> · <a href="key-finder.html" style="color:inherit">Key Finder</a> · <a href="call-response.html" style="color:inherit">Call &amp; Response</a> · <a href="riff-lab.html" style="color:inherit">Riff Lab</a></span></div>
+<title>Hum to Song</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Songcraft Lab shared look: graphite + amber (VU meter) + teal (tonic). Layout: single working column, decks of panels like a channel strip */
+:root{
+  --bg:#E9ECEF; --panel:#FFFFFF; --ink:#15181E; --muted:#5B6370; --line:#CDD2D9;
+  --amber:#A85F00; --amber-soft:#F6E6CC; --teal:#0E7A70; --teal-soft:#D3EEEA;
+  --clash:#B3261E; --clash-soft:#F7DAD7; --violet:#5B4BB0; --violet-soft:#E4E0F6;
+  --key-w:#FAFAF9; --key-b:#1C1F26; --key-ink:#3A3F48;
+  --roll-bg:#F4F6F8; --roll-blk:#EAEDF1; --grid:#E1E5EA; --grid-bar:#B9C0C9; --sub:#F3F5F7;
+  --f-display:"Unbounded","Zen Kaku Gothic New",system-ui,sans-serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101216; --panel:#181B21; --ink:#E6E8EC; --muted:#9AA2AE; --line:#2C313A;
+  --amber:#F0A63A; --amber-soft:#3A2C17; --teal:#3CC2B2; --teal-soft:#12302D;
+  --clash:#F07167; --clash-soft:#3B1D1B; --violet:#A99BF0; --violet-soft:#262043;
+  --key-w:#D5D8DE; --key-b:#0A0B0E; --key-ink:#2C3038;
+  --roll-bg:#14171C; --roll-blk:#111318; --grid:#22262D; --grid-bar:#3A414C; --sub:#1D2027; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101216; --panel:#181B21; --ink:#E6E8EC; --muted:#9AA2AE; --line:#2C313A;
+  --amber:#F0A63A; --amber-soft:#3A2C17; --teal:#3CC2B2; --teal-soft:#12302D;
+  --clash:#F07167; --clash-soft:#3B1D1B; --violet:#A99BF0; --violet-soft:#262043;
+  --key-w:#D5D8DE; --key-b:#0A0B0E; --key-ink:#2C3038;
+  --roll-bg:#14171C; --roll-blk:#111318; --grid:#22262D; --grid-bar:#3A414C; --sub:#1D2027; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header.app{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,6vw,44px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 span{color:var(--amber)}
+.lede{margin:0;color:var(--muted);max-width:64ch}
+h2{font-size:16px;margin:0;font-weight:700;letter-spacing:.02em;text-wrap:balance}
+h3{font-size:18px;margin:0;text-wrap:balance}
+p{margin:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.sub{background:var(--sub);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.spread{justify-content:space-between}
+.grow{flex:1;min-width:0}
+button,select,input[type=text],input[type=number],textarea{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 11px;line-height:1.4}
+button,select{cursor:pointer}
+textarea{width:100%;resize:vertical;font-size:15px;line-height:1.8}
+button:hover:not(:disabled){border-color:var(--muted)}
+button:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+button.primary{background:var(--ink);color:var(--panel);border-color:var(--ink);font-weight:700}
+button.on,.seg button.on{background:var(--amber-soft);border-color:var(--amber);color:var(--ink);font-weight:700}
+button.tonic-on{background:var(--teal-soft);border-color:var(--teal);font-weight:700}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px}
+.lbl{font-size:12px;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+.why{font-size:13px;color:var(--muted);border-left:2px solid var(--line);padding-left:12px;max-width:70ch}
+input[type=range]{accent-color:var(--amber);width:120px}
+abbr.term{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}
+details>summary{cursor:pointer}
+.gloss{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0 0;font-size:13px}
+.gloss dt{font-weight:700}
+.gloss dd{margin:0;color:var(--muted)}
+@media (max-width:520px){.gloss{grid-template-columns:1fr}.gloss dd{margin-bottom:6px}}
+/* steps (wizard / tabs) */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tab{display:flex;align-items:center;gap:8px;white-space:nowrap;background:transparent}
+.tab .num{font-family:var(--f-display);font-size:12px;width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;border:1px solid var(--line)}
+.tab.active{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.tab.active .num{border-color:var(--panel)}
+.tab.done .num{background:var(--teal-soft);border-color:var(--teal)}
+/* transport bar */
+.transport{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.mixer{display:flex;flex-wrap:wrap;gap:4px}
+.mixer button{font-size:12px;padding:4px 9px}
+.mixer button.muted{opacity:.45;text-decoration:line-through}
+/* piano roll */
+.roll-box{overflow-x:auto;background:var(--roll-bg);border:1px solid var(--line);border-radius:8px;touch-action:pan-x}
+.sc-roll svg{display:block;user-select:none;-webkit-user-select:none}
+.r-row{fill:transparent}
+.r-row.blk{fill:var(--roll-blk)}
+.r-row.ct{fill:var(--teal-soft)}
+.r-row.sc{fill:transparent}
+.r-row.out{fill:var(--sub);opacity:.6}
+.r-lbl{fill:var(--muted);font-family:var(--f-mono);font-size:9px}
+.r-lbl.c{fill:var(--ink);font-weight:600}
+.r-bar{stroke:var(--grid-bar)}
+.r-beat{stroke:var(--grid)}
+.r-sub{stroke:var(--grid);stroke-dasharray:2 3}
+.r-chord{fill:var(--violet-soft);stroke:var(--violet);stroke-width:.6}
+.r-chordtxt{fill:var(--ink);font-family:var(--f-mono);font-size:10px;font-weight:600}
+.r-note{fill:var(--amber);cursor:pointer}
+.r-note.ct{fill:var(--teal)}
+.r-note.tension{fill:var(--violet)}
+.r-note.clash{fill:var(--clash)}
+.r-note.ghost{opacity:.35}
+.r-ntxt{fill:var(--panel);font-family:var(--f-mono);font-size:9px;pointer-events:none}
+.r-ph{stroke:var(--ink);stroke-width:1.5}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
+/* step sequencer */
+.seq{display:grid;gap:3px;overflow-x:auto}
+.seq .lane{display:grid;grid-template-columns:64px repeat(16,minmax(18px,1fr));gap:3px;align-items:center;min-width:420px}
+.seq .lane span{font-size:12px;color:var(--muted)}
+.cell{height:26px;border:1px solid var(--line);border-radius:4px;background:var(--panel);padding:0;cursor:pointer}
+.cell.beat{background:var(--sub)}
+.cell.on{background:var(--amber);border-color:var(--amber)}
+.cell.ghost{background:var(--amber-soft);border-color:var(--amber)}
+.cell.now{outline:2px solid var(--teal);outline-offset:-1px}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.card{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--panel);text-align:left;cursor:pointer;font:inherit;color:inherit}
+.card.on{border-color:var(--amber);background:var(--amber-soft)}
+.card b{font-family:var(--f-mono);font-size:15px}
+.card .lbl{line-height:1.5}
+.stat{display:flex;flex-wrap:wrap;gap:20px}
+.stat div{display:flex;flex-direction:column}
+.stat b{font-family:var(--f-mono);font-size:20px}
+.notice{font-size:13px;background:var(--amber-soft);border:1px solid var(--amber);border-radius:8px;padding:10px 12px}
+#sc-toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--panel);padding:9px 16px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:calc(100% - 32px)}
+#sc-toast.show{opacity:1;transform:translate(-50%,0)}
+footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+footer a{color:var(--muted)}
+.series{display:flex;flex-wrap:wrap;gap:6px}
+.series a{font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.series a.here{color:var(--ink);border-color:var(--amber);background:var(--amber-soft)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.step-body{display:flex;flex-direction:column;gap:14px;min-height:240px}
+.btnlike{font-size:13px;border:1px solid var(--line);border-radius:6px;padding:6px 11px;cursor:pointer;background:var(--panel);display:inline-flex;align-items:center}
+.btnlike:hover{border-color:var(--muted)}
+.btnlike:focus-within{outline:2px solid var(--amber);outline-offset:2px}
+
+.step-body{display:flex;flex-direction:column;gap:14px;min-height:260px}
+.rec{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.recbtn{width:72px;height:72px;border-radius:50%;background:var(--clash);border:0;color:#fff;font-weight:700;font-size:13px}
+.recbtn.on{animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.6}}
+@media (prefers-reduced-motion:reduce){.recbtn.on{animation:none}}
+.meterbar{width:180px;height:8px;background:var(--grid);border-radius:4px;overflow:hidden}
+.meterbar i{display:block;height:100%;width:0;background:var(--teal)}
+.bignote{font-family:var(--f-display);font-size:34px;font-weight:700;min-width:3.5ch}
+.countin{font-family:var(--f-display);font-size:20px;color:var(--amber)}
+.curve{width:100%;height:120px;background:var(--roll-bg);border:1px solid var(--line);border-radius:8px;display:block}
+.bars{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+.bars .b{border:1px solid var(--line);border-radius:6px;padding:6px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.bars .b .n{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+.bars select{font-family:var(--f-mono);font-size:12px;padding:4px;width:100%}
+.bars .sug{display:flex;flex-direction:column;gap:3px}
+.bars .sug button{font-family:var(--f-mono);font-size:11px;padding:3px 4px;text-align:left}
+.fit{font-size:10px;color:var(--muted)}
+@media (max-width:760px){.bars{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.cands{display:flex;flex-wrap:wrap;gap:8px}
+.cands button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:150px}
+.cands b{font-family:var(--f-display);font-size:15px}
+.lines{display:flex;flex-direction:column;gap:6px}
+.line{display:grid;grid-template-columns:28px minmax(0,1fr) 54px 54px 30px;gap:8px;align-items:center;font-size:14px}
+.line .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.line .mb{height:10px;background:var(--grid);border-radius:3px;overflow:hidden}
+.line .mb i{display:block;height:100%;background:var(--amber)}
+.line .c{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+.ok{color:var(--teal);font-weight:700}
+.ng{color:var(--clash);font-weight:700}
+
+</style>
+<div class="wrap">
+  <header class="app">
+    
+    <div class="eyebrow">Songcraft Lab · Vol.2</div>
+    <h1>Hum to <span>Song</span></h1>
+    <p class="lede">鼻歌を録音してMIDIにし、キーを特定してコードを付けます。メロディを先に作り、あとから伴奏を決める作り方の練習です。</p>
+  </header>
+
+  <section class="panel" aria-label="再生">
+    <div class="transport">
+      <div class="row">
+        <button class="primary" id="play" title="再生／停止（スペースキー）" aria-keyshortcuts="Space">▶ 再生</button>
+        <button id="stop">■ 停止</button>
+        <label class="row lbl"><input type="checkbox" id="loop"> ループ</label>
+      </div>
+      <div class="row">
+        <label class="lbl" for="bpm">BPM</label>
+        <input type="number" id="bpm" min="60" max="160" step="1" style="width:72px">
+        <span class="lbl mono" id="keylabel"></span>
+      </div>
+      <div class="mixer" id="mixer" aria-label="パートのミュート"></div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="ステップ">
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div id="step" class="step-body"></div>
+    <div class="row spread">
+      <button id="prev">← 前へ</button>
+      <button class="primary" id="next">次へ →</button>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-out">
+    <h2 id="h-out">書き出しと保存</h2>
+    <div class="row">
+      <button class="primary" id="midi">MIDIを書き出す</button>
+      <button id="save">次のアプリ用に保存</button>
+      <button id="loadsaved" hidden>保存した曲のメロディを読み込む</button>
+    </div>
+    <p class="lbl">Claudeの画面内では、MIDIをZIPに入れて保存します（開くと .mid が出てきます）。MIDIはメロディ・コード・ベースの3トラックです。録音した音声そのものは保存されません。</p>
+  </section>
+
+  <details class="panel"><summary style="font-weight:700">用語集</summary><dl class="gloss" id="glossary"></dl></details>
+
+  <footer>
+    <div>進め方の出典: <a href="https://dtm-play.com/837" target="_blank" rel="noopener">DTM-play</a> · <a href="https://musicproductionwiki.com/articles/how-to-make-melody" target="_blank" rel="noopener">MusicProductionWiki</a> · <a href="https://tomhess.net/Articles/SongwritingPart2.aspx" target="_blank" rel="noopener">Tom Hess</a>。音高検出はYINアルゴリズムを簡略化したものを使っています。</div>
+  </footer>
+</div>
+
+<script>window.SC_STANDALONE=1;</script>
+<script>
+/* Songcraft Lab engine — theory, sound, transport, MIDI, song hand-off, piano roll. Shared by every app in the series. */
+(function(){
+const SC={};
+
+/* ================= theory ================= */
+const NOTE_SHARP=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const NOTE_FLAT =['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+const MAJ_N=['C','D♭','D','E♭','E','F','F♯','G','A♭','A','B♭','B'];
+const MIN_N=['C','C♯','D','E♭','E','F','F♯','G','G♯','A','B♭','B'];
+const FLAT_MAJ=[5,10,3,8,1], FLAT_MIN=[2,7,0,5,10,3];
+const SCALES={
+  major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10], dorian:[0,2,3,5,7,9,10],
+  minPent:[0,3,5,7,10], majPent:[0,2,4,7,9], blues:[0,3,5,6,7,10]
+};
+const QUAL={
+  maj:{iv:[0,4,7],suf:''}, min:{iv:[0,3,7],suf:'m'}, dim:{iv:[0,3,6],suf:'dim'},
+  maj7:{iv:[0,4,7,11],suf:'maj7'}, m7:{iv:[0,3,7,10],suf:'m7'}, '7':{iv:[0,4,7,10],suf:'7'},
+  m7b5:{iv:[0,3,6,10],suf:'m7♭5'}, sus4:{iv:[0,5,7],suf:'sus4'}, maj9:{iv:[0,4,7,11,14],suf:'maj9'},
+  m9:{iv:[0,3,7,10,14],suf:'m9'}, '9':{iv:[0,4,7,10,14],suf:'9'}
+};
+const ROMAN=['I','II','III','IV','V','VI','VII'];
+const T={
+  NOTE_SHARP,NOTE_FLAT,SCALES,QUAL,
+  prefersFlat:(t,mode)=>mode==='major'?FLAT_MAJ.includes(t):FLAT_MIN.includes(t),
+  keyName:(t,mode)=>mode==='major'?MAJ_N[t]+' メジャー':MIN_N[t]+' マイナー',
+  keyShort:(t,mode)=>mode==='major'?MAJ_N[t]:MIN_N[t]+'m',
+  pcName:(pc,flats)=>(flats?NOTE_FLAT:NOTE_SHARP)[((pc%12)+12)%12],
+  noteName:(m,flats)=>(flats?NOTE_FLAT:NOTE_SHARP)[((m%12)+12)%12]+(Math.floor(m/12)-1),
+  scalePcs:(t,mode)=>(SCALES[mode]||SCALES.major).map(i=>(i+t)%12),
+  isBlack:m=>[1,3,6,8,10].includes(((m%12)+12)%12)
+};
+/* diatonic chords. opts.seventh: 7th chords. opts.harmonicV: in minor, V becomes major (V7). */
+T.diatonic=function(t,mode,opts){
+  opts=opts||{};
+  const sc=SCALES[mode==='minor'?'minor':'major'];
+  const out=[];
+  for(let d=0;d<7;d++){
+    const pick=k=>sc[(d+k)%7]+12*Math.floor((d+k)/7);
+    let ivs=[pick(0),pick(2),pick(4),pick(6)].map(x=>x-sc[d]);
+    if(mode==='minor'&&d===4&&opts.harmonicV) ivs[1]=4; // raised leading tone
+    if(mode==='minor'&&d===4&&opts.harmonicV) ivs[3]=10;
+    const tri=ivs.slice(0,3).join(','), sev=ivs.join(',');
+    let q;
+    if(opts.seventh){q={'0,4,7,11':'maj7','0,3,7,10':'m7','0,4,7,10':'7','0,3,6,10':'m7b5'}[sev]||'maj7'}
+    else q={'0,4,7':'maj','0,3,7':'min','0,3,6':'dim'}[tri]||'maj';
+    const root=(t+sc[d])%12;
+    let roman=ROMAN[d];
+    if(q==='min'||q==='m7')roman=roman.toLowerCase()+(q==='m7'?'7':'');
+    else if(q==='dim'||q==='m7b5')roman=roman.toLowerCase()+(q==='dim'?'°':'ø7');
+    else if(q==='maj7')roman+='maj7'; else if(q==='7')roman+='7';
+    out.push({deg:d,root,q,roman,pcs:QUAL[q].iv.map(i=>(root+i)%12)});
+  }
+  return out;
+};
+T.chordName=(root,q,flats)=>T.pcName(root,flats)+QUAL[q].suf;
+T.chordPcs=(root,q)=>QUAL[q].iv.map(i=>(root+i)%12);
+/* voice a chord in close position around a center midi (no root doubling) */
+T.voice=function(root,q,center){
+  center=center||64;
+  let notes=QUAL[q].iv.map(i=>root+i+48);
+  while(notes[0]<center-7)notes=notes.map(n=>n+12);
+  return notes;
+};
+/* Krumhansl–Kessler key estimate, returns ranking */
+const KK_MAJ=[6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
+const KK_MIN=[6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+function pearson(x,y){const n=x.length;let mx=0,my=0;for(let i=0;i<n;i++){mx+=x[i];my+=y[i]}mx/=n;my/=n;let a=0,b=0,c=0;for(let i=0;i<n;i++){const dx=x[i]-mx,dy=y[i]-my;a+=dx*dy;b+=dx*dx;c+=dy*dy}return (b===0||c===0)?0:a/Math.sqrt(b*c)}
+T.estimateKey=function(notes){
+  const hist=Array(12).fill(0);notes.forEach(n=>hist[((n.m%12)+12)%12]+=n.d);
+  if(!notes.length)return[];
+  const sorted=notes.slice().sort((a,b)=>a.t-b.t);
+  const last=sorted[sorted.length-1].m%12, first=sorted[0].m%12;
+  const used=[...new Set(notes.map(n=>n.m%12))];
+  const out=[];
+  ['major','minor'].forEach(mode=>{const P=mode==='major'?KK_MAJ:KK_MIN;
+    for(let t=0;t<12;t++){const corr=pearson(hist,hist.map((_,i)=>P[(i-t+12)%12]));
+      const allowed=mode==='major'?SCALES.major:SCALES.minor.concat([9,11]);
+      const outside=used.filter(pc=>!allowed.includes((pc-t+12)%12)).length;
+      const lead=mode==='minor'&&used.includes((t+11)%12);
+      out.push({t,mode,corr,score:corr+(last===t?.25:0)+(first===t?.05:0)-.3*outside+(lead?.1:0)})}});
+  return out.sort((a,b)=>b.score-a.score);
+};
+SC.T=T;
+
+/* ================= genres ================= */
+const P16=s=>s.split('').map(c=>c==='x'?1:c==='o'?0.55:c==='.'?0:0.3); // x=accent o=normal -=ghost
+SC.GENRES={
+  bedroom:{name:'Bedroom Pop',bpm:84,swing:0.5,seventh:true,
+    drums:{kick:P16('x.......x.x.....'),snare:P16('....x.......x...'),hat:P16('o.o.o.o.o.o.o.o.')},
+    bass:'root',prog:{major:[[0,5,3,4],[3,4,2,5],[0,2,3,3]],minor:[[0,5,2,6],[5,6,0,0],[0,3,5,4]]}},
+  indie:{name:'Indie Rock',bpm:122,swing:0.5,seventh:false,
+    drums:{kick:P16('x.....x.x.......'),snare:P16('....x.......x...'),hat:P16('x.o.x.o.x.o.x.o.')},
+    bass:'eighth',prog:{major:[[0,4,5,3],[0,3,5,4],[5,3,0,4]],minor:[[0,5,2,6],[0,6,5,6],[0,3,6,2]]}},
+  rnb:{name:'R&B',bpm:85,swing:0.58,seventh:true,
+    drums:{kick:P16('x..o......x..o..'),snare:P16('....x..-....x..-'),hat:P16('xooxxooxxooxxoox')},
+    bass:'sync',prog:{major:[[3,2,1,0],[1,4,0,0],[5,1,4,0]],minor:[[0,3,0,4],[5,3,0,4],[0,6,5,4]]}},
+  boombap:{name:'Boom Bap',bpm:88,swing:0.6,seventh:true,
+    drums:{kick:P16('x......o..x.....'),snare:P16('....x.......x...'),hat:P16('o.o.o.o.o.o.o.o.')},
+    bass:'sync',prog:{major:[[1,4,0,5],[3,2,1,4],[0,5,1,4]],minor:[[0,3,0,3],[0,5,3,4],[5,4,0,0]]}},
+  synth:{name:'Synth Pop',bpm:112,swing:0.5,seventh:false,
+    drums:{kick:P16('x...x...x...x...'),snare:P16('....x.......x...'),hat:P16('..x...x...x...x.')},
+    bass:'octave',prog:{major:[[5,3,0,4],[0,4,5,3],[3,0,4,5]],minor:[[0,5,2,6],[5,6,0,0],[0,6,5,4]]}}
+};
+SC.GENRE_ORDER=['bedroom','indie','rnb','boombap','synth'];
+/* bass line for one bar given chord root pc, style; returns [{m,t,d,v}] with t relative to bar start (beats) */
+SC.bassBar=function(rootPc,style,next){
+  const r=36+((rootPc+12-4)%12)+4; // E1..D#2 range around 40-51
+  const nr=next==null?r:36+((next+12-4)%12)+4;
+  if(style==='whole')return[{m:r,t:0,d:4,v:.9}];
+  if(style==='half')return[{m:r,t:0,d:2,v:.9},{m:r,t:2,d:2,v:.8}];
+  if(style==='eighth')return[0,.5,1,1.5,2,2.5,3,3.5].map((t,i)=>({m:r,t,d:.45,v:i%2?.7:.9}));
+  if(style==='octave')return[0,.5,1,1.5,2,2.5,3,3.5].map((t,i)=>({m:i%2?r+12:r,t,d:.4,v:.85}));
+  if(style==='sync'){const app=nr>r?nr-1:nr+1;return[{m:r,t:0,d:1.4,v:.95},{m:r,t:1.5,d:.4,v:.6},{m:r+12,t:2,d:.4,v:.7},{m:r,t:2.75,d:.6,v:.8},{m:app,t:3.5,d:.45,v:.7}]}
+  return[{m:r,t:0,d:1.8,v:.9},{m:r,t:2,d:1.8,v:.85}];
+};
+
+/* ================= audio ================= */
+const A={ctx:null,master:null,buses:{},noise:null};
+A.init=function(){
+  if(!A.ctx){
+    const C=window.AudioContext||window.webkitAudioContext; A.ctx=new C();
+    const ctx=A.ctx; A.master=ctx.createGain(); A.master.gain.value=0.7;
+    const comp=ctx.createDynamicsCompressor(); comp.threshold.value=-16; comp.ratio.value=3; comp.attack.value=.01; comp.release.value=.2;
+    A.master.connect(comp); comp.connect(ctx.destination);
+    ['keys','bass','drums','lead','drone'].forEach(k=>{const g=ctx.createGain();g.gain.value=1;g.connect(A.master);A.buses[k]=g});
+    const len=ctx.sampleRate*1, buf=ctx.createBuffer(1,len,ctx.sampleRate), d=buf.getChannelData(0);
+    for(let i=0;i<len;i++)d[i]=Math.random()*2-1; A.noise=buf;
+  }
+  if(A.ctx.state==='suspended')A.ctx.resume();
+  return A.ctx;
+};
+A.mute=(bus,on)=>{if(A.buses[bus])A.buses[bus].gain.value=on?0:1};
+const hz=m=>440*Math.pow(2,(m-69)/12);
+A.hz=hz;
+let live=[];
+function track(n){live.push(n);if(live.length>600)live=live.slice(-300)}
+A.lead=function(m,t,dur,v){ // melody voice
+  const ctx=A.ctx; v=(v==null?.8:v)*0.24;
+  const g=ctx.createGain(), f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=3000;
+  const o1=ctx.createOscillator(), o2=ctx.createOscillator(), g2=ctx.createGain();
+  o1.type='triangle'; o1.frequency.value=hz(m); o2.type='sine'; o2.frequency.value=hz(m)*2; g2.gain.value=.22;
+  o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(f); f.connect(A.buses.lead);
+  const hold=Math.max(.08,dur);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(v,t+.012);
+  g.gain.exponentialRampToValueAtTime(v*.6,t+.15); g.gain.setValueAtTime(v*.6,t+hold);
+  g.gain.exponentialRampToValueAtTime(.0001,t+hold+.18);
+  o1.start(t);o2.start(t);o1.stop(t+hold+.25);o2.stop(t+hold+.25); track(o1);track(o2);
+};
+A.keys=function(m,t,dur,v){ // soft electric-piano-ish chord voice
+  const ctx=A.ctx; v=(v==null?.7:v)*0.11;
+  const g=ctx.createGain(), f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(2400,t); f.frequency.exponentialRampToValueAtTime(900,t+1.2);
+  const o1=ctx.createOscillator(), o2=ctx.createOscillator(), g2=ctx.createGain();
+  o1.type='sine'; o1.frequency.value=hz(m); o2.type='triangle'; o2.frequency.value=hz(m); o2.detune.value=6; g2.gain.value=.5;
+  o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(f); f.connect(A.buses.keys);
+  const hold=Math.max(.1,dur);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(v,t+.008);
+  g.gain.exponentialRampToValueAtTime(v*.45,t+.6); g.gain.setValueAtTime(v*.45,t+hold);
+  g.gain.exponentialRampToValueAtTime(.0001,t+hold+.3);
+  o1.start(t);o2.start(t);o1.stop(t+hold+.35);o2.stop(t+hold+.35); track(o1);track(o2);
+};
+A.bass=function(m,t,dur,v){
+  const ctx=A.ctx; v=(v==null?.85:v)*0.3;
+  const g=ctx.createGain(), f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(900,t); f.frequency.exponentialRampToValueAtTime(320,t+.25); f.Q.value=2;
+  const o1=ctx.createOscillator(), o2=ctx.createOscillator(), g2=ctx.createGain();
+  o1.type='sine'; o1.frequency.value=hz(m); o2.type='sawtooth'; o2.frequency.value=hz(m); g2.gain.value=.35;
+  o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(f); f.connect(A.buses.bass);
+  const hold=Math.max(.06,dur);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(v,t+.006);
+  g.gain.setValueAtTime(v*.85,t+hold*.8); g.gain.exponentialRampToValueAtTime(.0001,t+hold+.06);
+  o1.start(t);o2.start(t);o1.stop(t+hold+.1);o2.stop(t+hold+.1); track(o1);track(o2);
+};
+A.drum=function(name,t,v){
+  const ctx=A.ctx; v=v==null?1:v;
+  if(name==='kick'){
+    const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine';
+    o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(42,t+.12);
+    g.gain.setValueAtTime(.95*v,t); g.gain.exponentialRampToValueAtTime(.001,t+.4);
+    o.connect(g); g.connect(A.buses.drums); o.start(t); o.stop(t+.42); track(o); return;
+  }
+  const n=ctx.createBufferSource(); n.buffer=A.noise; const f=ctx.createBiquadFilter(), g=ctx.createGain();
+  if(name==='snare'){
+    f.type='bandpass'; f.frequency.value=1900; f.Q.value=.7;
+    g.gain.setValueAtTime(.55*v,t); g.gain.exponentialRampToValueAtTime(.001,t+.18);
+    const o=ctx.createOscillator(), og=ctx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(200,t); o.frequency.exponentialRampToValueAtTime(150,t+.08);
+    og.gain.setValueAtTime(.4*v,t); og.gain.exponentialRampToValueAtTime(.001,t+.1); o.connect(og); og.connect(A.buses.drums); o.start(t); o.stop(t+.12); track(o);
+    n.connect(f); f.connect(g); g.connect(A.buses.drums); n.start(t,Math.random()*.5); n.stop(t+.2); track(n); return;
+  }
+  // hat
+  f.type='highpass'; f.frequency.value=7500;
+  g.gain.setValueAtTime(.22*v,t); g.gain.exponentialRampToValueAtTime(.001,t+.05);
+  n.connect(f); f.connect(g); g.connect(A.buses.drums); n.start(t,Math.random()*.5); n.stop(t+.06); track(n);
+};
+let droneNodes=null;
+A.droneStart=function(pc){
+  A.init(); A.droneStop(); const ctx=A.ctx;
+  const g=ctx.createGain(), f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=650;
+  const oscs=[36+pc,43+pc,48+pc].map((m,i)=>{const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=hz(m);o.detune.value=(i-1)*4;o.connect(f);o.start();return o});
+  f.connect(g); g.connect(A.buses.drone); g.gain.setValueAtTime(0,ctx.currentTime); g.gain.linearRampToValueAtTime(.07,ctx.currentTime+.4);
+  droneNodes={g,oscs};
+};
+A.droneStop=function(){
+  if(!droneNodes||!A.ctx)return; const d=droneNodes; droneNodes=null; const t=A.ctx.currentTime;
+  d.g.gain.cancelScheduledValues(t); d.g.gain.setValueAtTime(d.g.gain.value,t); d.g.gain.linearRampToValueAtTime(0,t+.3); d.oscs.forEach(o=>o.stop(t+.35));
+};
+A.silence=function(){if(!A.ctx)return;const t=A.ctx.currentTime;live.forEach(n=>{try{n.stop(t+.02)}catch(e){}});live=[]};
+/* quick preview helpers */
+A.note=(m,d,part)=>{A.init();(A[part||'lead'])(m,A.ctx.currentTime+.01,d||.5)};
+A.chord=(ms,d)=>{A.init();const t=A.ctx.currentTime+.01;ms.forEach(m=>A.keys(m,t,d||1.2,.8))};
+SC.A=A;
+
+/* ================= transport ================= */
+/* events: {t (beats), d (beats), part:'lead'|'keys'|'bass'|'drum', m | drum name, v} */
+const TR={playing:false,timer:null,raf:null,onBeat:null};
+TR.play=function(o){
+  A.init(); TR.stop();
+  const ctx=A.ctx, spb=60/o.bpm, len=o.length, swing=o.swing||.5;
+  const sw=t=>{const s=t*4;return (Math.abs(s-Math.round(s))<1e-6&&Math.round(s)%2===1)?t+(swing-.5)*.5:t};
+  const evs=o.events.slice().sort((a,b)=>a.t-b.t);
+  TR.playing=true; TR.onBeat=o.onBeat||null; TR.onEnd=o.onEnd||null;
+  let start=ctx.currentTime+.08, cycle=0, idx=0;
+  TR.start=start; TR.spb=spb; TR.len=len; TR.loop=!!o.loop;
+  const ahead=.12;
+  TR.timer=setInterval(()=>{
+    const now=ctx.currentTime;
+    while(true){
+      if(idx>=evs.length){
+        if(!o.loop){ if(now>start+cycle*len*spb+len*spb+.3){TR.stop();if(TR.onEnd)TR.onEnd()} return }
+        cycle++; idx=0; if(!evs.length)return;
+      }
+      const e=evs[idx]; const at=start+(cycle*len+sw(e.t))*spb;
+      if(at>now+ahead)break;
+      if(at>=now-.05){
+        const d=e.d*spb;
+        if(e.part==='drum')A.drum(e.m,at,e.v); else A[e.part](e.m,at,d,e.v);
+      }
+      idx++;
+    }
+  },25);
+  const tick=()=>{if(!TR.playing)return;const b=(A.ctx.currentTime-TR.start)/TR.spb;if(TR.onBeat&&b>=0)TR.onBeat(TR.loop?b%TR.len:Math.min(b,TR.len));TR.raf=requestAnimationFrame(tick)};
+  TR.raf=requestAnimationFrame(tick);
+};
+TR.stop=function(){
+  if(TR.timer)clearInterval(TR.timer); TR.timer=null; if(TR.raf)cancelAnimationFrame(TR.raf);
+  const was=TR.playing; TR.playing=false; A.silence(); A.droneStop(); if(was&&TR.onBeat)TR.onBeat(-1);
+};
+SC.TR=TR;
+
+/* ================= MIDI ================= */
+const MIDI={};
+function vlq(n){const b=[n&0x7f];while(n>>=7)b.unshift((n&0x7f)|0x80);return b}
+function str(s){return [...s].map(c=>c.charCodeAt(0))}
+function u32(n){return[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255]}
+function chunk(id,data){return str(id).concat(u32(data.length),data)}
+function utf8(s){return [...new TextEncoder().encode(s)]}
+/* tracks: [{name, ch (0-15), notes:[{m,t,d,v}]}], beats -> ticks */
+MIDI.build=function(o){
+  const PPQ=480, out=[];
+  const mpq=Math.round(60000000/o.bpm);
+  const tempo=[0,0xFF,0x51,3,(mpq>>16)&255,(mpq>>8)&255,mpq&255, 0,0xFF,0x58,4,4,2,24,8, 0,0xFF,0x2F,0];
+  out.push(chunk('MTrk',tempo));
+  o.tracks.forEach(tr=>{
+    const evs=[];
+    tr.notes.forEach(n=>{const on=Math.round(n.t*PPQ), off=Math.max(on+1,Math.round((n.t+n.d)*PPQ)), v=Math.max(1,Math.min(127,Math.round((n.v==null?.8:n.v)*110)));
+      evs.push({t:on,b:[0x90|tr.ch,n.m,v],o:1}); evs.push({t:off,b:[0x80|tr.ch,n.m,0],o:0})});
+    evs.sort((a,b)=>a.t-b.t||a.o-b.o);
+    const name=utf8(tr.name); let data=[0,0xFF,0x03].concat(vlq(name.length),name), last=0;
+    evs.forEach(e=>{data=data.concat(vlq(e.t-last),e.b);last=e.t});
+    data=data.concat([0,0xFF,0x2F,0]);
+    out.push(chunk('MTrk',data));
+  });
+  const head=chunk('MThd',[0,1,0,out.length,(PPQ>>8)&255,PPQ&255]);
+  return new Uint8Array(head.concat(...out));
+};
+MIDI.DRUM_NOTE={kick:36,snare:38,hat:42};
+SC.MIDI=MIDI;
+
+/* ================= files & song hand-off ================= */
+SC.zip=function(name,bytes){ /* single-file stored ZIP: the artifact viewer saves .zip but not .mid */
+  const T=SC._crcT||(SC._crcT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})());
+  let crc=0xFFFFFFFF;for(let i=0;i<bytes.length;i++)crc=T[(crc^bytes[i])&255]^(crc>>>8);crc=(crc^0xFFFFFFFF)>>>0;
+  const nm=new TextEncoder().encode(name),n=bytes.length,d=new Date();
+  const tm=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),dt=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+  const buf=new Uint8Array(30+nm.length+n+46+nm.length+22),v=new DataView(buf.buffer);let o=0;
+  const u32=x=>{v.setUint32(o,x,true);o+=4},u16=x=>{v.setUint16(o,x,true);o+=2};
+  u32(0x04034b50);u16(20);u16(0x0800);u16(0);u16(tm);u16(dt);u32(crc);u32(n);u32(n);u16(nm.length);u16(0);buf.set(nm,o);o+=nm.length;buf.set(bytes,o);o+=n;
+  const cd=o;u32(0x02014b50);u16(20);u16(20);u16(0x0800);u16(0);u16(tm);u16(dt);u32(crc);u32(n);u32(n);u16(nm.length);u16(0);u16(0);u16(0);u16(0);u32(0);u32(0);buf.set(nm,o);o+=nm.length;
+  const cl=o-cd;u32(0x06054b50);u16(0);u16(0);u16(1);u16(1);u32(cl);u32(cd);u16(0);
+  return buf;
+};
+SC.download=function(data,name,type){
+  const isMidi=/\.mid$/i.test(name);
+  const anchor=()=>{try{
+    const blob=data instanceof Blob?data:new Blob([data],{type:type||'application/octet-stream'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000);
+    SC.toast(isMidi?'MIDIを書き出しました':'書き出しました'); return true;
+  }catch(e){SC.toast('書き出せませんでした');return false}};
+  if(!(window.claude&&typeof window.claude.use==='function'))return Promise.resolve(anchor()); // standalone page
+  return window.claude.use('downloads').then(dl=>{
+    if(!dl)return anchor();
+    let file=name,body=data;
+    if(isMidi){const bytes=data instanceof Uint8Array?data:new Uint8Array(data);body=SC.zip(name,bytes);file=name.replace(/\.mid$/i,'.zip')}
+    return dl.save({filename:file,data:body}).then(()=>{SC.toast(isMidi?'ZIPで保存しました。開くとMIDIファイルが出てきます':'保存しました');return true},e=>{
+      const c=e&&e.code;
+      SC.toast(c==='declined'?'保存をキャンセルしました':c==='rate_limited'?'少し待ってからもう一度押してください':'この画面では保存できませんでした。アプリを単独のページで開いてください');
+      return false});
+  },()=>anchor());
+};
+const SONG_KEY='songcraft:song';
+SC.song={
+  save(song){try{song.savedAt=new Date().toISOString();localStorage.setItem(SONG_KEY,JSON.stringify(song));return true}catch(e){return false}},
+  load(){try{const s=localStorage.getItem(SONG_KEY);return s?JSON.parse(s):null}catch(e){return null}},
+  exportFile(song,name){return SC.download(JSON.stringify(song,null,1),name||'songcraft-song.json','application/json')},
+  importFile(file){return file.text().then(t=>JSON.parse(t))}
+};
+
+/* ================= small UI helpers ================= */
+SC.$=(s,r)=>(r||document).querySelector(s);
+SC.$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+let toastT=null;
+SC.toast=function(msg){
+  let el=document.getElementById('sc-toast');
+  if(!el){el=document.createElement('div');el.id='sc-toast';el.setAttribute('role','status');document.body.appendChild(el)}
+  el.textContent=msg; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600);
+};
+
+/* ================= piano roll ================= */
+/* new SC.Roll(container,{lo,hi,beats,step,mono,rowFilter(m)->bool,rowClass(m,t)->'',chords:[{t,d,label}],onChange,flats,len}) */
+SC.Roll=function(el,o){
+  this.el=el; this.o=Object.assign({lo:55,hi:84,beats:16,step:.5,mono:true,len:.5,BW:40,RH:15},o); this.notes=o.notes||[]; this.ph=-1;
+  el.classList.add('sc-roll');
+  el.addEventListener('pointerdown',e=>this._down(e));
+  this.render();
+};
+SC.Roll.prototype.rows=function(){const r=[];for(let m=this.o.hi;m>=this.o.lo;m--){if(!this.o.rowFilter||this.o.rowFilter(m))r.push(m)}return r};
+SC.Roll.prototype.render=function(){
+  const o=this.o, rows=this.rows(), RH=o.RH, LW=40, CH=o.chords?18:0;
+  const BW=o.BW, W=LW+o.beats*BW+4, H=CH+rows.length*RH+2;
+  this.geo={rows,LW,CH,BW,RH,W,H};
+  let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="ピアノロール">`;
+  rows.forEach((m,i)=>{const y=CH+i*RH;
+    s+=`<rect x="${LW}" y="${y}" width="${W-LW}" height="${RH}" class="r-row${T.isBlack(m)?' blk':''}${o.rowClass?' '+o.rowClass(m):''}"/>`;
+    s+=`<text x="4" y="${y+RH-4}" class="r-lbl${m%12===0?' c':''}">${T.noteName(m,o.flats)}</text>`});
+  const steps=Math.round(o.beats/o.step);
+  for(let k=0;k<=steps;k++){const b=k*o.step, x=LW+b*BW; const cls=Math.abs(b%4)<1e-6?'r-bar':Math.abs(b%1)<1e-6?'r-beat':'r-sub';
+    s+=`<line x1="${x}" x2="${x}" y1="${CH}" y2="${H}" class="${cls}"/>`}
+  if(o.chords)o.chords.forEach(c=>{const x=LW+c.t*BW;s+=`<rect x="${x+1}" y="1" width="${c.d*BW-2}" height="${CH-3}" rx="3" class="r-chord"/><text x="${x+5}" y="${CH-6}" class="r-chordtxt">${c.label}</text>`});
+  this.notes.forEach((n,i)=>{const ri=rows.indexOf(n.m); if(ri<0)return; const x=LW+n.t*BW+1, y=CH+ri*RH+1, w=Math.max(4,n.d*BW-2);
+    const cls=o.noteClass?o.noteClass(n):'';
+    s+=`<rect x="${x}" y="${y}" width="${w}" height="${RH-2}" rx="3" class="r-note ${cls}" data-i="${i}"/>`;
+    if(w>30)s+=`<text x="${x+4}" y="${y+RH-5}" class="r-ntxt">${T.noteName(n.m,o.flats)}</text>`});
+  s+=`<line id="" class="r-ph" x1="0" x2="0" y1="0" y2="${H}" style="display:none"/>`;
+  s+='</svg>'; this.el.innerHTML=s; this.ph=this.el.querySelector('.r-ph');
+};
+SC.Roll.prototype.setPlayhead=function(b){
+  if(!this.ph)return; if(b<0){this.ph.style.display='none';return}
+  const x=this.geo.LW+b*this.geo.BW; this.ph.setAttribute('x1',x); this.ph.setAttribute('x2',x); this.ph.style.display='';
+};
+SC.Roll.prototype._down=function(e){
+  const svg=this.el.querySelector('svg'); if(!svg)return;
+  const r=svg.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top, g=this.geo, o=this.o;
+  if(x<g.LW||y<g.CH||o.readonly)return;
+  const ni=e.target.getAttribute&&e.target.getAttribute('data-i');
+  if(ni!=null){this.notes.splice(+ni,1);this.render();o.onChange&&o.onChange(this.notes);return}
+  const ri=Math.floor((y-g.CH)/g.RH); const m=g.rows[ri]; if(m==null)return;
+  let t=Math.floor((x-g.LW)/g.BW/o.step)*o.step; if(t>=o.beats)return;
+  let d=Math.min(o.len,o.beats-t);
+  if(o.mono){
+    this.notes=this.notes.filter(n=>!(n.t<t+d&&n.t+n.d>t));
+  }
+  this.notes.push({m,t,d,v:.85}); this.notes.sort((a,b)=>a.t-b.t);
+  SC.A.note(m,.35); this.render(); o.onChange&&o.onChange(this.notes);
+};
+
+window.SC=SC;
+})();
+
+</script>
+<script>
+(function(){
+const {T,A,TR,$,$$}=SC;
+const DRAFT='songcraft:hum-to-song:draft';
+const PARTS=[['lead','メロディ'],['keys','コード'],['bass','ベース']];
+const STEPS=['録音','修正','キー','コード付け','歌詞と音節'];
+const GLOSSARY={
+  'カウントイン':'録音前に鳴らす1小節分のクリック。テンポを体に入れるため。',
+  'ピッチ検出':'音声の基本周波数を推定して、音の高さ（音名）を求める処理。',
+  'クオンタイズ':'音の位置や長さを、決めたグリッド（ここでは8分音符）にそろえること。',
+  'トニック':'キーの中心音。メロディが最後に落ち着く音。',
+  'ドローン':'持続させる低音。基準音として調性感を固定する。',
+  'ダイアトニックコード':'キーの音階の音だけで作れる7つのコード。',
+  'コードトーン':'そのとき鳴っているコードの構成音。',
+  'モーラ':'日本語の音の長さの単位。「きゃ」は1、「がっこう」は4と数える。',
+  '音節':'英語などで、母音を中心にしたひとまとまりの音。'
+};
+const term=(w,l)=>`<abbr class="term" title="${GLOSSARY[w]}">${l||w}</abbr>`;
+
+let S={bpm:92,bars:8,melody:[],key:null,chords:Array(8).fill(-1),seventh:false,harmV:true,lyrics:'',step:0,len:.5};
+try{const d=JSON.parse(localStorage.getItem(DRAFT)||'null');if(d&&d.bars)S=Object.assign(S,d)}catch(e){}
+function persist(){try{localStorage.setItem(DRAFT,JSON.stringify(S))}catch(e){}}
+const muted=new Set();
+let roll=null, curve=null, recState=null;
+const beats=()=>S.bars*4;
+const flats=()=>S.key?T.prefersFlat(S.key.t,S.key.mode):false;
+function diat(){return S.key?T.diatonic(S.key.t,S.key.mode,{seventh:S.seventh,harmonicV:S.key.mode==='minor'&&S.harmV}):[]}
+
+/* ================= pitch detection (YIN, simplified) ================= */
+function detect(x,sr){
+  let k=Math.max(1,Math.round(sr/22050)), sr2=sr/k;
+  const y=new Float32Array(Math.floor(x.length/k));
+  for(let i=0;i<y.length;i++){let s=0;for(let j=0;j<k;j++)s+=x[i*k+j];y[i]=s/k}
+  const W=512, hop=256, tauMin=Math.floor(sr2/1000), tauMax=Math.floor(sr2/65);
+  const frames=[]; let maxRms=0;
+  const d=new Float32Array(tauMax+1), c=new Float32Array(tauMax+1);
+  for(let i=0;i+W+tauMax<y.length;i+=hop){
+    let r=0;for(let j=0;j<W;j++)r+=y[i+j]*y[i+j];r=Math.sqrt(r/W);maxRms=Math.max(maxRms,r);
+    frames.push({i,r,f:0});
+  }
+  const gate=Math.max(.006,maxRms*.08);
+  frames.forEach(fr=>{
+    if(fr.r<gate)return;
+    const i=fr.i; let run=0; c[0]=1;
+    for(let tau=1;tau<=tauMax;tau++){let s=0;for(let j=0;j<W;j++){const v=y[i+j]-y[i+j+tau];s+=v*v}d[tau]=s;run+=s;c[tau]=run>0?s*tau/run:1}
+    let best=-1;
+    for(let tau=tauMin;tau<=tauMax;tau++){if(c[tau]<.15){while(tau+1<=tauMax&&c[tau+1]<c[tau])tau++;best=tau;break}}
+    if(best<0){let m=1,mt=-1;for(let tau=tauMin;tau<=tauMax;tau++)if(c[tau]<m){m=c[tau];mt=tau}if(m<.3)best=mt}
+    if(best<=tauMin||best>=tauMax)return;
+    const a=c[best-1],b=c[best],cc=c[best+1],den=a+cc-2*b;const tb=den!==0?best+(a-cc)/(2*den):best;
+    fr.f=sr2/tb;
+  });
+  return frames.map(fr=>({sec:(fr.i+W/2)/sr2,midi:fr.f>0?69+12*Math.log2(fr.f/440):null,r:fr.r}));
+}
+function median(a){const s=a.slice().sort((p,q)=>p-q);return s[Math.floor(s.length/2)]}
+function framesToNotes(fr,bpm,bars){
+  const spb=60/bpm, step=.5, n=Math.round(bars*4/step), slots=[];
+  for(let s=0;s<n;s++)slots.push([]);
+  fr.forEach(f=>{const b=f.sec/spb;const s=Math.floor(b/step);if(s>=0&&s<n)slots[s].push(f)});
+  const voicedAll=fr.filter(f=>f.midi!=null).map(f=>f.midi);
+  let shift=0; if(voicedAll.length){const md=median(voicedAll);if(md<55)shift=12;if(md>86)shift=-12}
+  const sp=slots.map(sl=>{const v=sl.filter(f=>f.midi!=null);if(!sl.length||v.length/sl.length<.45)return null;return Math.round(median(v.map(f=>f.midi)))+shift});
+  const notes=[];
+  sp.forEach((m,s)=>{if(m==null)return;const t=s*step;const last=notes[notes.length-1];
+    if(last&&last.m===m&&Math.abs(last.t+last.d-t)<1e-6)last.d+=step; else notes.push({m:Math.max(48,Math.min(88,m)),t,d:step,v:.85})});
+  return {notes,shift};
+}
+function process(x,sr,msg){
+  const fr=detect(x,sr);
+  curve=fr;
+  const {notes,shift}=framesToNotes(fr,S.bpm,S.bars);
+  S.melody=notes;S.key=null;S.chords=Array(S.bars).fill(-1);persist();
+  SC.toast(notes.length?`${notes.length}音を検出しました${shift?'（オクターブを補正）':''}`:'音を検出できませんでした。もう少し大きく、はっきり歌ってみてください');
+  if(msg)$('#recmsg').textContent=msg;
+  renderStep();
+}
+
+/* ================= recording ================= */
+async function startRec(){
+  if(recState)return;
+  A.init(); const ctx=A.ctx;
+  let stream;
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})}
+  catch(e){$('#recmsg').innerHTML='マイクを使えませんでした。ブラウザでマイクを許可するか、アプリを単独のページで開いてください。音声ファイルの読み込みやデモでも試せます。';return}
+  const src=ctx.createMediaStreamSource(stream), proc=ctx.createScriptProcessor(2048,1,1), sink=ctx.createGain(); sink.gain.value=0;
+  src.connect(proc); proc.connect(sink); sink.connect(ctx.destination);
+  const spb=60/S.bpm, countStart=ctx.currentTime+.15, recStart=countStart+4*spb, recEnd=recStart+S.bars*4*spb;
+  for(let b=0;b<4+S.bars*4;b++)A.drum(b%4===0?'kick':'hat',countStart+b*spb,b<4?(b%4===0?.7:1):(b%4===0?.35:.6));
+  const chunks=[]; let firstTime=null;
+  const live=new Float32Array(2048);
+  proc.onaudioprocess=e=>{
+    if(firstTime===null)firstTime=e.playbackTime||ctx.currentTime;
+    const ch=e.inputBuffer.getChannelData(0); chunks.push(new Float32Array(ch)); live.set(ch);
+  };
+  recState={stream,src,proc,sink,chunks,recStart,recEnd,countStart,spb,get first(){return firstTime},live,sr:ctx.sampleRate};
+  $('#recbtn').classList.add('on'); $('#recbtn').textContent='停止';
+  const ui=setInterval(()=>{
+    if(!recState){clearInterval(ui);return}
+    const now=ctx.currentTime;
+    let r=0;for(let i=0;i<live.length;i++)r+=live[i]*live[i];r=Math.sqrt(r/live.length);
+    const mb=$('#meter i');if(mb)mb.style.width=Math.min(100,r*400)+'%';
+    const ci=$('#countin');
+    if(ci){if(now<recStart){ci.textContent='カウント '+(4-Math.floor((now-countStart)/spb))}else{const bar=Math.floor((now-recStart)/spb/4)+1;ci.textContent=`録音中 ${Math.min(bar,S.bars)} / ${S.bars} 小節`}}
+    if(now>=recStart&&r>.01){const f=quickPitch(live,recState.sr);const bn=$('#bignote');if(bn&&f)bn.textContent=T.noteName(Math.round(69+12*Math.log2(f/440)))}
+    if(now>recEnd+.15){clearInterval(ui);finishRec()}
+  },60);
+  recState.ui=ui;
+}
+function quickPitch(buf,sr){const fr=detect(buf,sr).filter(f=>f.midi!=null);return fr.length?440*Math.pow(2,(median(fr.map(f=>f.midi))-69)/12):0}
+function finishRec(cancel){
+  const R=recState; if(!R)return; recState=null; clearInterval(R.ui);
+  try{R.proc.disconnect();R.src.disconnect();R.sink.disconnect()}catch(e){}
+  R.stream.getTracks().forEach(t=>t.stop());
+  const b=$('#recbtn');if(b){b.classList.remove('on');b.textContent='録音'}
+  if(cancel){SC.toast('録音を中止しました');return}
+  const total=R.chunks.reduce((s,c)=>s+c.length,0), all=new Float32Array(total);let o=0;R.chunks.forEach(c=>{all.set(c,o);o+=c.length});
+  const lat=(A.ctx.baseLatency||.01)+(A.ctx.outputLatency||0);
+  const off=Math.max(0,Math.round((R.recStart-R.first+lat)*R.sr)), len=Math.round(S.bars*4*R.spb*R.sr);
+  process(all.subarray(off,Math.min(all.length,off+len)),R.sr,'録音を解析しました。ずれていたら「修正」で直せます。');
+}
+async function loadFile(file){
+  A.init();
+  try{
+    const buf=await A.ctx.decodeAudioData(await file.arrayBuffer());
+    const x=buf.getChannelData(0); let mx=0;for(let i=0;i<x.length;i++)mx=Math.max(mx,Math.abs(x[i]));
+    let st=0;for(let i=0;i<x.length;i++)if(Math.abs(x[i])>mx*.06){st=Math.max(0,i-Math.round(buf.sampleRate*.02));break}
+    process(x.subarray(st),buf.sampleRate,`「${file.name}」を解析しました（先頭の無音は詰めています）。`);
+  }catch(e){SC.toast('この音声ファイルは読み込めませんでした')}
+}
+/* demo hum: a G major tune rendered as a vibrato-y voice */
+const DEMO=[[67,1],[71,1],[74,1.5],[72,.5],[71,1],[69,1],[67,2],[69,1],[71,1],[72,1],[71,.5],[69,.5],[67,1],[66,1],[67,2],[74,1],[72,1],[71,1],[69,1],[71,1.5],[72,.5],[74,2],[76,1],[74,1],[72,1],[71,1],[69,1],[66,1],[67,2]];
+function demoHum(){
+  const sr=22050, spb=60/S.bpm; S.bars=8;
+  const total=Math.round(8*4*spb*sr), x=new Float32Array(total); let t=0, ph=0;
+  DEMO.forEach(([m,d])=>{const s0=Math.round(t*spb*sr), n=Math.round(d*spb*sr*.9);
+    for(let i=0;i<n&&s0+i<total;i++){const tt=i/sr, cents=18*Math.sin(2*Math.PI*5.2*tt)+(i<sr*.04?-60*(1-i/(sr*.04)):0);
+      const f=440*Math.pow(2,(m-69+cents/100)/12); ph+=2*Math.PI*f/sr;
+      const env=Math.min(1,i/(sr*.03))*Math.min(1,(n-i)/(sr*.04));
+      x[s0+i]=.35*env*(Math.sin(ph)+.35*Math.sin(2*ph)+.12*Math.sin(3*ph))}
+    t+=d});
+  for(let i=0;i<total;i++)x[i]+=(Math.random()-.5)*.004;
+  process(x,sr,'デモの鼻歌を解析しました。');
+}
+
+/* ================= playback ================= */
+function buildEvents(parts){
+  parts=parts||{lead:1,keys:1,bass:1}; const ev=[], D=diat();
+  if(parts.lead)S.melody.forEach(n=>ev.push({part:'lead',m:n.m,t:n.t,d:n.d,v:n.v||.85}));
+  for(let bar=0;bar<S.bars;bar++){const deg=S.chords[bar];if(deg==null||deg<0||!D[deg])continue;const c=D[deg];
+    if(parts.keys)T.voice(c.root,c.q,60).forEach(m=>ev.push({part:'keys',m,t:bar*4,d:4,v:.7}));
+    if(parts.bass)SC.bassBar(c.root,'half').forEach(n=>ev.push({part:'bass',m:n.m,t:bar*4+n.t,d:n.d,v:n.v}))}
+  return ev;
+}
+function play(parts){
+  A.init(); PARTS.forEach(([k])=>A.mute(k,muted.has(k)));
+  TR.play({events:buildEvents(parts),length:beats(),bpm:S.bpm,loop:$('#loop').checked,onBeat:b=>{if(roll)roll.setPlayhead(b);$('#play').textContent=b<0?'▶ 再生':'▶ 再生中'}});
+}
+
+/* ================= chord fit ================= */
+function fits(bar){
+  const D=diat(), sc=new Set(S.key?T.scalePcs(S.key.t,S.key.mode):[]), b0=bar*4;
+  const ns=S.melody.filter(n=>n.t<b0+4&&n.t+n.d>b0);
+  return D.map(c=>{let s=0,tot=0;
+    ns.forEach(n=>{const ov=Math.min(n.t+n.d,b0+4)-Math.max(n.t,b0);const w=ov*(Math.abs(n.t%1)<1e-6&&n.t>=b0?1.5:1);tot+=w;
+      s+=c.pcs.includes(n.m%12)?w:sc.has(n.m%12)?w*.15:-w*.6});
+    let sc2=tot?s/tot:0; if(bar===S.bars-1&&c.deg===0)sc2+=.25; if(bar===0&&c.deg===0)sc2+=.1;
+    return {deg:c.deg,score:sc2,pct:tot?Math.max(0,Math.round(ns.reduce((a,n)=>a+(c.pcs.includes(n.m%12)?Math.min(n.t+n.d,b0+4)-Math.max(n.t,b0):0),0)/ns.reduce((a,n)=>a+Math.min(n.t+n.d,b0+4)-Math.max(n.t,b0),0)*100)):0,empty:!ns.length}}).sort((a,b)=>b.score-a.score);
+}
+function fillChords(rank){
+  const D=diat(), out=[];
+  for(let b=0;b<S.bars;b++){
+    const f=fits(b).map(x=>{let sc=x.score;const q=D[x.deg].q;if(q==='dim'||q==='m7b5')sc-=.3;if(b>0&&out[b-1]===x.deg)sc-=.2;if(b===3&&(x.deg===4||x.deg===3))sc+=.08;return{...x,sc}}).sort((a,b2)=>b2.sc-a.sc);
+    out.push(f[0].empty?(b>0?out[b-1]:0):f[Math.min(rank,f.length-1)].deg);
+  }
+  S.chords=out;persist();
+}
+
+/* ================= syllables ================= */
+const SMALL=new Set('ゃゅょぁぃぅぇぉゎャュョァィゥェォヮ');
+function countMora(line){
+  let n=0, kanji=0;
+  line.replace(/[A-Za-z']+/g,w=>{const g=w.toLowerCase().replace(/e$/,'').match(/[aeiouy]+/g);n+=Math.max(1,g?g.length:1);return ' '});
+  for(const ch of line.replace(/[A-Za-z']+/g,'')){
+    if(/[぀-ヿ]/.test(ch)){if(!SMALL.has(ch))n++}
+    else if(/[一-鿿]/.test(ch)){n++;kanji++}
+  }
+  return {n,kanji};
+}
+
+/* ================= render ================= */
+function renderTabs(){
+  $('#tabs').innerHTML=STEPS.map((s,i)=>`<button class="tab${S.step===i?' active':''}${i<S.step?' done':''}" role="tab" aria-selected="${S.step===i}" data-tab="${i}"><span class="num">${i+1}</span>${s}</button>`).join('');
+  $('#prev').disabled=S.step===0;$('#next').disabled=S.step===STEPS.length-1;
+  $('#keylabel').textContent=S.key?T.keyName(S.key.t,S.key.mode):'キー未定';
+  $('#bpm').value=S.bpm;
+  $('#mixer').innerHTML=PARTS.map(([k,n])=>`<button data-mute="${k}" class="${muted.has(k)?'muted':''}">${n}</button>`).join('');
+}
+function drawCurve(){
+  const cv=$('#curve');if(!cv||!curve)return;const W=cv.clientWidth||600,H=120;cv.width=W*2;cv.height=H*2;
+  const g=cv.getContext('2d');if(!g)return;g.scale(2,2);const cs=getComputedStyle(document.documentElement);
+  const spb=60/S.bpm, total=S.bars*4*spb, lo=48, hi=84;
+  g.strokeStyle=cs.getPropertyValue('--grid').trim();g.lineWidth=1;
+  for(let b=0;b<=S.bars;b++){const x=b*4*spb/total*W;g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke()}
+  g.fillStyle=cs.getPropertyValue('--amber').trim();
+  S.melody.forEach(n=>{const x=n.t*spb/total*W,w=n.d*spb/total*W,y=H-(n.m-lo)/(hi-lo)*H;g.globalAlpha=.35;g.fillRect(x,y-3,w,6)});
+  g.globalAlpha=1;g.fillStyle=cs.getPropertyValue('--teal').trim();
+  curve.forEach(f=>{if(f.midi==null)return;const x=f.sec/total*W,y=H-(f.midi-lo)/(hi-lo)*H;g.fillRect(x,y-1,1.6,2)});
+}
+function renderStep(){
+  roll=null; const el=$('#step');
+  if(S.step===0){
+    el.innerHTML=`<h3>鼻歌を録音する</h3>
+    <p>テンポに合わせて、1小節の${term('カウントイン')}のあとに歌い始めてください。クリックが録音に入らないよう、ヘッドホンの使用をおすすめします。「ラ」「ン」など、はっきりした声のほうが${term('ピッチ検出')}が正確になります。</p>
+    <div class="row"><span class="lbl">長さ</span><div class="seg">${[4,8].map(b=>`<button data-bars="${b}" class="${S.bars===b?'on':''}">${b}小節</button>`).join('')}</div><span class="lbl">テンポは上部のBPMで変えられます。</span></div>
+    <div class="rec"><button class="recbtn" id="recbtn">録音</button>
+      <div class="row"><div class="bignote" id="bignote" aria-live="polite">—</div><div style="display:flex;flex-direction:column;gap:6px"><span class="countin" id="countin"></span><div class="meterbar" id="meter"><i></i></div></div></div></div>
+    <div class="row"><label class="btnlike"><input type="file" id="audioin" accept="audio/*" hidden>音声ファイルを読み込む</label><button data-act="demo">デモの鼻歌で試す</button></div>
+    <p class="lbl" id="recmsg"></p>
+    ${curve?`<div><span class="lbl">検出結果（緑：検出した音の高さ、オレンジ：${term('クオンタイズ')}後の音）</span><canvas class="curve" id="curve" aria-label="検出した音の高さのグラフ"></canvas></div>`:''}
+    <p class="why">録音した声は、約12ミリ秒ごとに音の高さを推定し、8分音符のグリッドごとに代表の音を決めてMIDIにしています。ビブラートやしゃくりは平均化されるので、細かい音は次の「修正」で直します。</p>`;
+    drawCurve();
+  }
+  if(S.step===1){
+    el.innerHTML=`<h3>検出したメロディを直す</h3>
+    <p>クリックで音を置く・消すができます。全体がずれているときは、下のボタンでまとめて動かせます。</p>
+    <div class="row spread"><div class="row"><span class="lbl">音価</span><div class="seg">${[[.5,'8分'],[1,'4分'],[2,'2分']].map(([v,n])=>`<button data-len="${v}" class="${S.len===v?'on':''}">${n}</button>`).join('')}</div></div>
+    <div class="row"><button data-shift="-12">1オクターブ下げる</button><button data-shift="12">1オクターブ上げる</button><button data-shift="-1">半音下げる</button><button data-shift="1">半音上げる</button><button data-move="-0.5">8分前へ</button><button data-move="0.5">8分後ろへ</button><button data-act="play-lead">メロディだけ鳴らす</button></div></div>
+    <div class="roll-box"><div id="roll"></div></div>
+    <p class="why">鼻歌は、音の出だしが低めになったり、長い音の終わりで下がったりしがちです。1音ずつ鍵盤で確かめながら直すと、耳の練習にもなります。</p>`;
+    roll=new SC.Roll($('#roll'),{lo:52,hi:86,beats:beats(),step:.5,BW:26,RH:13,len:S.len,notes:S.melody,flats:flats(),
+      rowClass:m=>S.key&&m%12===S.key.t?'ct':'',onChange:ns=>{S.melody=ns.slice();persist()}});
+  }
+  if(S.step===2){
+    const R=T.estimateKey(S.melody).slice(0,4), sel=S.key;
+    const used=[...new Set(S.melody.map(n=>n.m%12))];
+    const last=S.melody.length?S.melody.reduce((a,n)=>n.t>a.t?n:a).m%12:null;
+    el.innerHTML=`<h3>キーを決める</h3>
+    ${S.melody.length?`<p>メロディの音から推定したキーの候補です。押すと${term('ドローン')}（${term('トニック')}の持続音）付きでメロディが鳴ります。全体が自然に響くものを選んでください。</p>
+    <div class="cands">${R.map(r=>`<button data-key="${r.t},${r.mode}" class="${sel&&sel.t===r.t&&sel.mode===r.mode?'tonic-on':''}"><b>${T.keyName(r.t,r.mode)}</b><span class="lbl">${last===r.t?'最後の音がトニック':'最後の音はトニック以外'}</span><span class="lbl">構成音外の音: ${used.filter(pc=>!T.scalePcs(r.t,r.mode).concat(r.mode==='minor'?[(r.t+11)%12,(r.t+9)%12]:[]).includes(pc)).map(pc=>T.pcName(pc,T.prefersFlat(r.t,r.mode))).join(' ')||'なし'}</span></button>`).join('')}</div>
+    <div class="row"><span class="lbl">ほかのキー</span><select id="tonic">${Array.from({length:12},(_,t)=>`<option value="${t}" ${sel&&sel.t===t?'selected':''}>${T.NOTE_SHARP[t]}</option>`).join('')}</select>
+    <div class="seg"><button data-km="major" class="${sel&&sel.mode==='major'?'on':''}">メジャー</button><button data-km="minor" class="${sel&&sel.mode==='minor'?'on':''}">マイナー</button></div><button data-act="drone-stop">ドローンを止める</button></div>
+    ${window.SC_STANDALONE?'<p class="lbl">迷ったら、<a href="key-finder.html">Key Finder</a> の6ステップで詳しく判別できます。</p>':''}`:'<p class="lbl">先にメロディを録音するか、読み込んでください。</p>'}
+    <p class="why">候補の上位2つは、平行調（構成音が同じ長調と短調）になることがよくあります。どの音で落ち着くかを聴いて決めてください。</p>`;
+  }
+  if(S.step===3){
+    if(!S.key){el.innerHTML='<h3>コードを付ける</h3><p class="lbl">先に「キー」でキーを決めてください。</p>';renderTabs();return}
+    const D=diat(), fl=flats();
+    el.innerHTML=`<h3>コードを付ける</h3>
+    <p>小節ごとに、メロディとよく合う${term('ダイアトニックコード')}の候補を出しています。%は、その小節のメロディのうち${term('コードトーン')}が占める割合です。</p>
+    <div class="row"><button class="primary" data-act="fill0">おすすめで埋める</button><button data-act="fill1">別の進行案で埋める</button><button data-act="play-all">コード付きで鳴らす</button>
+    <label class="row lbl"><input type="checkbox" id="sev" ${S.seventh?'checked':''}> 7thコード</label>
+    ${S.key.mode==='minor'?`<label class="row lbl"><input type="checkbox" id="harmv" ${S.harmV?'checked':''}> V をメジャーにする</label>`:''}</div>
+    <div class="bars">${Array.from({length:S.bars},(_,b)=>{const f=fits(b);return `<div class="b"><span class="n">${b+1}小節</span>
+      <select data-bar="${b}" aria-label="${b+1}小節目のコード"><option value="-1">なし</option>${D.map(c=>`<option value="${c.deg}" ${S.chords[b]===c.deg?'selected':''}>${T.chordName(c.root,c.q,fl)}</option>`).join('')}</select>
+      <div class="sug">${f[0].empty?'<span class="fit">メロディなし</span>':f.slice(0,3).map(x=>`<button data-pick="${b},${x.deg}" class="${S.chords[b]===x.deg?'on':''}">${T.chordName(D[x.deg].root,D[x.deg].q,fl)} <span class="fit">${x.pct}%</span></button>`).join('')}</div></div>`}).join('')}</div>
+    <p class="why">メロディが良ければ、コード付けは簡単になります。練習として、同じメロディに「おすすめ」と「別の進行案」の2通りのコードを付けて聴き比べてみてください。同じメロディでも、コードによって明るさや緊張感が変わります。</p>`;
+  }
+  if(S.step===4){
+    const lines=S.lyrics.split('\n').filter(l=>l.trim()).slice(0,8);
+    const phraseNotes=i=>S.melody.filter(n=>n.t>=i*8&&n.t<i*8+8).length;
+    const counts=lines.map(l=>countMora(l)); const mx=Math.max(1,...counts.map(c=>c.n),...lines.map((_,i)=>phraseNotes(i)));
+    el.innerHTML=`<h3>歌詞の音の数をそろえる</h3>
+    <p>1行に2小節ずつ対応させて、歌詞の${term('モーラ')}（英語は${term('音節')}）を数えます。メロディの音数と近いほど歌いやすく、1行目と2行目、3行目と4行目の数がそろうと、くり返しの心地よさが生まれます。</p>
+    <textarea id="lyrics" rows="5" placeholder="1行に2小節分の歌詞を書きます（ひらがな推奨）">${S.lyrics.replace(/</g,'&lt;')}</textarea>
+    <div class="lines">${lines.length?`<div class="line lbl"><span>行</span><span>歌詞</span><span style="text-align:right">モーラ</span><span style="text-align:right">メロディ</span><span></span></div>`:''}
+    ${lines.map((l,i)=>{const c=counts[i], pn=phraseNotes(i), ok=Math.abs(c.n-pn)<=1;const pair=i%2===1?counts[i-1].n===c.n:null;
+      return `<div class="line"><span class="mono lbl">${i+1}</span><span class="t">${l.replace(/</g,'&lt;')}</span><span class="c">${c.n}${c.kanji?'*':''}</span><span class="c">${pn}</span><span class="${ok?'ok':'ng'}" title="${ok?'メロディの音数とほぼ一致':'メロディの音数と差がある'}">${ok?'✓':'△'}</span></div>
+      <div class="line"><span></span><div class="mb"><i style="width:${c.n/mx*100}%"></i></div><span></span><span></span><span class="lbl">${pair===null?'':pair?'前の行と同じ':'前の行と違う'}</span></div>`}).join('')}</div>
+    ${counts.some(c=>c.kanji)?'<p class="lbl">* 漢字は1字1モーラで仮に数えています。ひらがなで書くと正確です。</p>':''}
+    <p class="why">ヒット曲を多く手がけるプロデューサーのMax Martinは、メロディを先に作り、歌詞は意味よりも音節の数をメロディに合わせること、前の行と次の行の音節数を鏡のようにそろえることを重視していると言われます。</p>`;
+  }
+  renderTabs();
+}
+
+/* ================= output ================= */
+function exportMidi(){
+  const ev=buildEvents(), pick=p=>ev.filter(e=>e.part===p).map(e=>({m:e.m,t:e.t,d:e.d,v:e.v}));
+  const bytes=SC.MIDI.build({bpm:S.bpm,tracks:[{name:'Melody',ch:0,notes:pick('lead')},{name:'Chords',ch:1,notes:pick('keys')},{name:'Bass',ch:2,notes:pick('bass')}]});
+  SC.download(bytes,`hum-to-song_${S.bpm}bpm.mid`,'audio/midi');
+}
+function songData(){
+  const D=diat(), fl=flats();
+  const chords=S.chords.map((d,bar)=>d>=0&&D[d]?{bar,root:D[d].root,q:D[d].q,name:T.chordName(D[d].root,D[d].q,fl)}:null).filter(Boolean);
+  const prog=S.chords.slice(0,4).every(d=>d>=0)?S.chords.slice(0,4):undefined;
+  return{version:1,app:'hum-to-song',key:S.key,bpm:S.bpm,bars:S.bars,melody:S.melody,chords,prog,seventh:S.seventh,harmV:S.harmV,lyrics:S.lyrics};
+}
+
+/* ================= events ================= */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset;
+  if(b.id==='recbtn'){recState?finishRec(true):startRec();return}
+  if(d.tab!=null){S.step=+d.tab;persist();renderStep()}
+  if(d.bars){S.bars=+d.bars;S.chords=Array(S.bars).fill(-1);S.melody=S.melody.filter(n=>n.t<beats());persist();renderStep()}
+  if(d.len){S.len=+d.len;renderStep()}
+  if(d.shift){S.melody.forEach(n=>n.m=Math.max(36,Math.min(96,n.m+ +d.shift)));persist();renderStep()}
+  if(d.move){const mv=+d.move;S.melody=S.melody.map(n=>({...n,t:n.t+mv})).filter(n=>n.t>=0&&n.t<beats());persist();renderStep()}
+  if(d.key){const [t,mode]=d.key.split(',');S.key={t:+t,mode};S.chords=Array(S.bars).fill(-1);persist();renderStep();A.droneStart(+t);setTimeout(()=>{if(S.melody.length){const ev=buildEvents({lead:1});A.init();const t0=A.ctx.currentTime+.4,spb=60/S.bpm;ev.forEach(x=>A.lead(x.m,t0+x.t*spb,x.d*spb*.92,x.v))}},50)}
+  if(d.km){S.key={t:S.key?S.key.t:+($('#tonic').value),mode:d.km};S.chords=Array(S.bars).fill(-1);persist();renderStep()}
+  if(d.pick){const [bar,deg]=d.pick.split(',').map(Number);S.chords[bar]=deg;persist();renderStep();const c=diat()[deg];A.chord(T.voice(c.root,c.q,60))}
+  if(d.mute){A.init();muted.has(d.mute)?muted.delete(d.mute):muted.add(d.mute);A.mute(d.mute,muted.has(d.mute));renderTabs()}
+  const act=d.act;
+  if(act==='demo')demoHum();
+  if(act==='play-lead')play({lead:1});
+  if(act==='play-all')play();
+  if(act==='drone-stop'){A.droneStop();A.silence()}
+  if(act==='fill0'){fillChords(0);renderStep();play()}
+  if(act==='fill1'){fillChords(1);renderStep();play()}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='audioin'&&t.files[0]){loadFile(t.files[0]);t.value=''}
+  if(t.id==='bpm'){S.bpm=Math.max(60,Math.min(160,+t.value||S.bpm));persist()}
+  if(t.id==='tonic'){S.key={t:+t.value,mode:S.key?S.key.mode:'major'};S.chords=Array(S.bars).fill(-1);persist();renderStep()}
+  if(t.dataset.bar!=null){S.chords[+t.dataset.bar]=+t.value;persist();renderStep()}
+  if(t.id==='sev'){S.seventh=t.checked;persist();renderStep()}
+  if(t.id==='harmv'){S.harmV=t.checked;persist();renderStep()}
+});
+let lyrT=null;
+document.addEventListener('input',e=>{if(e.target.id==='lyrics'){S.lyrics=e.target.value;persist();clearTimeout(lyrT);lyrT=setTimeout(()=>{const pos=e.target.selectionStart;renderStep();const ta=$('#lyrics');ta.focus();ta.setSelectionRange(pos,pos)},500)}});
+$('#play').addEventListener('click',()=>play());
+$('#stop').addEventListener('click',()=>TR.stop());
+
+/* spacebar = play / stop (same as the transport button) */
+const spaceSkip=t=>t.isContentEditable||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||(t.tagName==='INPUT'&&!['range','checkbox','radio','button','file'].includes(t.type));
+document.addEventListener('keydown',e=>{
+  if(e.code!=='Space'||e.defaultPrevented||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(spaceSkip(e.target))return;
+  e.preventDefault();
+  if(e.repeat)return;
+  if(recState)return;if(TR.playing)$('#stop').click();else $('#play').click();
+});
+document.addEventListener('keyup',e=>{if(e.code==='Space'&&!spaceSkip(e.target))e.preventDefault()});
+$('#prev').addEventListener('click',()=>{if(S.step>0){S.step--;persist();renderStep()}});
+$('#next').addEventListener('click',()=>{if(S.step<STEPS.length-1){S.step++;persist();renderStep()}});
+$('#midi').addEventListener('click',exportMidi);
+$('#save').addEventListener('click',()=>SC.toast(SC.song.save(songData())?'保存しました。Vol.3・Vol.4から読み込めます':'このブラウザでは保存できません'));
+const saved=SC.song.load();
+if(saved&&saved.app!=='hum-to-song'&&saved.melody&&saved.melody.length){const lb=$('#loadsaved');lb.hidden=false;lb.addEventListener('click',()=>{
+  S.melody=saved.melody.map(n=>({m:n.m,t:n.t,d:n.d,v:n.v||.85}));S.bars=Math.min(8,Math.max(4,saved.bars||8));S.bpm=saved.bpm||S.bpm;S.key=saved.key||null;S.chords=Array(S.bars).fill(-1);S.step=1;persist();renderStep();SC.toast('保存した曲のメロディを読み込みました')})}
+window.addEventListener('resize',()=>{if(S.step===0)drawCurve()});
+$('#glossary').innerHTML=Object.entries(GLOSSARY).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('');
+renderStep();
+})();
+
+</script>
+
+</body></html>
