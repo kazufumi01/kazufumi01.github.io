@@ -1,0 +1,744 @@
+<!doctype html><html lang="ja"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>初期反射ラボ</title>
+<meta name="description" content="リバーブの初期反射（ER）だけを、鏡像法の部屋モデル・単一反射・エコーグラム・周波数特性で聴いて見て学ぶ無料の学習アプリ。">
+<link rel="canonical" href="https://kazufumi01.github.io/er-lab/">
+<meta property="og:title" content="初期反射ラボ"><meta property="og:url" content="https://kazufumi01.github.io/er-lab/"><meta property="og:image" content="https://kazufumi01.github.io/er-note/ogp.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: lesson rail | workspace (plan view + controls / echogram / spectrum + readouts). Amber = direct sound, teal→violet = reflection order */
+:root{
+  --bg:#0f1318; --panel:#161c24; --panel2:#1c2430; --line:#28323f; --fg:#e4e8ee; --muted:#8c97a8; --faint:#566172;
+  --direct:#f0b44c; --o1:#5ccfc4; --o2:#5aa4e6; --o3:#9c86ea; --o4:#e07a9a; --o5:#8c97a8; --tail:#c76a7e;
+  --accent:#5ccfc4; --accent-ink:#06201d; --zone:rgba(92,207,196,.07); --veil:rgba(15,19,24,.72);
+  --display:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#eef1f4; --panel:#ffffff; --panel2:#f4f6f9; --line:#d6dce4; --fg:#17202b; --muted:#566173; --faint:#9aa3b1;
+  --direct:#b9740e; --o1:#0f8e85; --o2:#2869b0; --o3:#6a52c4; --o4:#b8466d; --o5:#6b7586; --tail:#ad4459;
+  --accent:#0f8e85; --accent-ink:#ffffff; --zone:rgba(15,142,133,.07); --veil:rgba(238,241,244,.78); color-scheme:light }}
+:root[data-theme="light"]{
+  --bg:#eef1f4; --panel:#ffffff; --panel2:#f4f6f9; --line:#d6dce4; --fg:#17202b; --muted:#566173; --faint:#9aa3b1;
+  --direct:#b9740e; --o1:#0f8e85; --o2:#2869b0; --o3:#6a52c4; --o4:#b8466d; --o5:#6b7586; --tail:#ad4459;
+  --accent:#0f8e85; --accent-ink:#ffffff; --zone:rgba(15,142,133,.07); --veil:rgba(238,241,244,.78); color-scheme:light }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 32px}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono,output,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;max-width:1400px;margin:0 auto 14px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand svg{flex:none}
+.brand h1{font-family:var(--display);font-weight:900;font-size:22px;letter-spacing:.02em;margin:0;line-height:1.1}
+.brand small{display:block;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.transport{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.play{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:6px;padding:8px 16px;font-weight:700;cursor:pointer;min-width:96px;justify-content:center}
+.play[aria-pressed="true"]{background:var(--direct)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:transparent;padding:6px 10px;cursor:pointer;color:var(--muted);font-size:13px;white-space:nowrap}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--panel2);color:var(--fg);box-shadow:inset 0 -2px 0 var(--accent)}
+.lbl{font-size:11px;color:var(--muted);letter-spacing:.06em;margin-right:4px}
+.vol{display:flex;align-items:center;gap:6px}
+.vol input{width:90px}
+
+/* main grid */
+.main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;max-width:1400px;margin:0 auto;align-items:start}
+@media (max-width:1040px){.main{grid-template-columns:minmax(0,1fr)} .rail{order:2}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;min-width:0}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.ph h2{font-family:var(--display);font-size:13px;font-weight:700;margin:0;letter-spacing:.04em}
+.ph h2 span{font-family:var(--mono);font-weight:400;color:var(--muted);font-size:11px;margin-left:6px}
+
+/* rail */
+.rail{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px}
+@media (max-width:1040px){.rail{position:static}}
+.tabs{display:flex;gap:4px}
+.tabs button{flex:1;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:8px;cursor:pointer;color:var(--muted);font-weight:500}
+.tabs button[aria-selected="true"]{color:var(--fg);border-color:var(--accent)}
+.lessons{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:1040px){.lessons{max-height:none}}
+.lessons li{border-radius:6px}
+.lessons .lh{display:flex;gap:10px;width:100%;text-align:left;background:transparent;border:0;padding:8px 6px;cursor:pointer;border-radius:6px;align-items:baseline}
+.lessons .lh:hover{background:var(--panel2)}
+.lessons .n{font-family:var(--mono);font-size:11px;color:var(--accent);flex:none;width:20px}
+.lessons .t{font-weight:700;font-size:13.5px}
+.lessons li.open .lh{background:var(--panel2)}
+.lb{padding:4px 8px 12px 36px;font-size:13px;color:var(--fg)}
+.lb p{margin:0 0 8px}
+.lb .num{color:var(--accent)}
+.lb ul{margin:0 0 8px;padding-left:1.1em}
+.lb li{margin-bottom:4px}
+.load{border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12.5px;font-weight:500}
+.load:hover{background:var(--accent);color:var(--accent-ink)}
+.quiz p{margin:0 0 10px;font-size:13px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+.choices button{border:1px solid var(--line);background:var(--panel2);border-radius:6px;padding:9px 6px;cursor:pointer;font-size:13px}
+.choices button:hover:not(:disabled){border-color:var(--accent)}
+.choices button.right{border-color:var(--o1);box-shadow:inset 0 0 0 1px var(--o1)}
+.choices button.wrong{border-color:var(--tail);opacity:.8}
+.score{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.fb{font-size:13px;min-height:2.6em}
+
+/* workspace */
+.work{position:relative;display:flex;flex-direction:column;gap:16px;min-width:0}
+.row1{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
+.row3{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px}
+@media (max-width:760px){.row1,.row3{grid-template-columns:minmax(0,1fr)}}
+canvas{display:block;width:100%;touch-action:none}
+#plan{aspect-ratio:1/0.82;max-width:100%}
+#echo{height:240px}
+#freq{height:210px}
+.cap{font-size:12px;color:var(--muted);margin:8px 0 0}
+.info{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px;min-height:1.6em;overflow-wrap:anywhere}
+.info b{color:var(--fg);font-weight:500}
+
+/* controls */
+.ctrls{display:flex;flex-direction:column;gap:12px}
+.grp{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.grp:first-of-type{border-top:0;padding-top:0}
+.grp h3{margin:0;font-size:11px;letter-spacing:.1em;color:var(--muted);font-weight:500}
+.sl{display:grid;grid-template-columns:1fr auto;gap:0 8px;align-items:center}
+.sl label{font-size:12.5px}
+.sl output{font-size:12px;color:var(--accent)}
+.sl input{grid-column:1/-1;width:100%;accent-color:var(--accent);margin:2px 0 0}
+select{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:5px 8px;width:100%}
+.small{font-size:12px;color:var(--muted)}
+.mini{border:1px solid var(--line);background:var(--panel2);border-radius:5px;padding:4px 8px;cursor:pointer;font-size:12px}
+
+/* stats */
+.stats dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:7px 10px;align-items:baseline}
+.stats dt{font-size:12.5px;color:var(--muted)}
+.stats dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;text-align:right}
+.stats .verdict{grid-column:1/-1;margin-top:6px;padding:8px 10px;border-radius:6px;background:var(--panel2);font-size:12.5px}
+
+.veil{position:absolute;inset:0;background:var(--veil);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:8px;display:flex;align-items:flex-start;justify-content:center;padding-top:120px;z-index:5}
+.veil div{text-align:center;font-family:var(--display);font-weight:700;font-size:18px}
+.veil small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted);margin-top:6px}
+input[type=file]{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="brand">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+      <rect x="3" y="4" width="3" height="26" rx="1" fill="var(--direct)"/>
+      <rect x="11" y="12" width="2" height="18" rx="1" fill="var(--o1)"/>
+      <rect x="16" y="16" width="2" height="14" rx="1" fill="var(--o1)"/>
+      <rect x="20" y="19" width="2" height="11" rx="1" fill="var(--o2)"/>
+      <rect x="25" y="22" width="2" height="8" rx="1" fill="var(--o3)"/>
+      <rect x="29" y="25" width="2" height="5" rx="1" fill="var(--o3)"/>
+    </svg>
+    <div><h1>初期反射ラボ</h1><small>Early Reflection Lab · 0–150 ms</small><small style="text-transform:none;letter-spacing:0;margin-top:3px"><a href="https://kazufumi01.github.io/ja/" style="color:var(--accent)">← 目次</a>　<a href="https://kazufumi01.github.io/er-note/" style="color:var(--accent)">スタディノート版</a></small></div>
+  </div>
+  <div class="transport">
+    <button class="play" id="play" title="再生／停止（スペースキー）" aria-keyshortcuts="Space" aria-pressed="false">▶ 再生</button>
+    <span><span class="lbl">音源</span><span class="seg" id="srcSeg">
+      <button data-v="click">クリック</button><button data-v="clap" aria-pressed="true">クラップ</button><button data-v="drums">ドラム</button><button data-v="pluck">プラック</button><button data-v="user" id="userBtn">ファイル…</button>
+    </span></span>
+    <input type="file" id="file" accept="audio/*">
+    <span><span class="lbl">モニター</span><span class="seg" id="monSeg">
+      <button data-v="dry">Dry</button><button data-v="er">ERのみ</button><button data-v="mix" aria-pressed="true">Mix</button>
+    </span></span>
+    <span class="vol"><label class="lbl" for="vol">音量</label><input type="range" id="vol" min="-40" max="0" step="1" value="-10"></span>
+  </div>
+</header>
+
+<main class="main">
+  <aside class="rail">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabL" aria-selected="true">レッスン</button>
+      <button role="tab" id="tabQ" aria-selected="false">耳トレ</button>
+    </div>
+    <div class="panel" id="paneL"><ol class="lessons" id="lessons"></ol></div>
+    <div class="panel quiz" id="paneQ" hidden>
+      <div class="ph"><h2>耳トレ</h2><span class="score" id="score">0 / 0</span></div>
+      <span class="seg" id="qSeg" style="margin-bottom:10px"><button data-v="size" aria-pressed="true">部屋の大きさ</button><button data-v="delay">単一反射の遅延</button></span>
+      <p id="qText">「出題」を押すと画面が隠れ、ERだけが付いた音が流れます。響き方から答えを選んでください。</p>
+      <button class="play" id="qNew" style="width:100%">出題</button>
+      <div class="choices" id="choices"></div>
+      <div class="fb" id="fb"></div>
+    </div>
+  </aside>
+
+  <section class="work" id="work">
+    <div class="row1">
+      <div class="panel">
+        <div class="ph"><h2>平面図<span id="planSub">TOP VIEW</span></h2>
+          <span class="seg" id="viewSeg"><button data-v="room" aria-pressed="true">部屋</button><button data-v="mirror">鏡像</button></span></div>
+        <canvas id="plan" aria-label="部屋の平面図。音源とリスナーをドラッグで移動できます"></canvas>
+        <p class="cap" id="planCap">● 音源と ▲ リスナーはドラッグで動かせます。線は反射経路（床・天井反射は平面上では直線に重なります）。</p>
+      </div>
+      <div class="panel ctrls" id="ctrls"></div>
+    </div>
+
+    <div class="panel">
+      <div class="ph"><h2>エコーグラム<span>直接音を 0 ms / 0 dB とした到達時間とレベル</span></h2>
+        <span class="seg" id="spanSeg"><button data-v="50">50</button><button data-v="100" aria-pressed="true">100</button><button data-v="200">200</button><button data-v="400">400 ms</button></span></div>
+      <canvas id="echo" aria-label="エコーグラム"></canvas>
+      <div class="info" id="echoInfo">反射のバーにカーソルを合わせると経路と数値を表示、クリックで固定。</div>
+    </div>
+
+    <div class="row3">
+      <div class="panel">
+        <div class="ph"><h2>周波数特性<span>ERによる音色変化（コムフィルター）</span></h2>
+          <span class="seg" id="fSeg"><button data-v="mix" aria-pressed="true">Dry + ER</button><button data-v="er">ERのみ</button></span></div>
+        <canvas id="freq" aria-label="周波数特性"></canvas>
+        <p class="cap">細線 = 生の特性、太線 = 1/6 oct 平滑化。音色の「色付き」は太線、フランジ感は細線の櫛の目に現れます。</p>
+      </div>
+      <div class="panel stats"><div class="ph"><h2>読み取り値</h2></div><dl id="stats"></dl></div>
+    </div>
+    <div class="veil" id="veil" hidden><div>出題中<small>答えるとエコーグラムと設定値が表示されます</small></div></div>
+  </section>
+</main>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const db2g=d=>Math.pow(10,d/20), g2db=g=>20*Math.log10(Math.max(g,1e-9));
+const C=343, SZ=1.6, LZ=1.3;
+
+const PRESETS={
+  booth:{name:'ボーカルブース',W:2.2,L:2.6,H:2.3,alpha:.55,alphaF:.35,hf:.15,sx:1.1,sy:.8,lx:1.1,ly:1.6,span:50,cutoff:40,tailRT:.3},
+  bathroom:{name:'タイル浴室',W:1.8,L:2.6,H:2.4,alpha:.04,alphaF:.03,hf:.01,sx:.6,sy:.8,lx:1.1,ly:1.9,span:50,cutoff:40,tailRT:1.1},
+  bedroom:{name:'寝室（ベッドルーム）',W:3.6,L:4.2,H:2.4,alpha:.3,alphaF:.4,hf:.12,sx:1.4,sy:1.3,lx:2.2,ly:2.8,span:50,cutoff:45,tailRT:.45},
+  live:{name:'スタジオ・ライブルーム',W:7,L:9,H:3.6,alpha:.22,alphaF:.12,hf:.07,sx:3.2,sy:2.6,lx:3.8,ly:6.2,span:100,cutoff:70,tailRT:.9},
+  church:{name:'石造りの礼拝堂',W:12,L:26,H:12,alpha:.05,alphaF:.08,hf:.03,sx:6,sy:4,lx:7.5,ly:15,span:200,cutoff:110,tailRT:3.2},
+  hall:{name:'中規模コンサートホール',W:22,L:34,H:14,alpha:.18,alphaF:.7,hf:.05,sx:11,sy:5,lx:13,ly:20,span:200,cutoff:100,tailRT:2.0},
+};
+
+const S={preset:'live',mode:'room',W:7,L:9,H:3.6,alpha:.22,alphaF:.12,hf:.07,order:3,sx:3.2,sy:2.6,lx:3.8,ly:6.2,
+  predelay:0,width:1,erDb:-4,dryDb:0,layers:'er',tailRT:.9,tailDb:-6,cutoff:70,
+  st:12,sdb:-3,span:.6,src:'clap',monitor:'mix',vol:-10,view:'room',xspan:100,fmode:'mix'};
+
+/* ---------- acoustic model ---------- */
+const img=(n,p,D)=>n*D+(n%2===0?p:D-p);
+function computeTaps(){
+  if(S.mode==='single'){
+    return [{o:1,t:S.st,g:db2g(S.sdb),pan:S.span,single:true,ix:0,iy:0,i:0,j:0,k:0,nf:0,nc:0}];
+  }
+  const N=S.order, rw=Math.sqrt(1-S.alpha), rf=Math.sqrt(1-S.alphaF);
+  const dDir=Math.hypot(S.sx-S.lx,S.sy-S.ly,SZ-LZ);
+  const out=[];
+  for(let i=-N;i<=N;i++)for(let j=-N;j<=N;j++)for(let k=-N;k<=N;k++){
+    const o=Math.abs(i)+Math.abs(j)+Math.abs(k); if(!o||o>N) continue;
+    const ix=img(i,S.sx,S.W), iy=img(j,S.sy,S.L), iz=img(k,SZ,S.H);
+    const d=Math.hypot(ix-S.lx,iy-S.ly,iz-LZ);
+    const ak=Math.abs(k), nf=k<0?Math.ceil(ak/2):Math.floor(ak/2), nc=ak-nf;
+    const g=Math.pow(rw,Math.abs(i)+Math.abs(j)+nc)*Math.pow(rf,nf)*dDir/d;
+    const az=Math.atan2(ix-S.lx,-(iy-S.ly));
+    const pan=Math.max(-1,Math.min(1,Math.sin(az)*S.width));
+    out.push({i,j,k,o,nf,nc,ix,iy,d,t:(d-dDir)/C*1000+S.predelay,g,az,pan});
+  }
+  out.sort((a,b)=>a.t-b.t);
+  return out;
+}
+function kernel(buf,n,amp,a){
+  if(n<0||n>=buf.length) return;
+  if(a<.001){buf[n]+=amp;return}
+  let c=amp*(1-a);
+  for(let m=0;m<160&&n+m<buf.length;m++){buf[n+m]+=c;c*=a}
+}
+function buildIR(sr,taps,forAnalysis){
+  const maxT=taps.length?taps[taps.length-1].t:0;
+  const useTail=S.layers!=='er'&&S.mode==='room'&&!forAnalysis;
+  const useER=S.layers!=='tail'||S.mode==='single'||forAnalysis;
+  let len=Math.ceil(sr*((useER?maxT:0)/1000+.04));
+  if(useTail) len=Math.max(len,Math.ceil(sr*(S.cutoff/1000+S.tailRT*1.1)));
+  const L=new Float32Array(len), R=new Float32Array(len);
+  let energy=0;
+  for(const tp of taps){
+    const gl=Math.cos((tp.pan+1)*Math.PI/4)*Math.SQRT2, gr=Math.sin((tp.pan+1)*Math.PI/4)*Math.SQRT2;
+    const itd=.00066*tp.pan, t=tp.t/1000;
+    const a=tp.single?0:Math.min(.94,S.hf*tp.o);
+    energy+=tp.g*tp.g;
+    if(!useER) continue;
+    kernel(L,Math.round(Math.max(0,t+itd/2)*sr),tp.g*gl,a);
+    kernel(R,Math.round(Math.max(0,t-itd/2)*sr),tp.g*gr,a);
+  }
+  if(useTail){
+    const n0=Math.round(sr*S.cutoff/1000), RT=S.tailRT;
+    const A=db2g(S.tailDb)*Math.sqrt(Math.max(energy,.05)*3/(sr*RT/13.8));
+    let zl=0,zr=0; const lp=.55, fade=sr*.012;
+    for(let n=n0;n<len;n++){
+      const m=n-n0, env=A*Math.exp(-6.9078*m/(sr*RT))*Math.min(1,m/fade);
+      zl=lp*zl+(1-lp)*(Math.random()*2-1); zr=lp*zr+(1-lp)*(Math.random()*2-1);
+      L[n]+=zl*env*1.6; R[n]+=zr*env*1.6;
+    }
+  }
+  return {L,R,energy};
+}
+
+/* ---------- audio ---------- */
+let ctx=null, inBus, dryG, erBus, master, srcNode=null, curConv=null, playing=false, buffers={}, irKey='', irTimer=0;
+function biquad(x,type,f,q,sr){
+  const w=2*Math.PI*f/sr, cs=Math.cos(w), al=Math.sin(w)/(2*q);
+  let b0,b1,b2; const a0=1+al,a1=-2*cs,a2=1-al;
+  if(type==='bp'){b0=al;b1=0;b2=-al}else if(type==='hp'){b0=(1+cs)/2;b1=-(1+cs);b2=(1+cs)/2}else{b0=(1-cs)/2;b1=1-cs;b2=(1-cs)/2}
+  let x1=0,x2=0,y1=0,y2=0;
+  for(let n=0;n<x.length;n++){const y=(b0*x[n]+b1*x1+b2*x2-a1*y1-a2*y2)/a0;x2=x1;x1=x[n];y2=y1;y1=y;x[n]=y}
+  return x;
+}
+function norm(a,p=.8){let m=0;for(const v of a)m=Math.max(m,Math.abs(v));if(m)for(let i=0;i<a.length;i++)a[i]*=p/m;return a}
+function genSources(sr){
+  const mk=s=>new Float32Array(Math.round(sr*s)), rnd=()=>Math.random()*2-1;
+  const click=mk(.75); for(let n=0;n<120;n++) click[n]=rnd()*Math.exp(-n/(sr*.0004));
+  const burst=(arr,at,tau,amp)=>{const s=Math.round(at*sr);for(let n=0;n<sr*tau*7&&s+n<arr.length;n++)arr[s+n]+=rnd()*amp*Math.exp(-n/(sr*tau))};
+  const clap=mk(1.0); burst(clap,0,.0018,.8);burst(clap,.009,.0018,.8);burst(clap,.018,.0025,.9);burst(clap,.027,.03,1);
+  biquad(clap,'bp',1150,.8,sr); biquad(clap,'hp',350,.7,sr);
+  const beat=60/96, drums=mk(beat*4), sn=mk(beat*4), hh=mk(beat*4);
+  for(const b of [0,2]){const s=Math.round(b*beat*sr);let ph=0;for(let n=0;n<sr*.4;n++){const t=n/sr,f=48+75*Math.exp(-t/.035);ph+=2*Math.PI*f/sr;drums[s+n]+=Math.sin(ph)*Math.exp(-t/.13)*.9}}
+  for(const b of [1,3]){const s=Math.round(b*beat*sr);for(let n=0;n<sr*.35;n++){const t=n/sr;drums[s+n]+=Math.sin(2*Math.PI*188*t)*Math.exp(-t/.05)*.45;sn[s+n]+=rnd()*Math.exp(-t/.1)*.7}}
+  for(let h=0;h<8;h++){const s=Math.round(h*beat/2*sr);for(let n=0;n<sr*.08&&s+n<hh.length;n++)hh[s+n]+=rnd()*Math.exp(-n/(sr*.012))*(h%2?.14:.22)}
+  biquad(sn,'hp',1200,.7,sr); biquad(hh,'hp',7000,.7,sr);
+  for(let i=0;i<drums.length;i++) drums[i]+=sn[i]+hh[i];
+  const pluck=mk(beat*4), notes=[174.61,220,261.63,329.63,392,329.63,261.63,220];
+  notes.forEach((f,i)=>{const N=Math.round(sr/f), dl=new Float32Array(N);let p=0;for(let n=0;n<N;n++){p=.5*p+.5*rnd();dl[n]=p}
+    const start=Math.round(i*beat/2*sr);let idx=0;for(let n=0;n<sr*1.8;n++){const o=dl[idx],nx=dl[(idx+1)%N];dl[idx]=(o+nx)*.5*.996;idx=(idx+1)%N;pluck[(start+n)%pluck.length]+=o*.4}});
+  const toBuf=a=>{norm(a);const b=ctx.createBuffer(1,a.length,sr);b.copyToChannel(a,0);return b};
+  return {click:toBuf(click),clap:toBuf(clap),drums:toBuf(drums),pluck:toBuf(pluck)};
+}
+function initAudio(){
+  ctx=new (window.AudioContext||window.webkitAudioContext)();
+  inBus=ctx.createGain(); dryG=ctx.createGain(); erBus=ctx.createGain(); master=ctx.createGain();
+  const lim=ctx.createDynamicsCompressor(); lim.threshold.value=-2; lim.ratio.value=20; lim.attack.value=.002; lim.release.value=.12; lim.knee.value=0;
+  inBus.connect(dryG); dryG.connect(master); erBus.connect(master); master.connect(lim); lim.connect(ctx.destination);
+  const keep=buffers.user; buffers=genSources(ctx.sampleRate); if(keep) buffers.user=keep;
+  irKey=''; syncAudio(true);
+}
+function swapIR(){
+  if(!ctx) return;
+  const ir=buildIR(ctx.sampleRate,taps,false);
+  const b=ctx.createBuffer(2,ir.L.length,ctx.sampleRate); b.copyToChannel(ir.L,0); b.copyToChannel(ir.R,1);
+  const conv=ctx.createConvolver(); conv.normalize=false; conv.buffer=b;
+  const g=ctx.createGain(); g.gain.value=0; inBus.connect(conv); conv.connect(g); g.connect(erBus);
+  const t=ctx.currentTime; g.gain.setTargetAtTime(1,t,.012);
+  if(curConv){const old=curConv; old.g.gain.setTargetAtTime(0,t,.012); setTimeout(()=>{try{inBus.disconnect(old.conv)}catch(e){} old.conv.disconnect(); old.g.disconnect()},250)}
+  curConv={conv,g};
+}
+function syncAudio(force){
+  if(!ctx) return;
+  const t=ctx.currentTime;
+  dryG.gain.setTargetAtTime(S.monitor==='er'?0:db2g(S.dryDb),t,.02);
+  erBus.gain.setTargetAtTime(S.monitor==='dry'?0:db2g(S.erDb),t,.02);
+  master.gain.setTargetAtTime(db2g(S.vol),t,.02);
+  const k=JSON.stringify([S.mode,S.W,S.L,S.H,S.alpha,S.alphaF,S.hf,S.order,S.sx,S.sy,S.lx,S.ly,S.predelay,S.width,S.layers,S.tailRT,S.tailDb,S.cutoff,S.st,S.sdb,S.span]);
+  if(k!==irKey||force){irKey=k;clearTimeout(irTimer);irTimer=setTimeout(swapIR,force?0:50)}
+}
+function startSrc(){
+  if(srcNode){try{srcNode.stop()}catch(e){} srcNode.disconnect(); srcNode=null}
+  const b=buffers[S.src]||buffers.clap; srcNode=ctx.createBufferSource(); srcNode.buffer=b; srcNode.loop=true; srcNode.connect(inBus); srcNode.start();
+}
+async function play(on){
+  if(on){ if(!ctx) initAudio(); await ctx.resume(); startSrc(); playing=true }
+  else { if(srcNode){try{srcNode.stop()}catch(e){} srcNode=null} playing=false }
+  const p=$('#play'); p.setAttribute('aria-pressed',playing); p.textContent=playing?'■ 停止':'▶ 再生';
+}
+
+/* ---------- controls ---------- */
+const SL=[
+  {g:'部屋（m）',m:'room',k:'W',l:'幅 W',min:1.5,max:40,st:.1,f:v=>v.toFixed(1)+' m'},
+  {g:'部屋（m）',m:'room',k:'L',l:'奥行 L',min:1.5,max:60,st:.1,f:v=>v.toFixed(1)+' m'},
+  {g:'部屋（m）',m:'room',k:'H',l:'高さ H',min:2,max:20,st:.1,f:v=>v.toFixed(1)+' m'},
+  {g:'反射面',m:'room',k:'alpha',l:'壁・天井の吸音率 α',min:.02,max:.9,st:.01,f:v=>v.toFixed(2)},
+  {g:'反射面',m:'room',k:'alphaF',l:'床の吸音率 α',min:.02,max:.9,st:.01,f:v=>v.toFixed(2)},
+  {g:'反射面',m:'room',k:'hf',l:'高域吸収（1反射あたり）',min:0,max:.25,st:.005,f:v=>(v*100).toFixed(1)+'%'},
+  {g:'反射面',m:'room',k:'order',l:'反射次数',min:1,max:5,st:1,f:v=>v+' 次'},
+  {g:'単一反射',m:'single',k:'st',l:'遅延',min:.2,max:120,st:.1,f:v=>v.toFixed(1)+' ms'},
+  {g:'単一反射',m:'single',k:'sdb',l:'レベル',min:-24,max:0,st:.5,f:v=>v.toFixed(1)+' dB'},
+  {g:'単一反射',m:'single',k:'span',l:'パン',min:-1,max:1,st:.05,f:v=>v===0?'C':(v<0?'L':'R')+Math.round(Math.abs(v)*100)},
+  {g:'リターン（センド先）',m:'room',k:'predelay',l:'プリディレイ',min:0,max:60,st:.5,f:v=>v.toFixed(1)+' ms'},
+  {g:'リターン（センド先）',m:'room',k:'width',l:'ステレオ幅',min:0,max:1.5,st:.05,f:v=>Math.round(v*100)+'%'},
+  {g:'リターン（センド先）',k:'erDb',l:'ERレベル',min:-36,max:6,st:.5,f:v=>v.toFixed(1)+' dB'},
+  {g:'リターン（センド先）',k:'dryDb',l:'Dryレベル',min:-36,max:6,st:.5,f:v=>v.toFixed(1)+' dB'},
+  {g:'テール（比較用）',m:'room',k:'cutoff',l:'テール開始',min:20,max:150,st:1,f:v=>v+' ms'},
+  {g:'テール（比較用）',m:'room',k:'tailRT',l:'RT60',min:.2,max:4,st:.05,f:v=>v.toFixed(2)+' s'},
+  {g:'テール（比較用）',m:'room',k:'tailDb',l:'テール量（ER比）',min:-24,max:6,st:.5,f:v=>v.toFixed(1)+' dB'},
+];
+function buildControls(){
+  const box=$('#ctrls');
+  box.innerHTML=`<div class="grp"><h3>モード</h3>
+    <span class="seg" id="modeSeg"><button data-v="room">部屋モデル</button><button data-v="single">単一反射</button></span>
+    <select id="presetSel" aria-label="部屋プリセット">${Object.entries(PRESETS).map(([k,p])=>`<option value="${k}">${p.name}</option>`).join('')}<option value="custom">カスタム</option></select></div>`;
+  const groups={};
+  for(const s of SL){
+    if(!groups[s.g]){const d=document.createElement('div');d.className='grp';d.innerHTML=`<h3>${s.g}</h3>`;box.appendChild(d);groups[s.g]=d;d.dataset.m=s.m||''}
+    const w=document.createElement('div'); w.className='sl'; if(s.m) w.dataset.m=s.m;
+    w.innerHTML=`<label for="c_${s.k}">${s.l}</label><output id="o_${s.k}"></output><input type="range" id="c_${s.k}" min="${s.min}" max="${s.max}" step="${s.st}">`;
+    groups[s.g].appendChild(w);
+    w.querySelector('input').addEventListener('input',e=>{
+      S[s.k]=parseFloat(e.target.value);
+      if(['W','L','H','alpha','alphaF','hf'].includes(s.k)) S.preset='custom';
+      clampPos(); syncControls(); update();
+    });
+  }
+  const tg=groups['テール（比較用）'];
+  const lay=document.createElement('div');
+  lay.innerHTML=`<span class="seg" id="laySeg"><button data-v="er">ERのみ</button><button data-v="both">ER+テール</button><button data-v="tail">テールのみ</button></span>
+    <button class="mini" id="sabine" style="margin-top:6px">Sabine予測RT60をテールに反映</button>`;
+  tg.insertBefore(lay,tg.children[1]);
+  seg('#modeSeg',v=>{S.mode=v;update()});
+  seg('#laySeg',v=>{S.layers=v;update()});
+  $('#presetSel').addEventListener('change',e=>{if(e.target.value!=='custom')applyPreset(e.target.value);update()});
+  $('#sabine').addEventListener('click',()=>{S.tailRT=Math.min(4,Math.max(.2,+sabine().toFixed(2)));if(S.layers==='er')S.layers='both';update()});
+}
+function seg(sel,fn){$$(sel+' button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.v==='user')return;fn(b.dataset.v);syncControls()}))}
+function setSeg(sel,v){$$(sel+' button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v==String(v)))}
+function syncControls(){
+  for(const s of SL){const el=$('#c_'+s.k); if(!el) continue; el.value=S[s.k]; $('#o_'+s.k).textContent=s.f(S[s.k])}
+  setSeg('#modeSeg',S.mode); setSeg('#laySeg',S.layers); setSeg('#srcSeg',S.src); setSeg('#monSeg',S.monitor);
+  setSeg('#viewSeg',S.view); setSeg('#spanSeg',S.xspan); setSeg('#fSeg',S.fmode);
+  $('#presetSel').value=S.preset; $('#presetSel').hidden=S.mode!=='room';
+  $$('#ctrls [data-m]').forEach(el=>{const m=el.dataset.m; el.hidden=!!m&&m!==S.mode});
+  $('#vol').value=S.vol;
+}
+function clampPos(){
+  const m=.15;
+  S.sx=Math.min(Math.max(S.sx,m),S.W-m); S.lx=Math.min(Math.max(S.lx,m),S.W-m);
+  S.sy=Math.min(Math.max(S.sy,m),S.L-m); S.ly=Math.min(Math.max(S.ly,m),S.L-m);
+}
+function applyPreset(id){
+  const p=PRESETS[id]; S.preset=id; S.mode='room';
+  for(const k of ['W','L','H','alpha','alphaF','hf','sx','sy','lx','ly','cutoff','tailRT']) S[k]=p[k];
+  S.xspan=p.span;
+}
+
+/* ---------- drawing helpers ---------- */
+function tok(){const cs=getComputedStyle(document.documentElement);return n=>cs.getPropertyValue('--'+n).trim()}
+function fit(cv){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1,w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));
+  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h} const c=cv.getContext('2d'); c.setTransform(d,0,0,d,0,0); c.clearRect(0,0,r.width,r.height); return {c,w:r.width,h:r.height}}
+const ORD=['o1','o2','o3','o4','o5'];
+const fold=(x,D)=>{const m=((x%(2*D))+2*D)%(2*D);return m>D?2*D-m:m};
+function pathPts(tp){
+  const ts=[], add=(a,b,P)=>{if(a===b)return;const lo=Math.min(a,b),hi=Math.max(a,b);for(let m=Math.ceil(lo/P);m*P<hi;m++){const v=m*P;if(v<=lo)continue;ts.push((v-a)/(b-a))}};
+  add(S.lx,tp.ix,S.W); add(S.ly,tp.iy,S.L); ts.sort((a,b)=>a-b);
+  const pts=[[S.lx,S.ly]]; for(const t of ts) pts.push([fold(S.lx+(tp.ix-S.lx)*t,S.W),fold(S.ly+(tp.iy-S.ly)*t,S.L)]);
+  pts.push([S.sx,S.sy]); return pts;
+}
+function tapLabel(tp){
+  if(tp.single) return '単一反射';
+  const p=[]; if(tp.i) p.push('側壁×'+Math.abs(tp.i)); if(tp.j) p.push('前後壁×'+Math.abs(tp.j)); if(tp.nf) p.push('床×'+tp.nf); if(tp.nc) p.push('天井×'+tp.nc);
+  return p.join(' + ');
+}
+const sel=()=>pinned!=null?taps[pinned]:(hover!=null?taps[hover]:null);
+
+/* ---------- plan ---------- */
+let planT=null, drag=null;
+function drawPlan(){
+  const {c,w,h}=fit($('#plan')), T=tok();
+  if(S.mode==='single'){
+    c.fillStyle=T('muted'); c.font='13px '+T('body'); c.textAlign='center';
+    c.fillText('単一反射モード：部屋の形を持たない、反射1本だけの実験です。',w/2,h/2-10);
+    c.fillText('遅延・レベル・パンを右のスライダーで操作します。',w/2,h/2+12);
+    planT=null; return;
+  }
+  const mir=S.view==='mirror', R=mir?Math.min(S.order,2):0, pad=18;
+  const x0=-R*S.W, x1=(R+1)*S.W, y0=-R*S.L, y1=(R+1)*S.L;
+  const sc=Math.min((w-2*pad)/(x1-x0),(h-2*pad)/(y1-y0));
+  const ox=(w-(x1-x0)*sc)/2-x0*sc, oy=(h-(y1-y0)*sc)/2-y0*sc;
+  const X=x=>ox+x*sc, Y=y=>oy+y*sc; planT={X,Y,sc,ox,oy};
+  if(mir){
+    c.strokeStyle=T('line'); c.lineWidth=1;
+    for(let a=-R;a<=R;a++)for(let b=-R;b<=R;b++){c.strokeRect(X(a*S.W),Y(b*S.L),S.W*sc,S.L*sc)}
+  } else {
+    c.strokeStyle=T('line'); c.lineWidth=1; c.beginPath();
+    const step=S.W>15||S.L>15?5:1;
+    for(let x=step;x<S.W;x+=step){c.moveTo(X(x),Y(0));c.lineTo(X(x),Y(S.L))}
+    for(let y=step;y<S.L;y+=step){c.moveTo(X(0),Y(y));c.lineTo(X(S.W),Y(y))}
+    c.stroke();
+  }
+  c.fillStyle=T('zone'); c.fillRect(X(0),Y(0),S.W*sc,S.L*sc);
+  c.strokeStyle=T('fg'); c.lineWidth=2; c.strokeRect(X(0),Y(0),S.W*sc,S.L*sc);
+  const s=sel();
+  if(mir){
+    for(const tp of taps){
+      if(Math.abs(tp.ix-S.sx)>R*S.W+S.W||Math.abs(tp.iy-S.sy)>R*S.L+S.L) continue;
+      const r=Math.max(1.5,Math.min(6,2+4*tp.g)); c.globalAlpha=Math.max(.25,Math.min(1,tp.g*2.5));
+      c.fillStyle=T(ORD[tp.o-1]); c.beginPath(); c.arc(X(tp.ix),Y(tp.iy),r,0,7); c.fill();
+    }
+    c.globalAlpha=1;
+    if(s){c.strokeStyle=T(ORD[s.o-1]);c.lineWidth=2;c.beginPath();c.moveTo(X(s.ix),Y(s.iy));c.lineTo(X(S.lx),Y(S.ly));c.stroke();
+      c.beginPath();c.arc(X(s.ix),Y(s.iy),8,0,7);c.stroke()}
+  } else {
+    for(const tp of taps){
+      if(tp.o>2||tp.k!==0) continue;
+      const pts=pathPts(tp); c.strokeStyle=T(ORD[tp.o-1]); c.globalAlpha=tp.o===1?.55:.18; c.lineWidth=1;
+      c.beginPath(); pts.forEach((p,i)=>i?c.lineTo(X(p[0]),Y(p[1])):c.moveTo(X(p[0]),Y(p[1]))); c.stroke();
+    }
+    c.globalAlpha=1;
+    if(s){const pts=pathPts(s);c.strokeStyle=T(ORD[s.o-1]);c.lineWidth=2.5;c.beginPath();pts.forEach((p,i)=>i?c.lineTo(X(p[0]),Y(p[1])):c.moveTo(X(p[0]),Y(p[1])));c.stroke();
+      c.fillStyle=T(ORD[s.o-1]);for(const p of pts.slice(1,-1)){c.beginPath();c.arc(X(p[0]),Y(p[1]),3.5,0,7);c.fill()}}
+  }
+  c.strokeStyle=T('direct'); c.lineWidth=1.5; c.setLineDash([4,3]); c.beginPath(); c.moveTo(X(S.sx),Y(S.sy)); c.lineTo(X(S.lx),Y(S.ly)); c.stroke(); c.setLineDash([]);
+  c.fillStyle=T('direct'); c.beginPath(); c.arc(X(S.sx),Y(S.sy),7,0,7); c.fill();
+  const lx=X(S.lx), ly=Y(S.ly); c.fillStyle=T('o1'); c.beginPath(); c.moveTo(lx,ly-9); c.lineTo(lx+7,ly+6); c.lineTo(lx-7,ly+6); c.closePath(); c.fill();
+  c.fillStyle=T('muted'); c.font='11px '+T('mono'); c.textAlign='left';
+  c.fillText(`${S.W.toFixed(1)} × ${S.L.toFixed(1)} × ${S.H.toFixed(1)} m`,X(0)+6,Y(0)+14);
+  $('#planSub').textContent=mir?'鏡像法 IMAGE SOURCES':'TOP VIEW';
+}
+function planPointer(e,type){
+  if(!planT||S.view!=='room'||S.mode!=='room') return;
+  const r=$('#plan').getBoundingClientRect(), px=e.clientX-r.left, py=e.clientY-r.top;
+  const toM=(p,o)=>(p-o)/planT.sc;
+  if(type==='down'){
+    const ds=Math.hypot(px-planT.X(S.sx),py-planT.Y(S.sy)), dl=Math.hypot(px-planT.X(S.lx),py-planT.Y(S.ly));
+    if(Math.min(ds,dl)<22){drag=ds<=dl?'s':'l';$('#plan').setPointerCapture(e.pointerId)}
+  } else if(type==='move'&&drag){
+    S[drag+'x']=toM(px,planT.ox); S[drag+'y']=toM(py,planT.oy); clampPos(); update();
+  } else if(type==='up') drag=null;
+}
+
+/* ---------- echogram ---------- */
+let hover=null, pinned=null, echoT=null;
+function drawEcho(){
+  const {c,w,h}=fit($('#echo')), T=tok();
+  const ml=40,mr=12,mt=26,mb=24, pw=w-ml-mr, ph=h-mt-mb, xs=S.xspan, floor=-42;
+  const X=t=>ml+6+(pw-6)*t/xs, Y=d=>mt+ph*(Math.max(floor,d))/floor; echoT={X,ml,mr,xs,pw};
+  c.font='10.5px '+T('mono'); c.textAlign='right'; c.fillStyle=T('muted'); c.strokeStyle=T('line'); c.lineWidth=1;
+  for(let d=0;d>=floor+2;d-=10){c.beginPath();c.moveTo(ml,Y(d));c.lineTo(w-mr,Y(d));c.stroke();c.fillText(d+' dB',ml-4,Y(d)+3.5)}
+  const st=xs<=50?5:xs<=100?10:xs<=200?25:50; c.textAlign='center';
+  for(let t=0;t<=xs;t+=st){c.beginPath();c.moveTo(X(t),mt+ph);c.lineTo(X(t),mt+ph+4);c.stroke();c.fillText(t,X(t),h-8)}
+  // zones
+  c.fillStyle=T('zone'); c.fillRect(X(0),mt,X(Math.min(30,xs))-X(0),ph);
+  c.fillStyle=T('muted'); c.textAlign='left'; c.font='10.5px '+T('body');
+  if(xs>=50) c.fillText('融合ゾーン 〜30ms',X(1),mt-8);
+  if(S.mode==='room'&&S.predelay>0){c.fillStyle=T('line');c.globalAlpha=.6;c.fillRect(X(0)+2,mt,X(S.predelay)-X(0)-2,ph);c.globalAlpha=1}
+  const vline=(t,col,lab,dash)=>{if(t>xs)return;c.strokeStyle=col;c.setLineDash(dash||[4,4]);c.beginPath();c.moveTo(X(t),mt);c.lineTo(X(t),mt+ph);c.stroke();c.setLineDash([]);c.fillStyle=col;c.textAlign='center';c.fillText(lab,X(t),mt-8)};
+  if(xs>=100) vline(50,T('muted'),'エコー閾 ≈50ms');
+  // tail
+  const tailOn=S.mode==='room'&&S.layers!=='er';
+  if(S.mode==='room') vline(S.cutoff,T('tail'),'テール開始');
+  if(tailOn&&S.cutoff<xs){
+    const near=taps.filter(t=>t.t<S.cutoff&&t.t>S.cutoff*.5); const ref=near.length?g2db(Math.max(...near.map(t=>t.g))):-20;
+    const d0=Math.min(-3,ref-6+S.tailDb*.5);
+    c.fillStyle=T('tail'); c.globalAlpha=.22; c.beginPath(); c.moveTo(X(S.cutoff),Y(floor));
+    for(let t=S.cutoff;t<=xs;t+=xs/200){const d=d0-60*(t-S.cutoff)/(S.tailRT*1000)*Math.min(1,(t-S.cutoff)/12+.001);c.lineTo(X(t),Y(Math.min(d0,d)))}
+    c.lineTo(X(xs),Y(floor)); c.closePath(); c.fill(); c.globalAlpha=1;
+  }
+  // direct
+  c.strokeStyle=T('direct'); c.lineWidth=3; c.beginPath(); c.moveTo(X(0),Y(floor)); c.lineTo(X(0),Y(0)); c.stroke();
+  c.fillStyle=T('direct'); c.beginPath(); c.arc(X(0),Y(0),3.5,0,7); c.fill();
+  // taps
+  const s=sel(), dim=S.mode==='room'&&S.layers==='tail';
+  taps.forEach((tp,i)=>{
+    if(tp.t>xs) return; const d=g2db(tp.g); if(d<floor) return;
+    const col=T(ORD[tp.o-1]); c.globalAlpha=dim?.25:(s&&s!==tp?.55:1);
+    c.strokeStyle=col; c.lineWidth=s===tp?3:1.6; c.beginPath(); c.moveTo(X(tp.t),Y(floor)); c.lineTo(X(tp.t),Y(d)); c.stroke();
+    c.fillStyle=col; c.beginPath(); c.arc(X(tp.t),Y(d),s===tp?4:2.2,0,7); c.fill();
+  });
+  c.globalAlpha=1;
+  // ITDG bracket
+  const it=itdg();
+  if(it!=null&&it<=xs){const yb=mt+10;c.strokeStyle=T('fg');c.lineWidth=1;c.beginPath();c.moveTo(X(0),yb);c.lineTo(X(it),yb);c.moveTo(X(it),yb-4);c.lineTo(X(it),yb+4);c.stroke();
+    c.fillStyle=T('fg');c.textAlign='left';c.font='11px '+T('mono');c.fillText((S.mode==='single'?'遅延 ':'ITDG ')+it.toFixed(1)+' ms',X(it)+6,yb+4)}
+  // order legend
+  if(S.mode==='room'){c.textAlign='right';c.font='10.5px '+T('mono');let lx=w-mr;
+    for(let o=Math.min(S.order,5);o>=1;o--){const lab=o+'次';c.fillStyle=T(ORD[o-1]);c.fillText(lab,lx,mt+ph-6);lx-=c.measureText(lab).width+4;c.fillRect(lx-6,mt+ph-12,6,6);lx-=12}}
+  // info
+  const inf=$('#echoInfo');
+  if(s){const az=s.single?Math.asin(s.pan)*180/Math.PI:s.az*180/Math.PI;
+    inf.innerHTML=`<b>${s.single?'単一反射':s.o+'次反射'}</b> · ${tapLabel(s)} · <b>${s.t.toFixed(2)} ms</b> · <b>${g2db(s.g).toFixed(1)} dB</b> · 定位 ${Math.abs(az)<3?'正面':(az<0?'左':'右')+Math.abs(az).toFixed(0)+'°'}${s.single?'':' · 経路長 '+s.d.toFixed(2)+' m'}${pinned!=null?' · 固定中（もう一度クリックで解除）':''}`}
+  else inf.textContent='反射のバーにカーソルを合わせると経路と数値を表示、クリックで固定。';
+}
+function echoPick(e){
+  if(!echoT) return null; const r=$('#echo').getBoundingClientRect(), px=e.clientX-r.left;
+  let best=null,bd=9;
+  taps.forEach((tp,i)=>{if(tp.t>echoT.xs||g2db(tp.g)<-42)return;const d=Math.abs(echoT.X(tp.t)-px);if(d<bd||(d===bd&&best!=null&&tp.g>taps[best].g)){bd=d;best=i}});
+  return best;
+}
+
+/* ---------- frequency ---------- */
+function fft(re,im){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t}}
+  for(let len=2;len<=n;len<<=1){const ang=-2*Math.PI/len,wr=Math.cos(ang),wi=Math.sin(ang),hl=len>>1;for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let k=0;k<hl;k++){const a=i+k,b=a+hl,xr=re[b]*cr-im[b]*ci,xi=re[b]*ci+im[b]*cr;re[b]=re[a]-xr;im[b]=im[a]-xi;re[a]+=xr;im[a]+=xi;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t}}}}
+function drawFreq(){
+  const {c,w,h}=fit($('#freq')), T=tok(), sr=48000, N=16384;
+  const re=new Float64Array(N), im=new Float64Array(N);
+  if(S.fmode==='mix') re[0]+=db2g(S.dryDb);
+  const eg=db2g(S.erDb);
+  for(const tp of taps){const gm=(Math.cos((tp.pan+1)*Math.PI/4)+Math.sin((tp.pan+1)*Math.PI/4))*Math.SQRT2/2;const a=tp.single?0:Math.min(.94,S.hf*tp.o);
+    const n=Math.round(tp.t/1000*sr); if(n>=N) continue; if(a<.001){re[n]+=tp.g*eg*gm}else{let cc=tp.g*eg*gm*(1-a);for(let m=0;m<160&&n+m<N;m++){re[n+m]+=cc;cc*=a}}}
+  fft(re,im);
+  const pw2=new Float64Array(N/2); for(let i=0;i<N/2;i++) pw2[i]=re[i]*re[i]+im[i]*im[i];
+  const ml=40,mr=12,mt=10,mb=24,pw=w-ml-mr,ph=h-mt-mb, fmin=20,fmax=20000, dmax=12,dmin=-30;
+  const X=f=>ml+pw*Math.log(f/fmin)/Math.log(fmax/fmin), Y=d=>mt+ph*(dmax-Math.max(dmin,Math.min(dmax,d)))/(dmax-dmin);
+  c.strokeStyle=T('line');c.fillStyle=T('muted');c.font='10.5px '+T('mono');c.lineWidth=1;c.textAlign='right';
+  for(let d=dmax;d>=dmin;d-=6){c.beginPath();c.moveTo(ml,Y(d));c.lineTo(w-mr,Y(d));c.stroke();c.fillText(d,ml-4,Y(d)+3.5)}
+  c.textAlign='center';
+  for(const f of [50,100,200,500,1000,2000,5000,10000]){c.beginPath();c.moveTo(X(f),mt);c.lineTo(X(f),mt+ph);c.stroke();c.fillText(f>=1000?f/1000+'k':f,X(f),h-8)}
+  const binF=sr/N, cols=Math.floor(pw);
+  c.strokeStyle=T('o2');c.globalAlpha=.5;c.lineWidth=1;c.beginPath();
+  for(let x=0;x<cols;x++){const f0=fmin*Math.pow(fmax/fmin,x/pw),f1=fmin*Math.pow(fmax/fmin,(x+1)/pw);let b0=Math.max(1,Math.floor(f0/binF)),b1=Math.max(b0,Math.floor(f1/binF));
+    let lo=1e9,hi=0;for(let b=b0;b<=b1&&b<N/2;b++){lo=Math.min(lo,pw2[b]);hi=Math.max(hi,pw2[b])}
+    c.moveTo(ml+x+.5,Y(10*Math.log10(hi+1e-12)));c.lineTo(ml+x+.5,Y(10*Math.log10(lo+1e-12))+.5)}
+  c.stroke();c.globalAlpha=1;
+  c.strokeStyle=T('fg');c.lineWidth=2;c.beginPath();
+  for(let x=0;x<=cols;x+=2){const f=fmin*Math.pow(fmax/fmin,x/pw),b0=Math.max(1,Math.floor(f*Math.pow(2,-1/12)/binF)),b1=Math.max(b0,Math.ceil(f*Math.pow(2,1/12)/binF));
+    let s=0,n=0;for(let b=b0;b<=b1&&b<N/2;b++){s+=pw2[b];n++} const d=10*Math.log10(s/Math.max(n,1)+1e-12); x?c.lineTo(ml+x,Y(d)):c.moveTo(ml+x,Y(d))}
+  c.stroke();
+  const ft=taps[0]; if(ft&&S.fmode==='mix'&&ft.t>0&&ft.t<25){const fn=1000/(2*ft.t);c.fillStyle=T('direct');c.textAlign='left';
+    for(let k=0;k<4;k++){const f=fn*(2*k+1);if(f>fmax)break;c.beginPath();c.moveTo(X(f),mt+ph);c.lineTo(X(f)-4,mt+ph-7);c.lineTo(X(f)+4,mt+ph-7);c.fill()}
+    if(fn<fmax)c.fillText('ノッチ '+Math.round(fn)+' Hz…',X(fn)+6,mt+ph-4)}
+}
+
+/* ---------- stats ---------- */
+function itdg(){if(!taps.length)return null;if(S.mode==='single')return taps[0].t;const w=taps.find(t=>!(t.i===0&&t.j===0&&t.nc===0));return w?w.t:taps[0].t}
+function sabine(){const V=S.W*S.L*S.H,Sf=S.W*S.L,Sw=2*(S.W*S.H+S.L*S.H)+Sf;return .161*V/(S.alpha*Sw+S.alphaF*Sf)}
+function drawStats(){
+  const dl=$('#stats'), rows=[];
+  const erE=taps.reduce((a,t)=>a+t.g*t.g,0), dr=10*Math.log10(1/Math.max(erE,1e-9));
+  const ft=taps[0], notch=ft&&ft.t>0&&ft.t<25?Math.round(1000/(2*ft.t))+' Hz':'—';
+  if(S.mode==='room'){
+    const dDir=Math.hypot(S.sx-S.lx,S.sy-S.ly,SZ-LZ), V=S.W*S.L*S.H, Sa=2*(S.W*S.L+S.W*S.H+S.L*S.H), mfp=4*V/Sa;
+    const it=itdg(), inWin=taps.filter(t=>t.t<=S.cutoff).length;
+    const flr=taps.find(t=>t.i===0&&t.j===0&&t.nf===1&&t.nc===0);
+    rows.push(['直接音の距離',dDir.toFixed(2)+' m'],['ITDG（壁・天井の初回反射）',it.toFixed(1)+' ms'],['床反射',flr?flr.t.toFixed(1)+' ms / '+g2db(flr.g).toFixed(1)+' dB':'—'],
+      ['テール開始までの反射数',inWin+' 本'],['D/R（直接音 / ER 全体）',(dr>=0?'+':'')+dr.toFixed(1)+' dB'],['最初の反射によるノッチ',notch],
+      ['平均自由行程 4V/S',mfp.toFixed(2)+' m · '+(mfp/C*1000).toFixed(1)+' ms'],['Sabine予測 RT60',sabine().toFixed(2)+' s']);
+    dl.innerHTML=rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')+`<div class="verdict">${sizeVerdict(it)}</div>`;
+  } else {
+    const t=S.st;
+    rows.push(['遅延',t.toFixed(1)+' ms'],['相当する経路差',(t/1000*C).toFixed(2)+' m'],['第1ノッチ',t<25?Math.round(1000/(2*t))+' Hz':'—'],['ノッチ間隔',t<25?Math.round(1000/t)+' Hz':'—'],['レベル',S.sdb.toFixed(1)+' dB']);
+    const v=t<1.5?'<b>音色変化ゾーン</b>：反射は聞こえず、コムフィルターによる「箱鳴り・フランジ」として知覚されます。':
+      t<30?'<b>融合ゾーン</b>：先行音効果で直接音と1つに聞こえ、定位は直接音側に残ったまま音像が太く・広くなります。':
+      t<50?'<b>境界ゾーン</b>：素材次第。打楽器では分離し始め、持続音では融合しやすい帯域です。':
+      '<b>エコーゾーン</b>：独立したもう1つの音として聞こえます。ERとしては長すぎ、ディレイ／スラップバックの領域です。';
+    dl.innerHTML=rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')+`<div class="verdict">${v}</div>`;
+  }
+}
+function sizeVerdict(it){
+  if(it<4) return '<b>極小空間</b>の初期反射。最初の空白がほぼ無く、反射が直接音に密着して「狭い・近い」印象になります。';
+  if(it<10) return '<b>小〜中部屋</b>の初期反射。ボーカルやアコギに「録った部屋の実在感」を足すのに使いやすい帯域です。';
+  if(it<20) return '<b>大部屋・ライブスペース</b>の初期反射。空白が聴き取れ始め、空間の大きさが明確に伝わります。';
+  return '<b>ホール級</b>の初期反射。直接音のあとに十分な空白があり、明瞭度を保ったまま大きな空間を描けます。';
+}
+
+/* ---------- update ---------- */
+let taps=[];
+function update(){
+  taps=computeTaps(); if(pinned!=null&&pinned>=taps.length) pinned=null; if(hover!=null&&hover>=taps.length) hover=null;
+  syncControls(); drawPlan(); drawEcho(); drawFreq(); drawStats(); syncAudio();
+}
+const redraw=()=>{drawPlan();drawEcho();drawFreq()};
+
+/* ---------- lessons ---------- */
+const LESSONS=[
+ {t:'直接音とERを分けて聴く',b:`<p>ドラムを再生し、モニターを <b>Dry → ERのみ → Mix</b> と切り替えます。ERは残響の「長さ」を持たないのに、Mixにすると音が部屋の中に置かれ、厚みと立体感が出ます。</p><p>ERは直接音から概ね <span class="num">5〜80 ms</span> に届く、離散的な反射の集まりです。エコーグラムの1本1本が壁・天井・床からの反射です。</p>`,
+  a:()=>{applyPreset('live');S.order=3;S.layers='er';S.src='drums';S.monitor='mix';S.erDb=-4;S.predelay=0;S.width=1}},
+ {t:'単一反射①：1 msでコムフィルター',b:`<p>反射1本だけを <span class="num">1.0 ms / −3 dB</span> で足しています。周波数特性に <span class="num">500 Hz, 1.5 kHz, 2.5 kHz…</span> と等間隔の谷が並びます（第1ノッチ = 1 ÷ (2 × 遅延)）。</p><p>遅延を <span class="num">0.3〜5 ms</span> で動かすと谷が移動し、音が「箱鳴り」「フランジ」的に色付きます。譜面台や机の反射がボーカルを濁らせるのと同じ現象です。</p>`,
+  a:()=>{S.mode='single';S.st=1;S.sdb=-3;S.span=0;S.src='drums';S.monitor='mix';S.erDb=0;S.fmode='mix';S.xspan=50}},
+ {t:'単一反射②：先行音効果（ハース効果）',b:`<p>反射を <span class="num">15 ms</span> 遅らせて右に振りました。別の音としては聞こえず、直接音と融合して音像が広がります。定位は先に届いた<b>直接音の側（センター）に残ります</b>。</p><p>パンを左右に振っても位置がほとんど動かないこと、レベルを <span class="num">0 dB</span> 近くまで上げると初めて右へ引っ張られることを確認してください。</p>`,
+  a:()=>{S.mode='single';S.st=15;S.sdb=-3;S.span=.8;S.src='clap';S.monitor='mix';S.erDb=0;S.xspan=50}},
+ {t:'単一反射③：エコー閾を探す',b:`<p>遅延を <span class="num">20 → 35 → 50 → 80 ms</span> とゆっくり上げます。クラップでは概ね <span class="num">30〜50 ms</span> を超えた所で、反射が「やまびこ」として分離します。プラックに切り替えると、持続音では閾が長くなることも分かります。</p><p>この閾がERとして使える時間の上限です。スラップバック（<span class="num">80〜120 ms</span>）はその外側を意図的に使う技法です。</p>`,
+  a:()=>{S.mode='single';S.st=20;S.sdb=-3;S.span=0;S.src='clap';S.monitor='mix';S.erDb=0;S.xspan=100}},
+ {t:'部屋の大きさはITDGで決まる',b:`<p>右のプリセットで <b>ブース → 寝室 → ライブルーム → ホール</b> と切り替え、エコーグラム上部の <b>ITDG</b>（直接音から最初の壁・天井反射までの空白）を見ます。</p><ul><li>ブース：約 <span class="num">2〜4 ms</span></li><li>ライブルーム：約 <span class="num">5〜12 ms</span></li><li>ホール：約 <span class="num">15〜30 ms</span>（Beranekは良いホールの条件を <span class="num">20 ms</span> 以下としました）</li></ul><p>脳はこの空白の長さで空間の大きさを推定します。プリディレイはこの空白を人工的に伸ばすパラメーターです。</p>`,
+  a:()=>{applyPreset('booth');S.order=3;S.layers='er';S.src='clap';S.monitor='mix';S.erDb=-2;S.predelay=0}},
+ {t:'距離感はD/R比で決まる',b:`<p>平面図の ▲ リスナーを音源から遠ざけてください。直接音は距離に反比例して下がりますが、ER全体はそれほど下がらないため <b>D/R</b> が小さくなり、音が奥へ下がります。</p><p>ミックスでも同じで、フェーダーで音量を下げるより、<b>Dryを下げてERを保つ</b>方が自然に奥へ置けます。読み取り値のD/Rを見ながら <span class="num">+6 dB → 0 dB → −4 dB</span> と変化させてみてください。</p>`,
+  a:()=>{applyPreset('live');S.lx=3.5;S.ly=3.6;S.order=3;S.layers='er';S.src='pluck';S.monitor='mix';S.erDb=-4;S.predelay=0}},
+ {t:'材質は高域吸収で聴く',b:`<p>今は <b>タイル浴室</b>（α 0.04、高域吸収ほぼ0）です。反射が明るく密で、硬い響きです。プリセットを <b>寝室</b> に変えると、高次反射ほど高域が削れて暗く柔らかくなります。</p><p>「高域吸収」スライダーだけを <span class="num">0 → 15%</span> と動かすと、時間構造は同じまま材質感だけが変わることが分かります。反射次数を <span class="num">1 → 5</span> に上げると密度の変化も聴けます。</p>`,
+  a:()=>{applyPreset('bathroom');S.order=4;S.layers='er';S.src='clap';S.monitor='mix';S.erDb=-6}},
+ {t:'ERとテールの境界',b:`<p>反射成分を <b>ERのみ / ER+テール / テールのみ</b> で切り替えます。ERは「位置・大きさ・距離・材質」、テールは「響きの長さ（RT60）」の情報を担当しています。</p><p>テールのみだと空間はあるのに音源の位置や部屋の形が曖昧になります。テール開始は小部屋で <span class="num">30〜50 ms</span>、ホールで <span class="num">80〜120 ms</span> が目安です。</p>`,
+  a:()=>{applyPreset('live');S.order=3;S.layers='both';S.tailDb=-6;S.src='drums';S.monitor='mix';S.erDb=-4}},
+ {t:'ミックスへの応用',b:`<p>ベッドルーム系ボーカルの「ドライで近いのに立体的」な質感は、小さな部屋のERを薄く足すと作れます。この設定はその出発点です。</p><ul>
+  <li><b>Ableton Reverb</b>：Diffuse を <span class="num">−inf dB</span>、Reflect を <span class="num">0 dB</span> にすればERのみになります。Predelay <span class="num">0〜8 ms</span>、Size <span class="num">20〜40</span> から。</li>
+  <li><b>リターンのEQ（Pro-Q 3）</b>：HPF <span class="num">250〜400 Hz / 24 dB/oct</span>、LPF <span class="num">7〜9 kHz</span>。低域の反射はマスキングの原因になり、高域の反射は歯擦音を散らします。</li>
+  <li><b>センド量</b>：ボーカルで <span class="num">−18〜−24 dB</span> から。聞こえるまで上げず、ミュートして「何か失われた」と感じる量で止めます。</li>
+  <li><b>テールは別バスで</b>：プレート等は Predelay <span class="num">30〜60 ms</span> にしてERの後ろに置くと、子音を濁さずに奥行きと長さを分けて操作できます。</li>
+  <li><b>モノ互換</b>：ERリターンのWidthを <span class="num">80〜100%</span> に抑え、モノで1 ms台のコムが出ていないか確認します。</li></ul>`,
+  a:()=>{applyPreset('bedroom');S.order=3;S.layers='er';S.predelay=4;S.width=.85;S.src='pluck';S.monitor='mix';S.erDb=-10;S.dryDb=0;S.hf=.14}},
+];
+let openL=0;
+function buildLessons(){
+  const ol=$('#lessons');
+  ol.innerHTML=LESSONS.map((l,i)=>`<li class="${i===openL?'open':''}"><button class="lh" data-i="${i}" aria-expanded="${i===openL}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="t">${l.t}</span></button>
+    <div class="lb" ${i===openL?'':'hidden'}>${l.b}<button class="load" data-i="${i}">この設定で再生</button></div></li>`).join('');
+  ol.querySelectorAll('.lh').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.i;openL=openL===i?-1:i;buildLessons()}));
+  ol.querySelectorAll('.load').forEach(b=>b.addEventListener('click',()=>{
+    const def={dryDb:0,predelay:0,width:1,fmode:'mix',view:'room'}; Object.assign(S,def); pinned=null;
+    LESSONS[+b.dataset.i].a(); clampPos(); update(); if(playing) startSrc(); else play(true);
+  }));
+}
+
+/* ---------- quiz ---------- */
+const QROOM=[
+  {id:'booth',lab:'ブース',W:[1.8,2.6],L:[2,3],H:[2.2,2.5],a:[.35,.6]},
+  {id:'bed',lab:'寝室',W:[3,4.5],L:[3.5,5],H:[2.3,2.6],a:[.2,.4]},
+  {id:'live',lab:'ライブルーム',W:[6,10],L:[8,13],H:[3.2,5],a:[.12,.3]},
+  {id:'hall',lab:'ホール',W:[18,28],L:[28,42],H:[11,18],a:[.12,.25]}];
+const QDEL=[{id:'d1',lab:'〜2 ms',r:[.5,2]},{id:'d2',lab:'5〜15 ms',r:[5,15]},{id:'d3',lab:'20〜35 ms',r:[20,35]},{id:'d4',lab:'60 ms〜',r:[60,100]}];
+const Q={type:'size',ans:null,done:true,ok:0,n:0};
+const rr=(a)=>a[0]+Math.random()*(a[1]-a[0]);
+function newQ(){
+  pinned=null; hover=null;
+  if(Q.type==='size'){
+    const q=QROOM[Math.floor(Math.random()*4)]; Q.ans=q.id;
+    Object.assign(S,{mode:'room',preset:'custom',W:+rr(q.W).toFixed(1),L:+rr(q.L).toFixed(1),H:+rr(q.H).toFixed(1),alpha:+rr(q.a).toFixed(2),alphaF:.5,hf:.06,order:3,layers:'er',predelay:0,width:1,erDb:-2,dryDb:0,src:'clap',monitor:'mix'});
+    S.sx=S.W*rr([.3,.7]);S.sy=S.L*rr([.15,.35]);S.lx=S.W*rr([.3,.7]);S.ly=S.L*rr([.55,.8]);S.xspan=S.W>15?200:100;
+  } else {
+    const q=QDEL[Math.floor(Math.random()*4)]; Q.ans=q.id;
+    Object.assign(S,{mode:'single',st:+rr(q.r).toFixed(1),sdb:-3,span:+(Math.random()*1.2-.6).toFixed(2),erDb:0,dryDb:0,src:'clap',monitor:'mix',xspan:100});
+  }
+  Q.done=false; $('#veil').hidden=false; clampPos(); update(); renderQ(); if(playing) startSrc(); else play(true);
+}
+function renderQ(){
+  const list=Q.type==='size'?QROOM:QDEL;
+  $('#choices').innerHTML=list.map(o=>`<button data-id="${o.id}" ${Q.done&&Q.ans==null?'disabled':''}>${o.lab}</button>`).join('');
+  $('#choices').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>answer(b.dataset.id,b)));
+  $('#score').textContent=Q.ok+' / '+Q.n;
+  $('#qText').textContent=Q.type==='size'?'クラップにERだけを付けています。最初の反射までの空白と反射の密度から、部屋の大きさを当ててください。':'反射1本だけが付いています。音色が変わるのか、太くなるのか、分離して聞こえるのかで遅延を当ててください。';
+}
+function answer(id,btn){
+  if(Q.done) return; Q.done=true; Q.n++; const ok=id===Q.ans; if(ok)Q.ok++;
+  $('#choices').querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.id===Q.ans)b.classList.add('right');else if(b===btn)b.classList.add('wrong')});
+  $('#veil').hidden=true; $('#score').textContent=Q.ok+' / '+Q.n;
+  $('#fb').innerHTML=(ok?'<b>正解。</b>':'<b>不正解。</b>')+(Q.type==='size'?` 正解は ${S.W}×${S.L}×${S.H} m、ITDG ${itdg().toFixed(1)} ms でした。`:` 正解は ${S.st.toFixed(1)} ms でした。`)+' 画面を見ながらもう一度聴いてみてください。';
+}
+
+/* ---------- wiring ---------- */
+buildControls(); buildLessons();
+$('#play').addEventListener('click',()=>play(!playing));
+
+/* spacebar = play / stop (same as the transport button) */
+const spaceSkip=t=>t.isContentEditable||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||(t.tagName==='INPUT'&&!['range','checkbox','radio','button','file'].includes(t.type));
+document.addEventListener('keydown',e=>{
+  if(e.code!=='Space'||e.defaultPrevented||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(spaceSkip(e.target))return;
+  e.preventDefault();
+  if(e.repeat)return;
+  $('#play').click();
+});
+document.addEventListener('keyup',e=>{if(e.code==='Space'&&!spaceSkip(e.target))e.preventDefault()});
+seg('#srcSeg',v=>{S.src=v;if(playing)startSrc()});
+$('#userBtn').addEventListener('click',()=>$('#file').click());
+$('#file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;if(!ctx)initAudio();
+  try{const b=await ctx.decodeAudioData(await f.arrayBuffer());buffers.user=b;S.src='user';syncControls();if(playing)startSrc();else play(true)}catch(err){$('#echoInfo').textContent='このファイルは読み込めませんでした。WAV・MP3・AIFFなどの音声ファイルを選んでください。'}});
+seg('#monSeg',v=>{S.monitor=v;syncAudio()});
+seg('#viewSeg',v=>{S.view=v;drawPlan()});
+seg('#spanSeg',v=>{S.xspan=+v;drawEcho()});
+seg('#fSeg',v=>{S.fmode=v;drawFreq()});
+$('#vol').addEventListener('input',e=>{S.vol=+e.target.value;syncAudio()});
+const pl=$('#plan'); pl.addEventListener('pointerdown',e=>planPointer(e,'down')); pl.addEventListener('pointermove',e=>planPointer(e,'move'));
+pl.addEventListener('pointerup',e=>planPointer(e,'up')); pl.addEventListener('pointercancel',e=>planPointer(e,'up'));
+const ec=$('#echo');
+ec.addEventListener('pointermove',e=>{const h=echoPick(e);if(h!==hover){hover=h;drawEcho();drawPlan()}});
+ec.addEventListener('pointerleave',()=>{hover=null;drawEcho();drawPlan()});
+ec.addEventListener('click',e=>{const h=echoPick(e);pinned=(h==null||h===pinned)?null:h;drawEcho();drawPlan()});
+$('#tabL').addEventListener('click',()=>{$('#tabL').setAttribute('aria-selected',true);$('#tabQ').setAttribute('aria-selected',false);$('#paneL').hidden=false;$('#paneQ').hidden=true});
+$('#tabQ').addEventListener('click',()=>{$('#tabQ').setAttribute('aria-selected',true);$('#tabL').setAttribute('aria-selected',false);$('#paneQ').hidden=false;$('#paneL').hidden=true;renderQ()});
+seg('#qSeg',v=>{Q.type=v;Q.done=true;Q.ans=null;$('#veil').hidden=true;$('#fb').textContent='';setSeg('#qSeg',v);renderQ()});
+$('#qNew').addEventListener('click',()=>{$('#fb').textContent='';newQ()});
+new ResizeObserver(()=>redraw()).observe($('#work'));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+if(document.fonts) document.fonts.ready.then(redraw);
+update();
+})();
+</script>
+
+</body></html>

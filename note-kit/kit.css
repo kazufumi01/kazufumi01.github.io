@@ -1,0 +1,82 @@
+/* ===== Study Note kit — 古いノートの質感（紙・墨・藍・朱）。各ラボの本体はそのまま、見た目と配置だけを整える ===== */
+html.nk{
+  --nk-paper:#efe8d8; --nk-page:#f8f3e8; --nk-ink:#2b2722; --nk-muted:#776d60; --nk-line:#d2c6af; --nk-rule:#e5dbc8;
+  --nk-blue:#2c4a6e; --nk-red:#a5472a; --nk-pencil:#aea493; --nk-hl:#efe3bd; --nk-kraft:#e2d2b0; --nk-kline:#c4ad82; --nk-on:#f8f3e8;
+  --nk-serif:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --nk-ui:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  --nk-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:light;
+}
+html.nk body{background:var(--nk-paper)!important;color:var(--nk-ink);font-family:var(--nk-ui)}
+html.nk h1,html.nk h2,html.nk h3{font-family:var(--nk-serif);letter-spacing:.03em}
+/* header */
+.nk-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;padding:9px max(16px,env(safe-area-inset-right)) 9px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--nk-line);background:var(--nk-paper)}
+.nk-brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.nk-brand .nk-eb{font-family:var(--nk-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--nk-muted)}
+.nk-brand h1{font-family:var(--nk-serif);font-size:21px;margin:0;line-height:1.2;letter-spacing:.04em;color:var(--nk-ink)}
+.nk-brand h1 small{font-family:var(--nk-ui);font-size:12px;font-weight:500;color:var(--nk-muted);margin-left:8px;letter-spacing:.02em}
+.nk-nav{display:flex;gap:4px 14px;flex-wrap:wrap;font-size:12px}
+.nk-nav a{color:var(--nk-blue);text-decoration:none;border-bottom:1px solid var(--nk-line)}
+.nk-nav a:hover{border-color:var(--nk-blue)}
+.nk-head .nk-tp{margin-left:auto;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.nk-head .nk-tp>*{margin:0}
+/* cards */
+.nk-card{background:var(--nk-page)!important;border:1px solid var(--nk-line)!important;border-radius:2px!important;box-shadow:none!important;min-width:0;min-height:0}
+.nk-graphs .nk-card,.nk-ctrls{padding:8px 10px!important}
+.nk-card h2{font-size:14px!important;font-weight:700}
+/* notes column */
+.nk-notes{display:flex;flex-direction:column;min-height:0;background:var(--nk-kraft);border:1px solid var(--nk-kline);border-radius:2px}
+.nk-tabs{display:flex;border-bottom:1px solid var(--nk-kline);flex:none}
+.nk-tabs button{flex:1;background:transparent;border:0;border-right:1px solid var(--nk-kline);padding:7px 4px;font:inherit;font-size:12px;cursor:pointer;color:#5d5246}
+.nk-tabs button:last-child{border-right:0}
+.nk-tabs button[aria-selected="true"]{background:var(--nk-ink);color:var(--nk-on);font-weight:700}
+.nk-body{flex:1;min-height:0;overflow:auto;padding:12px 14px 16px 24px;background-image:linear-gradient(to right,transparent 13px,rgba(165,71,42,.28) 13px,rgba(165,71,42,.28) 14px,transparent 14px)}
+.nk-body>*{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;max-width:none!important}
+.nk-body h3{font-size:18px}
+.nk-body h4{font-family:var(--nk-serif);border-bottom:1px solid var(--nk-kline);padding-bottom:2px}
+.nk-try{background:var(--nk-red);color:var(--nk-on);padding:8px 10px 10px;margin:8px 0 10px;border-radius:2px}
+.nk-try>h4,.nk-try>p:first-child{color:var(--nk-on)!important;border:0!important;margin:0 0 6px!important;font-family:var(--nk-serif);font-size:14px}
+.nk-try>h4::before{content:"▶ "}
+.nk-try .btn,.nk-try button{background:var(--nk-page)!important;border-color:var(--nk-page)!important;color:var(--nk-ink)!important;font-weight:700}
+.nk-try .btn:hover,.nk-try button:hover{background:var(--nk-ink)!important;border-color:var(--nk-ink)!important;color:var(--nk-on)!important}
+.nk-guide h3{margin:0 0 6px}
+.nk-guide section{margin:0 0 14px}
+.nk-guide h4{margin:10px 0 4px;font-size:13.5px}
+.nk-guide p,.nk-guide li{font-size:13px}
+.nk-guide .nk-leg{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:12px;color:var(--nk-muted)}
+.nk-about p{font-size:12.5px}
+.nk-about .nk-lead{font-size:13.5px;color:var(--nk-ink)}
+/* PC：一画面 */
+@media (min-width:1100px) and (min-height:660px){
+  html.nk,html.nk body{height:100%;overflow:hidden}
+  html.nk body{display:flex;flex-direction:column;padding:0!important}
+  .nk-main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) var(--nk-cw,272px) var(--nk-nw,350px);gap:10px;padding:10px 14px 12px}
+  .nk-graphs{display:grid;gap:10px;min-height:0;grid-template-areas:var(--nk-areas);grid-template-columns:var(--nk-cols);grid-template-rows:var(--nk-rows)}
+  .nk-graphs>.nk-card{display:flex;flex-direction:column;overflow:hidden}
+  .nk-ctrls{min-height:0;overflow:auto}
+  .nk-pc-hide,.nk-graphs .note,.nk-graphs p.cap{display:none!important}
+  .nk-cv{position:relative;flex:1 1 0;min-height:0;overflow:hidden}
+  .nk-cv>canvas{position:absolute;left:0;top:0;width:100%!important}
+  .nk-cv>svg{width:100%;height:100%}
+}
+@media (min-width:1100px) and (max-width:1379px) and (min-height:660px){ .nk-main{grid-template-columns:minmax(0,1fr) var(--nk-cw-s,250px) var(--nk-nw-s,312px);gap:8px;padding:8px 10px 10px} .nk-graphs{gap:8px} }
+@media (min-width:1500px) and (min-height:660px){ .nk-main{grid-template-columns:minmax(0,1fr) var(--nk-cw-l,290px) var(--nk-nw-l,400px)} }
+/* スマホ・タブレット：縦スクロール */
+@media not all and (min-width:1100px) and (min-height:660px){
+  .nk-main{display:flex;flex-direction:column;gap:14px;padding:12px max(12px,env(safe-area-inset-right)) 40px max(12px,env(safe-area-inset-left))}
+  .nk-graphs{display:flex;flex-direction:column;gap:14px}
+  .nk-graphs>.nk-card{padding:10px 12px!important}
+  .nk-notes{display:contents}
+  .nk-tabs{display:none}
+  .nk-body{display:contents}
+  .nk-body>.nk-pane{display:block!important;background:var(--nk-kraft)!important;border:1px solid var(--nk-kline)!important;padding:12px 14px!important;margin:0!important}
+  .nk-mo-first{order:-1}
+  .nk-cv{position:relative}
+  .nk-head .nk-tp{margin-left:0;width:100%}
+  .nk-head .nk-tp .btn,.nk-head .nk-tp .sel,.nk-head .nk-tp select,.nk-head .nk-tp button{min-height:44px}
+}
+.nk-ctrls>*{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important}
+.nk-tabs button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:7px 2px;font-size:11.5px}
+html.nk body{padding:0!important}
+.nk-mounted{max-width:none!important;margin:0!important;padding:0!important;border-radius:0!important;background:transparent!important;color:var(--nk-ink)!important}
+@media (min-width:1100px) and (min-height:660px){.nk-mounted{display:flex!important;flex-direction:column;flex:1;min-height:0}}

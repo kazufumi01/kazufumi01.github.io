@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en" class="nk" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#15171b">
+<title>Delay Basics Study Note — Delay Basics Lab</title>
+<meta name="description" content="A free learning app: hear and see seven classic uses of delay — slapback, doubling, Haas, ping-pong, dotted eighths, dub throws and short ambience — with a real delay running in your browser and a live echo timeline.">
+
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Audio Anatomy Labs">
+<meta property="og:title" content="Delay Basics Study Note — Delay Basics Lab">
+<meta property="og:description" content="A free learning app: hear and see seven classic uses of delay — slapback, doubling, Haas, ping-pong, dotted eighths, dub throws and short ambience — with a real delay running in your browser and a live echo timeline.">
+<meta property="og:url" content="https://kazufumi01.github.io/delay-basics-note/en/">
+<meta property="og:image" content="https://kazufumi01.github.io/delay-basics-note/en/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700&display=swap">
+<link rel="stylesheet" href="/note-kit/kit.css">
+<style>html.nk .dl1{--bg:var(--nk-paper)!important;--panel:var(--nk-page)!important;--panel2:#efe7d6!important;--line:var(--nk-line)!important;--ink:var(--nk-ink)!important;--mute:var(--nk-muted)!important;--acc:var(--nk-red)!important;--L:#3f7fb3!important;--R:#c0566e!important;--ok:#3f6b35!important;font-family:var(--nk-ui)!important}.nk .dl1 button{border-radius:2px!important}.nk .dl1-seg{border-radius:2px!important}.nk .dl1-play{background:var(--nk-ink)!important;border-color:var(--nk-ink)!important;color:var(--nk-on)!important}.nk .dl1-card .dl1-tag{color:var(--nk-on)!important}.nk .dl1-toggle.on{background:#e3ead8!important}.nk .dl1-warn{color:var(--nk-red)!important}.nk .dl1-card,.nk .dl1-grid,.nk .dl1-table,.nk .dl1-tempo div{border-radius:2px!important}.nk-ctrls .dl1-grid{grid-template-columns:1fr!important}.nk-body .dl1-table th{white-space:normal}.nk-head .dl1-transport{margin:0!important}@media (min-width:1100px) and (min-height:660px){.nk .nk-cv>canvas{height:100%!important}}.nk .dl1-viz.nk-card{background:#101215!important}.nk .dl1-viz .dl1-legend{color:#b9b2a5}.nk .dl1-presets.nk-card{margin:0!important;display:grid!important;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}</style>
+<link rel="canonical" href="https://kazufumi01.github.io/delay-basics-note/en/">
+<link rel="alternate" hreflang="ja" href="https://kazufumi01.github.io/delay-basics-note/">
+<link rel="alternate" hreflang="en" href="https://kazufumi01.github.io/delay-basics-note/en/">
+</head>
+<body style="margin:0;padding:16px;background:#f4f2ee;">
+
+<!-- ===== app: start ===== -->
+<div id="dl1" class="dl1">
+<style>
+.dl1{--bg:#15171b;--panel:#1e2128;--panel2:#252932;--line:#323844;--ink:#ece9e3;--mute:#9ba2ad;--acc:#f0a63a;--L:#62b6ea;--R:#ec7a92;--ok:#7fd3a0;
+font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",Meiryo,sans-serif;
+background:var(--bg);color:var(--ink);border-radius:16px;padding:20px 18px 22px;max-width:780px;margin:24px auto;line-height:1.7;font-size:15px;box-sizing:border-box;text-align:left}
+.dl1 *{box-sizing:border-box}
+.dl1 h3,.dl1 h4,.dl1 p{margin:0;padding:0;border:0;background:none;color:inherit}
+.dl1-kicker{font-size:11px;letter-spacing:.18em;color:var(--acc);font-weight:700}
+.dl1-title{font-size:22px!important;font-weight:800;margin:2px 0 4px!important;letter-spacing:.02em}
+.dl1-lead{color:var(--mute);font-size:14px}
+.dl1-transport{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0 12px}
+.dl1 button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:7px 12px;font-size:14px;line-height:1.3}
+.dl1 button:hover{border-color:#4a5262}
+.dl1 button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.dl1-play{background:var(--acc)!important;color:#1a1305!important;border-color:var(--acc)!important;font-weight:800;min-width:98px}
+.dl1-seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.dl1-seg button{border:0;background:transparent;padding:5px 10px;border-radius:7px;color:var(--mute)}
+.dl1-seg button.on{background:var(--panel2);color:var(--ink);box-shadow:inset 0 0 0 1px #46505f}
+.dl1-bpm{display:flex;align-items:center;gap:6px;color:var(--mute);font-size:13px}
+.dl1-bpm input{width:64px;font:inherit;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 6px}
+.dl1-presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:6px 0 14px}
+.dl1-preset{text-align:left!important;padding:9px 11px!important}
+.dl1-preset b{display:block;font-size:14px}
+.dl1-preset span{display:block;font-size:11.5px;color:var(--mute)}
+.dl1-preset.on{border-color:var(--acc)!important;box-shadow:inset 0 0 0 1px var(--acc)}
+.dl1-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.dl1-card h4{font-size:17px;font-weight:800;margin-bottom:4px!important}
+.dl1-card .dl1-tag{display:inline-block;font-size:11px;color:#1a1305;background:var(--acc);border-radius:99px;padding:1px 9px;margin-left:8px;vertical-align:2px;font-weight:700}
+.dl1-card dl{margin:8px 0 0;display:grid;grid-template-columns:9.5em 1fr;gap:4px 10px;font-size:14px}
+.dl1-card dt{color:var(--acc);font-weight:700}
+.dl1-card dd{margin:0}
+.dl1-viz{background:#101215;border:1px solid var(--line);border-radius:12px;padding:8px 8px 6px;margin-bottom:6px}
+.dl1-viz canvas{display:block;width:100%;height:210px}
+.dl1-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mute);margin:4px 2px 14px}
+.dl1-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.dl1-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.dl1-ctl{display:flex;flex-direction:column;gap:3px}
+.dl1-ctl.full{grid-column:1/-1}
+.dl1-ctl label{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.dl1-ctl label output{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:700}
+.dl1-ctl .row{display:flex;gap:8px;align-items:center}
+.dl1 input[type=range]{width:100%;accent-color:var(--acc);margin:4px 0}
+.dl1 select{font:inherit;font-size:13px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:4px 6px}
+.dl1-toggles{display:flex;flex-wrap:wrap;gap:8px;grid-column:1/-1;padding-top:4px;border-top:1px dashed var(--line);margin-top:4px}
+.dl1-toggle.on{background:#2b3a31!important;border-color:var(--ok)!important;color:var(--ok)!important}
+.dl1-warn{font-size:12.5px;color:#ffcf8a;grid-column:1/-1;min-height:0}
+.dl1-sec{font-size:13px;color:var(--acc);font-weight:800;letter-spacing:.06em;margin:16px 2px 6px}
+.dl1-table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--panel);border-radius:12px;overflow:hidden}
+.dl1-table th,.dl1-table td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;color:var(--ink);background:none}
+.dl1-table th{white-space:nowrap;color:var(--acc);font-weight:700;width:9.5em}
+.dl1-table tr:last-child th,.dl1-table tr:last-child td{border-bottom:0}
+.dl1-tempo{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.dl1-tempo div{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:6px 8px;font-size:12px;color:var(--mute)}
+.dl1-tempo b{display:block;color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
+.dl1-dl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:12px 0 0!important}.dl1-dl b{color:var(--ink)}.dl1-dl small{display:block;color:var(--mute);font-size:12px}.dl1-dlbtn{margin-left:auto;white-space:nowrap;font-weight:800;text-decoration:none!important;color:#1a1305!important;background:var(--acc);border-radius:8px;padding:6px 12px}
+.dl1-foot{font-size:12px;color:var(--mute);margin-top:14px}
+@media (max-width:560px){.dl1{padding:16px 12px}.dl1-grid{grid-template-columns:1fr}.dl1-tempo{grid-template-columns:repeat(2,1fr)}.dl1-card dl{grid-template-columns:1fr}.dl1-card dt{margin-top:4px}.dl1-table th{width:auto}}
+.dl1-lang{float:right;margin:-2px 0 0 10px;font-size:12px;font-weight:700;text-decoration:none!important;color:var(--ink)!important;border:1px solid var(--line);border-radius:99px;padding:1px 10px;line-height:1.6}.dl1-lang:hover{border-color:var(--acc);color:var(--acc)!important}
+</style>
+
+<a class="dl1-lang" href="https://kazufumi01.github.io/delay-basics-lab/" hreflang="ja" lang="ja">日本語</a><a class="dl1-lang" href="https://kazufumi01.github.io/" target="_blank" rel="noopener">All labs ↗</a>
+<div class="dl1-kicker">DELAY LEARNING LAB 01</div>
+<h3 class="dl1-title">Delay Basics Lab</h3>
+<p class="dl1-lead">Pick a preset and press Play. Compare what you hear with how the echoes line up on the timeline below, and learn the classic uses of delay by ear. Headphones recommended — start with a low volume.</p>
+<div class="dl1-card dl1-dl"><div><b>VST3 / AU plug-in: free beta for a limited time</b><span class="dl1-tag">Beta</span><small>VST3 / AU / Standalone · Mac: zip (manual) or pkg (installer) · Windows: builds, but not yet tested on a real machine</small></div><a class="dl1-dlbtn" href="https://github.com/kazufumi01/DelayBasicsLab/releases/latest" target="_blank" rel="noopener">Download ↗</a></div>
+
+
+<div class="dl1-transport">
+  <button class="dl1-play" data-act="play">▶ Play</button>
+  <div class="dl1-seg" data-group="src">
+    <button data-v="pluck" class="on">Pluck</button>
+    <button data-v="snare">Snare</button>
+    <button data-v="vox">Vocal-ish</button>
+  </div>
+  <label class="dl1-bpm">BPM <input type="number" data-k="bpm" value="92" min="60" max="180" step="1"></label>
+</div>
+
+<div class="dl1-presets" data-el="presets"></div>
+<div class="dl1-card" data-el="explain"></div>
+
+<div class="dl1-viz"><canvas data-el="tl" aria-label="Echo timeline"></canvas></div>
+<div class="dl1-legend">
+  <span><i style="background:#8b929c"></i>Dry signal</span>
+  <span><i style="background:var(--L)"></i>Left-channel echoes</span>
+  <span><i style="background:var(--R)"></i>Right-channel echoes</span>
+  <span>Darker = more highs removed (filters inside the feedback loop add up)</span>
+</div>
+
+<div class="dl1-grid">
+  <div class="dl1-ctl full">
+    <label>Mode</label>
+    <div class="dl1-seg" data-group="mode">
+      <button data-v="mono">Mono</button>
+      <button data-v="dual">Stereo (independent L/R)</button>
+      <button data-v="pingpong">Ping-Pong</button>
+      <button data-v="haas">Haas (L dry / R delayed)</button>
+    </div>
+  </div>
+  <div class="dl1-ctl">
+    <label>Time L <output data-o="tL"></output></label>
+    <div class="row"><input type="range" data-k="tL" min="0" max="1000"><select data-k="syncL"></select></div>
+  </div>
+  <div class="dl1-ctl">
+    <label>Time R <output data-o="tR"></output></label>
+    <div class="row"><input type="range" data-k="tR" min="0" max="1000"><select data-k="syncR"></select></div>
+  </div>
+  <div class="dl1-ctl"><label>Feedback <output data-o="fb"></output></label><input type="range" data-k="fb" min="0" max="95" step="1"></div>
+  <div class="dl1-ctl"><label>Wet level <output data-o="wet"></output></label><input type="range" data-k="wet" min="-30" max="0" step="0.5"></div>
+  <div class="dl1-ctl"><label>High Pass (low cut) <output data-o="hp"></output></label><input type="range" data-k="hp" min="0" max="1000"></div>
+  <div class="dl1-ctl"><label>Low Pass (high cut) <output data-o="lp"></output></label><input type="range" data-k="lp" min="0" max="1000"></div>
+  <div class="dl1-ctl"><label>Mod Rate <output data-o="rate"></output></label><input type="range" data-k="rate" min="0" max="1000"></div>
+  <div class="dl1-ctl"><label>Mod Depth <output data-o="depth"></output></label><input type="range" data-k="depth" min="0" max="5" step="0.05"></div>
+  <div class="dl1-toggles">
+    <button class="dl1-toggle" data-t="bypass">Delay OFF (A/B)</button>
+    <button class="dl1-toggle" data-t="wetonly">Wet only</button>
+    <button class="dl1-toggle" data-t="monosum">Mono check</button>
+  </div>
+  <div class="dl1-warn" data-el="warn"></div>
+</div>
+
+<div data-fp="plug"><div class="dl1-sec">Building this preset in real plugins</div>
+<table class="dl1-table" data-el="plug"></table></div>
+
+<div class="dl1-sec">Tempo → delay time chart (current BPM)</div>
+<div class="dl1-tempo" data-el="tempo"></div>
+
+<p class="dl1-foot">All sound is synthesized in your browser (Web Audio API). The filters sit inside the feedback loop, at the output of every repeat, so their effect accumulates with each repeat. Plugin settings are starting points; product names are trademarks of their respective owners.</p>
+
+<script>
+(function(){
+var root=document.getElementById('dl1');if(!root||root.dataset.ready)return;root.dataset.ready='1';
+function q(s){return root.querySelector(s)}function qa(s){return Array.prototype.slice.call(root.querySelectorAll(s))}
+var NOTES=[['','Free (ms)'],['1/16','1/16'],['1/8T','1/8T'],['1/8','1/8'],['1/8D','1/8D'],['1/4T','1/4T'],['1/4','1/4'],['1/4D','1/4D'],['1/2','1/2']];
+var NV={'1/16':.25,'1/8T':1/3,'1/8':.5,'1/8D':.75,'1/4T':2/3,'1/4':1,'1/4D':1.5,'1/2':2};
+var S={src:'pluck',bpm:92,mode:'mono',tL:110,tR:110,syncL:'',syncR:'',fb:5,hp:200,lp:5000,rate:.5,depth:0,wet:-9,bypass:false,wetonly:false,monosum:false,preset:'slap'};
+var P={
+slap:{n:'Slapback',s:'60–140 ms, one repeat',tag:'Presence',
+ set:{mode:'mono',tL:110,syncL:'',tR:110,syncR:'',fb:5,hp:200,lp:5000,rate:.5,depth:0,wet:-9},
+ what:'A single reflection, slightly darker than the source, returns about 0.1 s later. Its origin is the 1950s tape slapback.',
+ use:'Vocals, guitars, snare. Adds a forward yet three-dimensional presence without clouding the space the way a reverb can.',
+ ear:'Toggle Delay OFF: hear the sound “bouncing off a hard wall” and the vocal outline getting thicker. Around 100 ms is the turning point — shorter feels tighter, longer feels more rockabilly.',
+ plug:[['Ableton Echo','Stereo, Link ON / Sync OFF, 110 ms / Feedback 5% / Filter: HP 200 Hz, LP 5 kHz / Character › Wobble 5–10% for a hint of tape'],['Valhalla Delay','Mode: Tape or HiFi / Style: Single / Delay 110 ms / Feedback 0–10% / Low Cut 200 Hz, High Cut 5 kHz'],['EchoBoy','Single Echo / Style: Studio Tape / Echo Time 110 ms (ms display) / Feedback 5–10% / start with low Saturation']]},
+dbl:{n:'Doubling',s:'10–30 ms + movement',tag:'Thickness',
+ set:{mode:'dual',tL:13,syncL:'',tR:21,syncR:'',fb:0,hp:150,lp:9000,rate:.7,depth:1.2,wet:-4},
+ what:'Our ears fuse delays shorter than about 30 ms with the source and hear them as thickness rather than a separate echo (the precedence effect). Different L/R times plus slow modulation sound like a double-tracked part.',
+ use:'Thicker vocals, wider synths and guitars — a stand-in for a real double take. Detuning by a few cents (MicroShift-style pitch doublers) belongs to the same family.',
+ ear:'Turn on Mono check to hear the comb filtering (a hollow, swishy color) typical of short delays. Set Mod Depth to 0 to hear how unnatural a static double sounds.',
+ plug:[['Ableton Echo','Stereo, Link OFF / L 13 ms, R 21 ms / Feedback 0% / Modulation › Rate 0.7 Hz, a little Mod Delay'],['Valhalla Delay','Style: Dual / Delay L 13 ms, R 21 ms / Feedback 0% / Mode: HiFi (a little Mod Depth). Or Mode: Pitch with Detune at ±8–12 cents L/R'],['EchoBoy','Dual Echo / L 13 ms, R 21 ms / Feedback 0% / Style: Studio Tape plus a little Wobble']]},
+haas:{n:'Haas Wide',s:'delay one side by 5–30 ms',tag:'Width',
+ set:{mode:'haas',tL:12,syncL:'',tR:12,syncR:'',fb:0,hp:20,lp:20000,rate:.5,depth:0,wet:0},
+ what:'The left side stays dry; only the right side is delayed by 12 ms. You localize toward the earlier left signal, but sound also arrives from the right, so the image spreads sideways.',
+ use:'Spreading mono sources (guitar, pad, backing vocals) across the stereo field, or filling the sides of an arrangement.',
+ ear:'Always switch on Mono check. When L and R are summed, some frequencies cancel (comb filtering) and the sound turns thin. That is the classic Haas pitfall.',
+ plug:[['Ableton Delay','Insert on the track / Link OFF / L 1 ms, R 12 ms / Feedback 0% / Dry/Wet 100% (check mono with Utility)'],['Valhalla Delay','Style: Dual / Delay L 0 ms, R 12 ms / Feedback 0% / Mix 100% (insert)'],['EchoBoy','Dual Echo with only one side at 10–20 ms, Feedback 0%, Mix 100%. Always check mono compatibility']]},
+pp:{n:'Ping-Pong',s:'bounces left and right',tag:'Movement',
+ set:{mode:'pingpong',tL:0,syncL:'1/8',tR:0,syncR:'1/8',fb:45,hp:250,lp:4500,rate:.5,depth:0,wet:-11},
+ what:'Echoes alternate left → right → left… Each side’s feedback is routed into the opposite side (cross-feedback).',
+ use:'Synth arpeggios, guitar riffs, the ends of vocal phrases. Creates movement at the sides without crowding the lead in the center.',
+ ear:'Watch blue and red alternate on the timeline. A high-pass of 250 Hz or more keeps the echoes from fighting the bass and kick.',
+ plug:[['Ableton Echo','Mode: Ping Pong / Sync 1/8 / Feedback 40–50% / Filter HP 250 Hz, LP 4.5 kHz'],['Valhalla Delay','Style: PingPong / Delay L and R both 1/8 synced / Feedback 45%'],['EchoBoy','Echo Mode: Ping-Pong / Echo Time 1/8 (Sync) / Feedback 45%']]},
+dot:{n:'Dotted 8th + 1/4',s:'fills the rhythmic gaps',tag:'Groove',
+ set:{mode:'dual',tL:0,syncL:'1/8D',tR:0,syncR:'1/4',fb:35,hp:300,lp:3500,rate:.4,depth:.3,wet:-12},
+ what:'Dotted eighth on the left, quarter note on the right. The two offset rhythms interlock and fill the gaps in the phrase with sixteenth-note answers.',
+ use:'The classic way to turn a simple eighth-note guitar or synth line into a busy rhythm. Also great behind long vocal notes.',
+ ear:'Watch the blue dotted-eighth echoes land off the orange beat lines. The lower the Low Pass, the further the echoes sit behind the source.',
+ plug:[['Ableton Echo','Stereo, Link OFF / L 1/8D, R 1/4 (Sync) / Feedback 35% / LP 3.5 kHz'],['Valhalla Delay','Style: Dual / Delay L 1/8D, R 1/4 / Feedback 35% / High Cut 3.5 kHz'],['EchoBoy','Dual Echo / L 1/8D, R 1/4 / Feedback 35% / lower the High Cut to push it back']]},
+dub:{n:'Dub Throw',s:'high feedback + filters',tag:'Texture / build',
+ set:{mode:'mono',tL:0,syncL:'1/4D',tR:0,syncR:'1/4D',fb:72,hp:450,lp:2200,rate:.35,depth:.8,wet:-8},
+ what:'High feedback, with HP/LP filters in the loop narrowing the band on every pass. The repeats fade out thinner, darker and wobblier — the dub way of using a tape echo.',
+ use:'Throws on vocal endings or snare hits. Automate the send up for just one beat to create transitions.',
+ ear:'Watch the colors on the timeline darken as the highs are shaved off. Around 90% feedback you can feel the edge of self-oscillation (watch your level).',
+ plug:[['Ableton Echo','Sync 1/4D / Feedback 70% / Filter HP 450 Hz, LP 2.2 kHz (a little Res) / Character › Wobble 20%, a little Noise'],['Valhalla Delay','Mode: Tape / Feedback 70% / Age around 30% / a little Wow and Flutter / Low Cut 450 Hz, High Cut 2.2 kHz'],['EchoBoy','Style: Space Echo / Feedback 70% / raise Saturation to add grit']]},
+amb:{n:'Short Ambience',s:'a fake room from short echoes',tag:'Delay vs reverb',
+ set:{mode:'dual',tL:43,syncL:'',tR:67,syncR:'',fb:48,hp:300,lp:3200,rate:.3,depth:.6,wet:-10},
+ what:'Feed back short 40–80 ms echoes with different L/R times and the reflections pile up densely enough to start sounding like a room. A reverb is, at heart, a huge collection of delays.',
+ use:'A close sense of air when a reverb pushes things too far back. Blends drums or acoustic guitar without leaving them dry or muddying them.',
+ ear:'Sweep Feedback from 0 to 60% and find where an echo turns into ambience. Diffusion in Valhalla Delay pushes this boundary even further.',
+ plug:[['Ableton Echo','Stereo, Link OFF / L 43 ms, R 67 ms / Feedback 45–50% / a little Reverb for density'],['Valhalla Delay','Style: Ratio (Ratio around 61.8%) / Feedback 50% / raise Diffusion Amount to turn it into a pseudo-reverb'],['EchoBoy','Dual Echo / L 43 ms, R 67 ms / Feedback 45% / add Diffusion under Style Tweak']]}
+};
+var ORDER=['slap','dbl','haas','pp','dot','dub','amb'];
+
+/* ---------- UI helpers ---------- */
+function logTo(x,a,b){return a*Math.pow(b/a,x/1000)}function logFrom(v,a,b){return 1000*Math.log(v/a)/Math.log(b/a)}
+var RNG={tL:[1,1500],tR:[1,1500],hp:[20,2000],lp:[500,20000],rate:[.05,6]};
+function beat(){return 60000/S.bpm}
+function tval(ch){var s=S['sync'+ch];return s?beat()*NV[s]:S['t'+ch]}
+function fmtHz(v){return v>=1000?(v/1000).toFixed(v>=10000?1:2)+' kHz':Math.round(v)+' Hz'}
+function fmtMs(v){return v<10?v.toFixed(1)+' ms':Math.round(v)+' ms'}
+
+var presetBox=q('[data-el=presets]');
+ORDER.forEach(function(k){var b=document.createElement('button');b.className='dl1-preset';b.dataset.p=k;b.innerHTML='<b>'+P[k].n+'</b><span>'+P[k].s+'</span>';presetBox.appendChild(b)});
+['syncL','syncR'].forEach(function(k){var sel=q('select[data-k='+k+']');NOTES.forEach(function(n){var o=document.createElement('option');o.value=n[0];o.textContent=n[1];sel.appendChild(o)})});
+
+function syncUI(){
+ qa('[data-group=src] button').forEach(function(b){b.classList.toggle('on',b.dataset.v===S.src)});
+ qa('[data-group=mode] button').forEach(function(b){b.classList.toggle('on',b.dataset.v===S.mode)});
+ qa('.dl1-preset').forEach(function(b){b.classList.toggle('on',b.dataset.p===S.preset)});
+ ['tL','tR','hp','lp','rate'].forEach(function(k){var v=(k==='tL'||k==='tR')?tval(k.slice(1)):S[k];q('input[data-k='+k+']').value=logFrom(v,RNG[k][0],RNG[k][1])});
+ q('input[data-k=fb]').value=S.fb;q('input[data-k=wet]').value=S.wet;q('input[data-k=depth]').value=S.depth;
+ q('select[data-k=syncL]').value=S.syncL;q('select[data-k=syncR]').value=S.syncR;q('input[data-k=bpm]').value=S.bpm;
+ q('[data-o=tL]').textContent=fmtMs(tval('L'))+(S.syncL?' ('+S.syncL+')':'');
+ q('[data-o=tR]').textContent=fmtMs(tval('R'))+(S.syncR?' ('+S.syncR+')':'');
+ q('[data-o=fb]').textContent=S.fb+' %';q('[data-o=wet]').textContent=S.wet.toFixed(1)+' dB';
+ q('[data-o=hp]').textContent=fmtHz(S.hp);q('[data-o=lp]').textContent=fmtHz(S.lp);
+ q('[data-o=rate]').textContent=S.rate.toFixed(2)+' Hz';q('[data-o=depth]').textContent=S.depth.toFixed(2)+' ms';
+ qa('.dl1-toggle').forEach(function(b){b.classList.toggle('on',!!S[b.dataset.t])});
+ var rDisabled=S.mode==='mono',lDisabled=S.mode==='haas';
+ q('input[data-k=tR]').disabled=rDisabled;q('select[data-k=syncR]').disabled=rDisabled;
+ q('input[data-k=tL]').disabled=lDisabled;q('select[data-k=syncL]').disabled=lDisabled;
+ var w='';
+ if(S.mode==='haas')w='⚠ Always check Haas with Mono check. If it thins out, change the delay time or use another widening method (e.g. doubling).';
+ else if(S.fb>=85)w='⚠ Feedback is high — close to self-oscillation (the echoes keep growing). Watch your level.';
+ else if(tval('L')<35&&S.mode!=='pingpong'&&S.fb>30)w='ℹ A short time with high feedback sounds less like a delay and more like a metallic resonance (comb filter / flanger).';
+ q('[data-el=warn]').textContent=w;
+ renderExplain();renderTempo();draw();
+}
+function renderExplain(){var p=P[S.preset];var custom=S._custom?'<span class="dl1-tag" style="background:#9ba2ad">Edited</span>':'';
+ q('[data-el=explain]').innerHTML='<h4>'+p.n+'<span class="dl1-tag">'+p.tag+'</span>'+custom+'</h4><dl><dt>What’s happening?</dt><dd>'+p.what+'</dd><dt>Where to use it</dt><dd>'+p.use+'</dd><dt>What to listen for</dt><dd>'+p.ear+'</dd></dl>';
+ q('[data-el=plug]').innerHTML=p.plug.map(function(r){return '<tr><th>'+r[0]+'</th><td>'+r[1]+'</td></tr>'}).join('');}
+function renderTempo(){var rows=[['1/16','16th'],['1/8T','8th triplet'],['1/8','8th'],['1/8D','dotted 8th'],['1/4T','quarter triplet'],['1/4','quarter'],['1/4D','dotted quarter'],['1/2','half']];
+ q('[data-el=tempo]').innerHTML=rows.map(function(r){return '<div>'+r[1]+'<b>'+(beat()*NV[r[0]]).toFixed(1)+' ms</b></div>'}).join('');}
+
+/* ---------- Timeline ---------- */
+var cv=q('[data-el=tl]');
+function taps(){var out=[],wet=Math.pow(10,S.wet/20),g=S.fb/100,tL=tval('L'),tR=tval('R'),i,a,t;
+ var lim=0.0025;
+ if(S.mode==='haas'){out.push({t:tR,a:1*wet,ch:'R',n:1});return out}
+ if(S.mode==='mono'){for(i=1,a=wet,t=tL;i<40&&t<6000;i++){out.push({t:t,a:a,ch:'B',n:i});a*=g;t+=tL;if(a<lim)break}}
+ else if(S.mode==='dual'){[['L',tL],['R',tR]].forEach(function(c){for(var j=1,aa=wet,tt=c[1];j<40&&tt<6000;j++){out.push({t:tt,a:aa,ch:c[0],n:j});aa*=g;tt+=c[1];if(aa<lim)break}})}
+ else{for(i=1,a=wet,t=tL;i<40&&t<6000;i++){var ch=i%2?'L':'R';out.push({t:t,a:a,ch:ch,n:i});a*=g;t+=(i%2?tR:tL);if(a<lim)break}}
+ return out}
+function lpShade(n){var f=4000,h=1/Math.sqrt(1+Math.pow(f/S.lp,4));var hh=1/Math.sqrt(1+Math.pow(S.hp/250,4));return Math.pow(h*hh,n)}
+function mix(c1,c2,k){return 'rgb('+c1.map(function(v,i){return Math.round(v*k+c2[i]*(1-k))}).join(',')+')'}
+function draw(){var dpr=window.devicePixelRatio||1,W=cv.clientWidth||700,H=(window.NK_H?NK_H(cv,210):210);cv.width=W*dpr;cv.height=H*dpr;var c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+ var T=taps(),maxT=0;T.forEach(function(p){if(p.a>Math.pow(10,-36/20))maxT=Math.max(maxT,p.t)});if(!T.length)maxT=200;if(maxT===0)maxT=T[0].t;
+ var win=Math.min(4000,Math.max(60,maxT*1.18));
+ var padL=30,padR=10,top=16,laneH=(H-top-28)/2,x=function(t){return padL+(W-padL-padR)*t/win};
+ c.font='11px -apple-system,sans-serif';c.fillStyle='#6d7480';
+ c.fillText('L',8,top+laneH/2+4);c.fillText('R',8,top+laneH+laneH/2+8);
+ c.strokeStyle='#2a2f38';c.lineWidth=1;c.beginPath();c.moveTo(padL,top+laneH+2);c.lineTo(W-padR,top+laneH+2);c.stroke();
+ var b=beat();if(win>b*0.6){c.setLineDash([3,4]);c.strokeStyle='rgba(240,166,58,.35)';for(var bt=b/4,k=1;bt*k<win;k++){var isBeat=k%4===0;if(!isBeat&&win>b*3)continue;c.globalAlpha=isBeat?1:.45;c.beginPath();c.moveTo(x(bt*k),top);c.lineTo(x(bt*k),H-26);c.stroke()}c.globalAlpha=1;c.setLineDash([])}
+ var step=[1,2,5,10,20,50,100,200,250,500,1000].filter(function(s){return win/s<=8})[0]||1000;
+ c.fillStyle='#6d7480';for(var tt=0;tt<=win;tt+=step){var lb=tt+'ms',lw=c.measureText(lb).width;c.fillText(lb,Math.min(W-padR-lw,Math.max(2,x(tt)-lw/2)),H-8)}
+ function bar(t,a,lane,col,label){var h=Math.max(2,laneH*Math.max(0,(20*Math.log10(Math.max(a,1e-4))+42)/42));var y0=top+(lane?laneH+4:0)+laneH-h;var bw=Math.max(3,Math.min(12,(W-padL)/120));c.fillStyle=col;c.fillRect(x(t)-bw/2,y0,bw,h);if(label&&h>14&&bw>=5){c.fillStyle='#0b0c0e';c.font='bold 9px sans-serif';c.fillText(label,x(t)-bw/2+1,y0+10);c.font='11px -apple-system,sans-serif'}}
+ var dryA=S.wetonly?0:1;
+ if(dryA){bar(0,1,0,'#8b929c');if(S.mode!=='haas')bar(0,1,1,'#8b929c')}
+ var CL=[98,182,234],CR=[236,122,146],DK=[40,44,52];
+ if(!S.bypass)T.forEach(function(p){if(p.t>win)return;var k=.25+.75*lpShade(p.n);var lab=p.n<10?String(p.n):'';
+  if(p.ch==='L'||p.ch==='B')bar(p.t,p.a,0,mix(CL,DK,k),lab);if(p.ch==='R'||p.ch==='B')bar(p.t,p.a,1,mix(CR,DK,k),lab)});
+ c.fillStyle='#9ba2ad';c.fillText(S.bypass?'Delay OFF':(S.monosum?'Mono check on (display still shows L/R)':''),padL+4,12);
+}
+window.addEventListener('resize',function(){draw()});
+
+/* ---------- Audio ---------- */
+var ctx,A={},net=[],playing=false,timer=null,nextT=0,step=0,noiseBuf;
+function bq(type,f,qv){var n=ctx.createBiquadFilter();n.type=type;n.frequency.value=f||1000;n.Q.value=qv||.707;return n}
+function init(){ctx=new(window.AudioContext||window.webkitAudioContext)();
+ var len=ctx.sampleRate;noiseBuf=ctx.createBuffer(1,len,ctx.sampleRate);var d=noiseBuf.getChannelData(0);for(var i=0;i<len;i++)d[i]=Math.random()*2-1;
+ A.master=ctx.createGain();A.master.gain.value=.55;
+ A.lim=ctx.createDynamicsCompressor();A.lim.threshold.value=-8;A.lim.ratio.value=12;A.lim.attack.value=.003;A.lim.release.value=.2;
+ A.master.connect(A.lim);
+ A.st=ctx.createGain();A.mo=ctx.createGain();A.lim.connect(A.st);A.st.connect(ctx.destination);
+ var spl=ctx.createChannelSplitter(2);A.sum=ctx.createGain();A.sum.gain.value=.5;A.lim.connect(spl);spl.connect(A.sum,0);spl.connect(A.sum,1);
+ A.monoMerge=ctx.createChannelMerger(2);A.sum.connect(A.monoMerge,0,0);A.sum.connect(A.monoMerge,0,1);A.monoMerge.connect(A.mo);A.mo.connect(ctx.destination);
+ A.src=ctx.createGain();
+ A.dry=ctx.createGain();A.dryPan=ctx.createStereoPanner();A.src.connect(A.dry);A.dry.connect(A.dryPan);A.dryPan.connect(A.master);
+ A.send=ctx.createGain();A.src.connect(A.send);
+ A.merge=ctx.createChannelMerger(2);A.wet=ctx.createGain();A.merge.connect(A.wet);A.wet.connect(A.master);
+ A.lfo=ctx.createOscillator();A.lfo.type='sine';A.lfo.start();
+ build();}
+function build(){net.forEach(function(n){try{n.disconnect()}catch(e){}});try{A.send.disconnect()}catch(e){}try{A.lfo.disconnect()}catch(e){}net=[];
+ var dL=ctx.createDelay(4),dR=ctx.createDelay(4),hpL=bq('highpass'),lpL=bq('lowpass'),hpR=bq('highpass'),lpR=bq('lowpass'),fbL=ctx.createGain(),fbR=ctx.createGain(),oL=ctx.createGain(),oR=ctx.createGain(),mL=ctx.createGain(),mR=ctx.createGain();
+ net=[dL,dR,hpL,lpL,hpR,lpR,fbL,fbR,oL,oR,mL,mR];fbL.gain.value=0;fbR.gain.value=0;mL.gain.value=0;mR.gain.value=0;
+ A.lfo.connect(mL);A.lfo.connect(mR);mL.connect(dL.delayTime);mR.connect(dR.delayTime);
+ dL.connect(hpL);hpL.connect(lpL);dR.connect(hpR);hpR.connect(lpR);
+ var m=S.mode;
+ if(m==='mono'){A.send.connect(dL);lpL.connect(fbL);fbL.connect(dL);lpL.connect(oL);lpL.connect(oR)}
+ else if(m==='dual'){A.send.connect(dL);A.send.connect(dR);lpL.connect(fbL);fbL.connect(dL);lpR.connect(fbR);fbR.connect(dR);lpL.connect(oL);lpR.connect(oR)}
+ else if(m==='pingpong'){A.send.connect(dL);lpL.connect(oL);lpL.connect(fbL);fbL.connect(dR);lpR.connect(oR);lpR.connect(fbR);fbR.connect(dL)}
+ else{A.send.connect(dR);lpR.connect(oR)}
+ oL.connect(A.merge,0,0);oR.connect(A.merge,0,1);
+ A.n={dL:dL,dR:dR,hpL:hpL,lpL:lpL,hpR:hpR,lpR:lpR,fbL:fbL,fbR:fbR,mL:mL,mR:mR,mode:m};apply(true)}
+function apply(now){if(!ctx)return;if(A.n.mode!==S.mode){build();return}
+ var t=ctx.currentTime,tc=now?0.001:.05,n=A.n,dep=S.depth/1000;
+ var tl=Math.max(tval('L')/1000,dep+.0006),tr=Math.max(tval('R')/1000,dep+.0006);if(S.mode==='mono')tr=tl;
+ n.dL.delayTime.setTargetAtTime(tl,t,tc);n.dR.delayTime.setTargetAtTime(tr,t,tc);
+ var g=S.mode==='haas'?0:S.fb/100;n.fbL.gain.setTargetAtTime(g,t,.02);n.fbR.gain.setTargetAtTime(g,t,.02);
+ [n.hpL,n.hpR].forEach(function(f){f.frequency.setTargetAtTime(S.hp,t,.02)});[n.lpL,n.lpR].forEach(function(f){f.frequency.setTargetAtTime(S.lp,t,.02)});
+ A.lfo.frequency.setTargetAtTime(S.rate,t,.05);n.mL.gain.setTargetAtTime(dep,t,.05);n.mR.gain.setTargetAtTime(S.mode==='mono'?dep:-dep,t,.05);
+ A.wet.gain.setTargetAtTime(S.bypass?0:Math.pow(10,S.wet/20),t,.02);
+ A.dry.gain.setTargetAtTime(S.wetonly?0:1,t,.02);A.dryPan.pan.setTargetAtTime(S.mode==='haas'?-1:0,t,.01);
+ A.st.gain.setTargetAtTime(S.monosum?0:1,t,.01);A.mo.gain.setTargetAtTime(S.monosum?1:0,t,.01)}
+
+/* ---------- Sound sources ---------- */
+function mtof(m){return 440*Math.pow(2,(m-69)/12)}
+function env(g,t,a,peak,dec){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(.0005,t+a+dec)}
+function pluck(t,m){var f=mtof(m),o1=ctx.createOscillator(),o2=ctx.createOscillator(),lp=bq('lowpass',3800,1.2),g=ctx.createGain();o1.type='sawtooth';o2.type='triangle';o1.frequency.value=f;o2.frequency.value=f*2.003;
+ lp.frequency.setValueAtTime(4200,t);lp.frequency.exponentialRampToValueAtTime(700,t+.22);env(g,t,.003,.32,.38);o1.connect(lp);o2.connect(lp);lp.connect(g);g.connect(A.src);o1.start(t);o2.start(t);o1.stop(t+.5);o2.stop(t+.5)}
+function snare(t){var ns=ctx.createBufferSource();ns.buffer=noiseBuf;var bp=bq('bandpass',2200,.7),hp=bq('highpass',700),g=ctx.createGain();env(g,t,.001,.55,.17);ns.connect(hp);hp.connect(bp);bp.connect(g);g.connect(A.src);ns.start(t,Math.random()*.5);ns.stop(t+.25);
+ var o=ctx.createOscillator(),og=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(230,t);o.frequency.exponentialRampToValueAtTime(170,t+.06);env(og,t,.001,.5,.09);o.connect(og);og.connect(A.src);o.start(t);o.stop(t+.15)}
+function kick(t){var o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(48,t+.12);env(g,t,.002,.8,.32);o.connect(g);g.connect(A.src);o.start(t);o.stop(t+.4)}
+function vox(t,m,dur){var f=mtof(m),o=ctx.createOscillator(),vib=ctx.createOscillator(),vg=ctx.createGain(),g=ctx.createGain(),sum=ctx.createGain();o.type='sawtooth';o.frequency.value=f;vib.frequency.value=5.4;vg.gain.setValueAtTime(0,t);vg.gain.linearRampToValueAtTime(f*.012,t+Math.min(dur,.35));vib.connect(vg);vg.connect(o.frequency);
+ [[730,9,1],[1090,11,.55],[2440,14,.28],[3400,16,.12]].forEach(function(F){var b=bq('bandpass',F[0],F[1]),bg=ctx.createGain();bg.gain.value=F[2]*3;o.connect(b);b.connect(bg);bg.connect(sum)});
+ var ns=ctx.createBufferSource();ns.buffer=noiseBuf;var nb=bq('bandpass',3000,1),ng=ctx.createGain();ng.gain.value=.05;ns.connect(nb);nb.connect(ng);ng.connect(sum);
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5,t+.05);g.gain.setValueAtTime(.5,t+dur);g.gain.exponentialRampToValueAtTime(.0005,t+dur+.14);sum.connect(g);g.connect(A.src);
+ o.start(t);vib.start(t);ns.start(t,Math.random()*.5);var e=t+dur+.2;o.stop(e);vib.stop(e);ns.stop(e)}
+var PL={0:76,3:79,6:81,10:74,16:72,19:76,22:79,26:67};
+var VX={0:[69,.9],8:[72,.45],12:[71,.3],16:[67,1.3]};
+function playStep(s,t){var six=60/S.bpm/4;
+ if(S.src==='pluck'){if(PL[s]!=null)pluck(t,PL[s])}
+ else if(S.src==='snare'){if(s%16===4||s%16===12)snare(t);if(s===0||s===16||s===26)kick(t)}
+ else{var v=VX[s];if(v)vox(t,v[0],v[1]*six*4)}}
+function tick(){var six=60/S.bpm/4;while(nextT<ctx.currentTime+.15){playStep(step,nextT);nextT+=six;step=(step+1)%32}}
+function play(){if(!ctx)init();if(ctx.state==='suspended')ctx.resume();if(playing){playing=false;clearInterval(timer);q('[data-act=play]').textContent='▶ Play';return}
+ playing=true;step=0;nextT=ctx.currentTime+.06;timer=setInterval(tick,25);tick();q('[data-act=play]').textContent='■ Stop'}
+
+/* ---------- Events ---------- */
+function loadPreset(k){var p=P[k];S.preset=k;S._custom=false;for(var x in p.set)S[x]=p.set[x];S.wetonly=false;S.bypass=false;if(k!=='haas')S.monosum=false;if(ctx)build();syncUI()}
+root.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!root.contains(b))return;
+ if(b.dataset.act==='play'){play();return}
+ if(b.dataset.p){loadPreset(b.dataset.p);return}
+ if(b.dataset.t){S[b.dataset.t]=!S[b.dataset.t];apply();syncUI();return}
+ var grp=b.parentNode.dataset.group;if(grp==='src'){S.src=b.dataset.v;syncUI();return}
+ if(grp==='mode'){S.mode=b.dataset.v;S._custom=true;if(ctx)build();syncUI()}});
+root.addEventListener('input',function(e){var el=e.target,k=el.dataset.k;if(!k)return;
+ if(k==='bpm'){var v=+el.value;if(v>=40&&v<=240){S.bpm=v;apply();syncUI()}return}
+ if(k==='syncL'||k==='syncR'){var ch=k.slice(-1);if(!el.value)S['t'+ch]=tval(ch);S[k]=el.value}
+ else if(RNG[k]){var val=logTo(+el.value,RNG[k][0],RNG[k][1]);if(k==='tL'||k==='tR'){S['sync'+k.slice(1)]='';val=Math.round(val*10)/10}S[k]=val}
+ else S[k]=+el.value;
+ S._custom=true;apply();syncUI()});
+loadPreset('slap');
+})();
+</script>
+</div>
+<!-- ===== app: end ===== -->
+
+<script>
+(function(){if(window.parent===window)return;var last=0;
+function send(){var h=Math.ceil(document.documentElement.scrollHeight);if(Math.abs(h-last)<2)return;last=h;window.parent.postMessage({type:'jpk-lab-height',height:h},'*')}
+if(window.ResizeObserver)new ResizeObserver(send).observe(document.body);window.addEventListener('load',send);setTimeout(send,300)})();
+</script>
+<script>
+window.JPKFP_CONF_OFF={"key": "delay-basics-lab", "mount": "#dl1", "vars": {"bg": "var(--bg)", "bg2": "var(--panel)", "line": "var(--line)", "fg": "var(--ink)", "muted": "var(--mute)"}, "targets": [{"el": "#dl1 [data-el=explain]", "ja": "プリセットの解説", "en": "About this preset"}, {"el": "#dl1 [data-fp=plug]", "ja": "実機プラグインで作るなら", "en": "Build it in real plugins"}], "buttons": [{"host": "#dl1 .dl1-transport"}]};
+/* ---------- floating explanation panel (shared across JPK labs) ---------- */
+(function(){
+var C=window.JPKFP_CONF;if(!C||window.JPKFP_READY)return;window.JPKFP_READY=1;
+function $(s){return typeof s==='string'?document.querySelector(s):s}
+function lang(){return C.lang?C.lang():(document.documentElement.lang||'ja').slice(0,2)}
+var T={ja:{open:'解説をパネルで表示',close:'パネルを閉じる',ph:'パネルで表示中',back:'ここに戻す',prev:'前へ',next:'次へ',x:'閉じる',drag:'ドラッグで移動'},
+       en:{open:'Show notes in a panel',close:'Close panel',ph:'Shown in the floating panel',back:'Put it back here',prev:'Previous',next:'Next',x:'Close',drag:'Drag to move'}};
+function t(k){return (T[lang()]||T.ja)[k]}
+function i18n(el,k,attr){/* keeps EQ-lab style [data-en] toggles in sync */
+  if(attr){el.setAttribute(attr,t(k));return}
+  el.textContent=t(k);el.setAttribute('data-ja',T.ja[k]);el.setAttribute('data-en',T.en[k]);}
+var V=C.vars||{};
+var css='.jpkfp{position:fixed;z-index:60;width:420px;height:540px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);min-width:300px;min-height:220px;display:flex;flex-direction:column;'+
+ 'background:'+(V.bg||'#161922')+';color:'+(V.fg||'inherit')+';border:1px solid '+(V.line||'#2a2f3d')+';border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.38);resize:both;overflow:hidden;text-align:left;box-sizing:border-box}'+
+ '.jpkfp[hidden]{display:none!important}.jpkfp *{box-sizing:border-box}'+
+ '.jpkfp .jpkfp-head{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid '+(V.line||'#2a2f3d')+';background:'+(V.bg2||'transparent')+';cursor:move;touch-action:none;user-select:none;-webkit-user-select:none}'+
+ '.jpkfp .jpkfp-grip{color:'+(V.muted||'#8e94a4')+';font-size:16px;padding:0 4px 0 2px;line-height:1}'+
+ '.jpkfp .jpkfp-title{flex:1;min-width:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+ '.jpkfp select.jpkfp-sel{flex:1;min-width:0;font:inherit;font-size:13px;color:inherit;background:'+(V.bg||'#161922')+';border:1px solid '+(V.line||'#2a2f3d')+';border-radius:6px;padding:4px 6px;height:30px;margin:0}'+
+ '.jpkfp button.jpkfp-ib{flex:none;width:30px;height:30px;padding:0!important;margin:0;display:grid;place-items:center;font:inherit;font-size:13px;line-height:1;color:inherit;background:'+(V.bg||'#161922')+'!important;border:1px solid '+(V.line||'#2a2f3d')+'!important;border-radius:6px;cursor:pointer;box-shadow:none!important;min-width:0;min-height:0}'+
+ '.jpkfp button.jpkfp-ib:hover{border-color:'+(V.muted||'#8e94a4')+'!important}'+
+ '.jpkfp .jpkfp-body{overflow:auto;flex:1;padding:14px 16px 18px;-webkit-overflow-scrolling:touch}'+
+ '.jpkfp .jpkfp-body>.jpkfp-moved{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;max-width:none!important;width:auto!important;position:static!important}'+
+ '.jpkfp-ph{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border:1px dashed '+(V.line||'#2a2f3d')+';border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:13px;color:'+(V.muted||'#8e94a4')+'}'+
+ '@media (max-width:700px){.jpkfp{left:0!important;right:0;top:auto!important;bottom:0;width:auto!important;height:46vh!important;max-width:none;border-radius:12px 12px 0 0;resize:none;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}.jpkfp .jpkfp-head{cursor:default}}'+
+ (C.css||'');
+var st=document.createElement('style');st.textContent=css;(C.mount?$(C.mount):document.head).appendChild(st);
+
+var targets=[];C.targets.forEach(function(d){var el=$(d.el);if(el)targets.push({el:el,ja:d.ja,en:d.en})});
+if(!targets.length)return;
+function label(d){return lang()==='en'?d.en:d.ja}
+
+var fp=document.createElement('div');fp.className='jpkfp'+(C.cls?' '+C.cls:'');fp.hidden=true;fp.setAttribute('role','dialog');
+var multi=targets.length>1;
+fp.innerHTML='<div class="jpkfp-head"><span class="jpkfp-grip">⠿</span>'+
+  (multi?'<button type="button" class="jpkfp-ib" data-a="prev">◀</button><select class="jpkfp-sel"></select><button type="button" class="jpkfp-ib" data-a="next">▶</button>':'<span class="jpkfp-title"></span>')+
+  '<button type="button" class="jpkfp-ib" data-a="close">✕</button></div><div class="jpkfp-body"></div>';
+(C.mount?$(C.mount):document.body).appendChild(fp);
+var head=fp.querySelector('.jpkfp-head'),body=fp.querySelector('.jpkfp-body'),sel=fp.querySelector('.jpkfp-sel'),ttl=fp.querySelector('.jpkfp-title');
+var KEY='jpkfp-'+(C.key||location.pathname);
+var cur=0,live=-1,ph=null;
+
+function labels(){
+  fp.setAttribute('aria-label',label(targets[cur]));
+  i18n(head.querySelector('.jpkfp-grip'),'drag','title');
+  i18n(fp.querySelector('[data-a=close]'),'x','aria-label');
+  if(multi){i18n(fp.querySelector('[data-a=prev]'),'prev','aria-label');i18n(fp.querySelector('[data-a=next]'),'next','aria-label');
+    sel.innerHTML=targets.map(function(d,i){return '<option value="'+i+'">'+label(d)+'</option>'}).join('');sel.value=String(cur);}
+  else ttl.textContent=label(targets[0]);
+  btns.forEach(function(b){i18n(b,fp.hidden?'open':'close')});
+  if(ph){i18n(ph.querySelector('span'),'ph');i18n(ph.querySelector('button'),'back');}
+}
+function putBack(){
+  if(live<0)return;var el=targets[live].el;el.classList.remove('jpkfp-moved');
+  if(ph&&ph.parentNode){ph.parentNode.insertBefore(el,ph);ph.parentNode.removeChild(ph);}
+  live=-1;ph=null;
+}
+function show(i){
+  putBack();cur=(i+targets.length)%targets.length;var el=targets[cur].el;
+  ph=document.createElement('div');ph.className='jpkfp-ph';
+  ph.innerHTML='<span></span><button type="button" class="'+(C.btnCls||'')+'"></button>';
+  ph.querySelector('button').addEventListener('click',function(){setOpen(false)});
+  el.parentNode.insertBefore(ph,el);el.classList.add('jpkfp-moved');body.appendChild(el);body.scrollTop=0;live=cur;labels();
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.i=cur;localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+}
+function clamp(v,a,b){return Math.min(b,Math.max(a,v))}
+function place(x,y){
+  var w=fp.offsetWidth,h=fp.offsetHeight;
+  x=clamp(x,8,Math.max(8,innerWidth-w-8));y=clamp(y,8,Math.max(8,innerHeight-h-8));
+  fp.style.left=x+'px';fp.style.top=y+'px';
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.x=x;s.y=y;localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+}
+function setOpen(on){
+  if(on===!fp.hidden)return;
+  if(!on){putBack();fp.hidden=true;labels();return;}
+  var s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  fp.hidden=false;
+  if(s&&s.w){fp.style.width=s.w;fp.style.height=s.h;}
+  place(s&&s.x!=null?s.x:innerWidth-fp.offsetWidth-24,s&&s.y!=null?s.y:innerHeight-fp.offsetHeight-24);
+  show(s&&s.i<targets.length?s.i:0);
+}
+var btns=[];
+(C.buttons||[]).forEach(function(b){
+  var host=$(b.host);if(!host)return;
+  var el=document.createElement('button');el.type='button';el.className=b.cls||C.btnCls||'';
+  el.addEventListener('click',function(){setOpen(fp.hidden)});
+  if(b.pos==='before')host.parentNode.insertBefore(el,host);else if(b.pos==='after')host.parentNode.insertBefore(el,host.nextSibling);else host.appendChild(el);btns.push(el);
+});
+fp.querySelector('[data-a=close]').addEventListener('click',function(){setOpen(false)});
+if(multi){
+  fp.querySelector('[data-a=prev]').addEventListener('click',function(){show(cur-1)});
+  fp.querySelector('[data-a=next]').addEventListener('click',function(){show(cur+1)});
+  sel.addEventListener('change',function(){show(+sel.value)});
+}
+var drag=null;
+head.addEventListener('pointerdown',function(e){
+  if(e.target.closest('button,select')||innerWidth<=700)return;
+  drag={dx:e.clientX-fp.offsetLeft,dy:e.clientY-fp.offsetTop};try{head.setPointerCapture(e.pointerId)}catch(_){}
+});
+head.addEventListener('pointermove',function(e){if(drag)place(e.clientX-drag.dx,e.clientY-drag.dy)});
+head.addEventListener('pointerup',function(){drag=null});
+head.addEventListener('pointercancel',function(){drag=null});
+if(window.ResizeObserver)new ResizeObserver(function(){if(!fp.hidden&&innerWidth>700){try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.w=fp.offsetWidth+'px';s.h=fp.offsetHeight+'px';localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}}).observe(fp);
+addEventListener('resize',function(){if(!fp.hidden&&innerWidth>700)place(fp.offsetLeft,fp.offsetTop)});
+if(C.langBtn){var lb=$(C.langBtn);if(lb)lb.addEventListener('click',function(){setTimeout(labels,0)})}
+labels();
+})();
+</script>
+<script>window.NK={"lang": "en", "mount": "#dl1", "title": "Delay Basics Study Note", "sub": "Delay Basics Lab", "links": [["← All labs", "https://kazufumi01.github.io/"], ["Previous version", "https://kazufumi01.github.io/delay-basics-lab/en/"], ["Article (Japanese)", "https://jpk.seesaa.net/article/521764427.html", "target=\"_blank\" rel=\"noopener\" hreflang=\"ja\""], ["日本語", "../", "hreflang=\"ja\" lang=\"ja\""]], "transport": [".dl1-transport"], "graphs": [{"sel": ".dl1-viz", "area": "tl", "fill": ["canvas"], "with": [".dl1-legend"]}, {"sel": ".dl1-presets", "area": "pr"}], "areas": "\"tl\" \"pr\"", "cols": "minmax(0,1fr)", "rows": "minmax(0,1fr) auto", "cw": "330px", "ctrls": [".dl1-grid"], "notes": [{"sel": "[data-el=explain]", "label": "Notes"}, {"sel": "[data-fp=plug]", "label": "In plug-ins"}, {"sel": ".dl1-tempo", "label": "Tempo chart"}], "about": ".dl1-lead, .dl1-dl, .dl1-foot", "hide": "#dl1 > .dl1-kicker, #dl1 > .dl1-title, #dl1 > .dl1-lang, #dl1 > .dl1-sec"};</script>
+<script src="/note-kit/kit.js"></script>
+</body>
+</html>

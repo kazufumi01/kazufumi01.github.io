@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EQ・スタディノート｜EQ解剖ラボ</title>
+<meta name="description" content="同じEQカーブでも、処理方式で時間の動きが変わる。ゼロレイテンシー・アナログ一致・リニア位相を切り替えて、位相・群遅延・インパルスレスポンス・プリリンギングを聴いて見て学ぶ無料のEQ学習アプリ。">
+<meta name="theme-color" content="#0d6575">
+
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="Johan Plus Kei">
+<meta property="og:title" content="EQ・スタディノート｜EQ解剖ラボ">
+<meta property="og:description" content="同じEQカーブでも、処理方式で時間の動きが変わる。ゼロレイテンシー・アナログ一致・リニア位相を切り替えて、位相・群遅延・インパルスレスポンス・プリリンギングを聴いて見て学ぶ無料のEQ学習アプリ。">
+<meta property="og:url" content="https://kazufumi01.github.io/eq-note/">
+<meta property="og:image" content="https://kazufumi01.github.io/eq-note/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script>window.EQLAB_DEFAULT='ja';</script>
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700&display=swap">
+<link rel="stylesheet" href="/note-kit/kit.css">
+<style>html.nk{--bg:var(--nk-paper);--panel:var(--nk-page);--ink:var(--nk-ink);--muted:var(--nk-muted);--line:var(--nk-line);--grid:var(--nk-rule);--accent:var(--nk-blue);--on-accent:var(--nk-on);--sig:var(--nk-pencil);--sel:var(--nk-hl);--pre:var(--nk-red);--pre-bg:rgba(165,71,42,.12);--ghost:#9a8f7e;--phase:#b0741c;--b1:#5b4a8e;--b2:var(--nk-blue);--b3:#3f6b35;--b4:#b0741c;--b5:var(--nk-red);--b6:#8a4a6a}.nk-ctrls .modes{flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:10px!important}.nk-ctrls .chips{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:4px!important}.nk-ctrls .editor{grid-template-columns:1fr;margin-top:10px!important;padding-top:10px!important;border-top:1px solid var(--nk-line)!important}.nk .lessons>li{background:var(--nk-page)}@media (min-width:1100px) and (min-height:660px){#p-eq{gap:0}#p-eq .scope-grid{flex:1 1 0;min-height:0;align-items:stretch}#p-eq .sc-main,#p-eq .sc-side{display:flex;flex-direction:column;min-height:0}#p-eq .sc-side .ro{grid-template-columns:1fr 1fr;gap:4px}#p-eq .sc-side .ro div{padding:4px 6px}#p-eq .sc-side .ro dd{font-size:13px}.nk .nk-cv>#eqc,.nk .nk-cv>#irc,.nk .nk-cv>#trc{height:100%!important;aspect-ratio:auto!important}#p-tr .tr-bar{margin-top:6px}#p-eq .eqhint{display:none}}@media (min-width:1100px) and (min-height:660px) and (max-height:820px){#p-eq .legend,#p-tr .legend,#p-tr .tr-ro,#p-eq .sc-head .phl .lbl{display:none}#p-eq .sc-side .ro dt{font-size:10px;line-height:1.3}#p-eq .sc-side .ro dd{font-size:12px}#p-eq .sc-side .ro div{padding:3px 6px}#irzoom{flex-wrap:nowrap;margin-top:4px!important}#irzoom button,#irview button{padding:2px 7px;min-height:24px;font-size:11px}}@media not all and (min-width:1100px) and (min-height:660px){.nk-cv>#trc{aspect-ratio:2.6/1}}</style>
+<link rel="canonical" href="https://kazufumi01.github.io/eq-note/">
+<link rel="alternate" hreflang="ja" href="https://kazufumi01.github.io/eq-note/">
+<link rel="alternate" hreflang="en" href="https://kazufumi01.github.io/eq-note/en/">
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: sibling of コンプ／サチュレーター解剖ラボ — studio rack. EQ curve with draggable nodes is the hero (left top); phase/group delay and impulse response sit side by side under it, transient comparison below; processing mode, readouts and lessons on the right; DAW mapping + C++ bridge at the bottom */
+:root{
+  --bg:#e6e9ed; --panel:#f6f7f9; --ink:#16202b; --muted:#566271; --line:#c8cfd7; --grid:#dde2e8;
+  --accent:#0d6575; --on-accent:#ffffff; --sig:#9ca7b3; --sel:#e3eef0; --pre:#b83f36; --pre-bg:rgba(184,63,54,.10); --ghost:#8f9aa6;
+  --phase:#c9a227; --b1:#6b5bb5; --b2:#0d6575; --b3:#3c8a3a; --b4:#c47410; --b5:#b83f36; --b6:#a2507f;
+  --font-ui:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d; --grid:#212932;
+  --accent:#55b7c5; --on-accent:#0a1a1d; --sig:#56616e; --sel:#1d2d33; --pre:#ef7a6e; --pre-bg:rgba(239,122,110,.12); --ghost:#6b7683;
+  --phase:#e9cf6a; --b1:#a497e8; --b2:#55b7c5; --b3:#7cc66f; --b4:#eda33c; --b5:#ef7a6e; --b6:#de8fbd; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d; --grid:#212932;
+  --accent:#55b7c5; --on-accent:#0a1a1d; --sig:#56616e; --sel:#1d2d33; --pre:#ef7a6e; --pre-bg:rgba(239,122,110,.12); --ghost:#6b7683;
+  --phase:#e9cf6a; --b1:#a497e8; --b2:#55b7c5; --b3:#7cc66f; --b4:#eda33c; --b5:#ef7a6e; --b6:#de8fbd; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:14px;line-height:1.7}
+.wrap{max-width:1260px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
+a{color:var(--accent)}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.brand h1{font-size:26px;font-weight:700;letter-spacing:.02em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px;max-width:64ch}
+.brand .blog{font-size:13px;font-weight:700;text-decoration:none}
+.transport{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn,.sel{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:7px 12px;cursor:pointer;min-height:36px}
+.btn:hover,.sel:hover{border-color:var(--muted)}
+.btn:focus-visible,.sel:focus-visible,input:focus-visible,.seg button:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700;min-width:96px}
+.btn[aria-pressed="true"]{background:var(--b4);border-color:var(--b4);color:var(--on-accent)}
+.btn.sm{min-height:30px;padding:3px 10px;font-size:12px}
+.file{position:relative;overflow:hidden}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.status{font-size:12px;color:var(--muted);min-height:1.2em}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media (max-width:940px){.grid{grid-template-columns:minmax(0,1fr)}}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:640px){.row2{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0;position:relative}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.ph h2{font-size:15px;font-weight:700}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;font-size:12px;color:var(--ink);background:transparent;border:0;border-right:1px solid var(--line);padding:5px 10px;cursor:pointer;min-height:30px}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);font-weight:700}
+canvas{display:block;width:100%;border-radius:4px;background:var(--bg)}
+.modes{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.scope-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:940px){.scope-grid{grid-template-columns:minmax(0,1fr)}}
+.sc-main,.sc-side{min-width:0}
+.sc-head{display:flex;justify-content:space-between;align-items:center;gap:6px 12px;flex-wrap:wrap;margin-bottom:6px;min-height:30px}
+.phl,.phr{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.phr{margin-left:auto;justify-content:flex-end}
+.eqhint{margin:0 0 6px}
+#eqc{height:470px;touch-action:none;cursor:crosshair}
+#irc{height:210px}
+.toplinks{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+#labs{text-decoration:none;display:inline-flex;align-items:center}
+.brandrow{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.irexp{margin-top:8px}
+.sc-side .ro{margin-top:10px}
+@media (max-width:640px){#eqc{height:440px}#irc{height:240px}}
+#trc{aspect-ratio:2.6/1}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.legend i.dash{background:repeating-linear-gradient(90deg,var(--ink) 0 4px,transparent 4px 7px)!important;height:2px}
+.tr-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 16px;margin-top:10px}
+.tr-ro{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0}
+.tr-ro dt{font-size:11px;color:var(--muted)}
+.tr-ro dd{margin:0;font-family:var(--font-mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);margin:8px 0 0}
+.chips{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:12px}
+@media (max-width:640px){.chips{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.chip{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:4px;overflow:hidden;min-width:0;background:var(--panel)}
+.chip[data-sel="true"]{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c)}
+.chip button{font:inherit;font-family:var(--font-mono);font-size:12px;border:0;background:transparent;color:var(--ink);cursor:pointer;min-height:34px}
+.chip .pw{display:flex;align-items:center;gap:5px;padding:0 8px;border-right:1px solid var(--line);font-weight:600}
+.chip .pw .dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--c);background:transparent}
+.chip .pw[aria-pressed="true"] .dot{background:var(--c)}
+.chip .fq{flex:1;text-align:left;padding:0 8px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip.off .fq{color:var(--muted)}
+.editor{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.ctl{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ctl .top-l{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.ctl output{font-family:var(--font-mono);font-size:12px;color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.ctl.wide{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.ro{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 0}
+.ro div{background:var(--bg);border-radius:4px;padding:8px 10px;min-width:0}
+.ro dt{font-size:11px;color:var(--muted)}
+.ro dd{margin:0;font-family:var(--font-mono);font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.ro dd.warn{color:var(--pre)}
+.modeexp{font-size:13px;margin:10px 0 0;padding:10px 12px;border-radius:4px;background:var(--sel)}
+.modeexp b{font-weight:700}
+.stack{display:flex;flex-direction:column;gap:10px}
+.lbl{font-size:12px;color:var(--muted);margin-right:4px}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin:-4px 0 12px}
+.tabs button{font:inherit;font-size:14px;font-weight:700;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:6px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.lessons{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.lessons>li{border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.lessons summary{cursor:pointer;padding:8px 10px;font-weight:700;font-size:13px;display:flex;gap:8px;align-items:baseline;list-style:none}
+.lessons summary::-webkit-details-marker{display:none}
+.lessons summary .n{font-family:var(--font-mono);font-size:11px;color:var(--muted);min-width:2.2em}
+.lessons details[open] summary{border-bottom:1px solid var(--line)}
+.lessons .body{padding:10px 12px;font-size:13px}
+.lessons .body p{margin:0 0 8px}
+.lessons .body ul{margin:0 0 8px;padding-left:1.2em}
+.lessons .try{margin-top:4px}
+.quiz .q{font-size:14px;font-weight:700;margin:6px 0 10px}
+.quiz .ans{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.quiz .ans .btn{min-width:64px;font-family:var(--font-mono)}
+.quiz .ans .btn.right{background:var(--b3);border-color:var(--b3);color:var(--on-accent)}
+.quiz .ans .btn.wrong{background:var(--pre);border-color:var(--pre);color:var(--on-accent)}
+.quiz .fb{font-size:13px;min-height:1.5em}
+.score{font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+.veil{position:absolute;inset:0;border-radius:6px;background:var(--panel);display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:3;font-weight:700}
+.veil small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:4px}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:700}
+pre{margin:0;font-family:var(--font-mono);font-size:12px;line-height:1.6;background:var(--bg);border-radius:4px;padding:12px 14px;overflow-x:auto}
+footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.sign{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="brandrow"><p class="eyebrow">Equalizer / Phase · Group Delay · Pre-ringing</p><div class="toplinks"><a class="btn sm" id="labs" href="https://kazufumi01.github.io/" target="_blank" rel="noopener" data-en="All labs ↗">ラボ一覧 ↗</a><button class="btn sm" id="lang" type="button" lang="en">English</button></div></div>
+      <h1 data-en="EQ Anatomy Lab">EQ解剖ラボ</h1>
+      <p data-en="The same EQ curve can behave differently in time depending on how it is built. Switch between zero latency, analog-matched and linear phase, and hear and see what happens to phase, group delay, the impulse response and pre-ringing. Headphones recommended; start with a low volume.">同じEQカーブでも、処理の方式で「時間の動き」が変わります。ゼロレイテンシー、アナログ一致、リニア位相の3方式を切り替えて、位相・群遅延・インパルスレスポンス・プリリンギングを聴いて見て比べるアプリです。ヘッドホン推奨。最初は音量控えめで。</p>
+      <a class="blog" href="https://jpk.seesaa.net/article/521891797.html" target="_blank" rel="noopener" data-en="Effects article index (Japanese) →">エフェクター記事メニュー →</a>
+    </div>
+    <div class="transport">
+      <button class="btn primary" id="play" type="button" data-en="▶ Play">▶ 再生</button>
+      <select class="sel" id="src" aria-label="音源" data-en-aria="Source">
+        <option value="mix" data-en="Drums + bass + chords (90 BPM)">ドラム＋ベース＋コード（90 BPM）</option>
+        <option value="drums" data-en="Drums only">ドラムのみ</option>
+        <option value="hits" data-en="Single kick hits (for pre-ringing)">キック単発（プリリンギング確認用）</option>
+        <option value="bass" data-en="Bass only">ベースのみ</option>
+        <option value="pink" data-en="Pink noise">ピンクノイズ</option>
+      </select>
+      <label class="btn file"><span data-en="Load audio file">音源ファイルを読み込む</span><input type="file" id="file" accept="audio/*"></label>
+      <button class="btn" id="bypass" type="button" aria-pressed="false" data-en="Bypass">バイパス</button>
+      <button class="btn" id="delta" type="button" aria-pressed="false" data-en="Hear the difference">差分を聴く</button>
+      <button class="btn" id="autog" type="button" aria-pressed="true" data-en="Match loudness">音量を揃える</button>
+    </div>
+  </header>
+  <div class="status" id="status" role="status"></div>
+
+  <section class="panel scope" id="p-eq">
+    <div class="ph"><h2 data-en="EQ curve · phase · impulse response">EQカーブ・位相・インパルスレスポンス</h2>
+      <div class="modes"><button class="btn sm" id="reset" type="button" data-en="Reset EQ">EQを初期化</button>
+        <div class="seg" id="mode" role="group" aria-label="処理方式" data-en-aria="Processing mode"><button type="button" data-v="iir" aria-pressed="true" data-en="Zero latency">ゼロレイテンシー</button><button type="button" data-v="analog" data-en="Analog-matched">アナログ一致</button><button type="button" data-v="linear" data-en="Linear phase">リニア位相</button></div>
+        <div id="res-wrap"><span class="lbl" data-en="Resolution">解像度</span><div class="seg" id="res" role="group" aria-label="リニア位相の解像度" data-en-aria="Linear-phase resolution"><button type="button" data-v="low" data-en="Low">低</button><button type="button" data-v="mid" aria-pressed="true" data-en="Mid">中</button><button type="button" data-v="high" data-en="High">高</button></div></div>
+        <div><span class="lbl">Q</span><div class="seg" id="qmode" role="group" aria-label="Qの振る舞い" data-en-aria="Q behaviour"><button type="button" data-v="const" aria-pressed="true" data-en="Constant Q">一定Q</button><button type="button" data-v="prop" data-en="Proportional Q">比例Q</button></div></div>
+      </div>
+    </div>
+    <div class="scope-grid">
+      <div class="sc-main">
+        <p class="lbl eqhint" id="eqhint" data-en="Dot: frequency &amp; gain / width handles: Q / Shift + up-down: Q / double-click: add or switch off">点：周波数・ゲイン ／ 幅ハンドル：Q ／ Shift＋上下：Q ／ ダブルクリック：追加・オフ</p>
+        <div class="sc-head">
+          <div class="phl"><span class="lbl" data-en="Phase / group delay plot:">位相・群遅延の表示：</span><div class="seg" id="phlay" role="group" aria-label="位相の表示位置" data-en-aria="Phase plot position"><button type="button" data-v="overlay" aria-pressed="true" data-en="Overlay on the EQ curve">EQカーブに重ねる</button><button type="button" data-v="split" data-en="Separate plot below">下に分ける</button></div></div>
+          <div class="phr"><div class="seg" id="phtab" role="group" aria-label="位相の表示内容" data-en-aria="Phase display"><button type="button" data-v="phase" aria-pressed="true" data-en="Phase">位相</button><button type="button" data-v="gd" data-en="Group delay">群遅延</button></div><div class="seg" id="phrange" role="group" aria-label="位相の目盛り範囲" data-en-aria="Phase scale"></div></div>
+        </div>
+        <canvas id="eqc" tabindex="0" aria-label="上段はEQの振幅特性、下段は位相または群遅延。点をドラッグして周波数とゲイン、幅ハンドルでQを変更できます" data-en-aria="EQ magnitude with phase or group delay. Drag a dot to set frequency and gain, drag the width handles to set Q"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--accent)"></i><span data-en="Current mode">今の方式</span></span>
+          <span><i class="dash"></i><span id="lg-ghost">比較線</span></span>
+          <span><i class="dash" style="background:repeating-linear-gradient(90deg,var(--phase) 0 2px,transparent 2px 5px)!important"></i><span id="lg-ph">位相</span></span>
+          <span><i style="background:var(--sig)"></i><span data-en="Output spectrum (while playing)">出力のスペクトル（再生中）</span></span>
+        </div>
+        <p class="note" id="ph-note"></p>
+      </div>
+      <div class="sc-side">
+        <div class="sc-head"><span class="lbl" data-en="Impulse response">インパルスレスポンス</span>
+          <div class="seg" id="irview" role="group" aria-label="縦軸" data-en-aria="Vertical scale"><button type="button" data-v="db" aria-pressed="true">dB</button><button type="button" data-v="wave" data-en="Wave">波形</button></div></div>
+        <canvas id="irc" aria-label="インパルスレスポンスのグラフ。0 msより左がプリリンギング" data-en-aria="Impulse response. Everything left of 0 ms is pre-ringing"></canvas>
+        <div class="seg" id="irzoom" role="group" aria-label="表示範囲" data-en-aria="Time range" style="margin-top:8px"><button type="button" data-v="10">±10 ms</button><button type="button" data-v="50" aria-pressed="true">±50 ms</button><button type="button" data-v="250">±250 ms</button></div>
+        <p class="note irexp" data-en="The impulse response is what the EQ outputs when you feed it a single click. 0 ms is where the click was. Everything to the right is what rings on after it; everything to the left (red) comes out before it, which is pre-ringing. In dB view even very quiet ringing is visible.">インパルスレスポンスは、一瞬の「パチッ」という音を入れたときにEQから出てくる音です。0 msが元の音の位置で、右側はその後に残る響き、左側（赤）は音より先に出る響き＝プリリンギングです。dB表示では、ごく小さな響きまで見えます。</p>
+        <dl class="ro">
+          <div><dt id="r-latl" data-en="Latency">レイテンシー</dt><dd id="r-lat">—</dd></div>
+          <div><dt data-en="Pre-ringing level">プリリンギング量</dt><dd id="r-pre">—</dd></div>
+          <div><dt data-en="Pre-ringing length">プリリンギングの長さ</dt><dd id="r-prel">—</dd></div>
+          <div><dt data-en="Gain compensation">音量補正</dt><dd id="r-ag">—</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="バンドの選択" data-en-aria="Band selection"></div>
+    <div class="editor" id="editor">
+      <div class="ctl wide">
+        <span class="lbl" data-en="Type">タイプ</span>
+        <div class="seg" id="b-type" role="group" aria-label="フィルタータイプ" data-en-aria="Filter type"></div>
+      </div>
+      <div class="ctl"><div class="top-l"><label for="b-f" data-en="Frequency">周波数</label><output id="o-f"></output></div><input type="range" id="b-f" min="0" max="1000" step="1"></div>
+      <div class="ctl" id="c-g"><div class="top-l"><label for="b-g" data-en="Gain">ゲイン</label><output id="o-g"></output></div><input type="range" id="b-g" min="-18" max="18" step="0.1"></div>
+      <div class="ctl"><div class="top-l"><label for="b-q" id="l-q">Q</label><output id="o-q"></output></div><input type="range" id="b-q" min="0" max="1000" step="1"></div>
+      <div class="ctl" id="c-sl"><div class="top-l"><span data-en="Slope">スロープ</span><output id="o-sl"></output></div><div class="seg" id="b-sl" role="group" aria-label="スロープ" data-en-aria="Slope"></div></div>
+    </div>
+  </section>
+
+  <main class="grid">
+    <div class="col">
+      <section class="panel" id="p-tr">
+        <div class="ph"><h2 data-en="Transient comparison (single hit)">トランジェント比較（1発の波形）</h2>
+          <div class="transport">
+            <div class="seg" id="hit" role="group" aria-label="テスト音" data-en-aria="Test sound"><button type="button" data-v="kick" aria-pressed="true" data-en="Kick">キック</button><button type="button" data-v="snare" data-en="Snare">スネア</button><button type="button" data-v="click" data-en="Click">クリック</button></div>
+            <div class="seg" id="trview" role="group" aria-label="表示" data-en-aria="View"><button type="button" data-v="over" aria-pressed="true" data-en="Overlay">重ねる</button><button type="button" data-v="diff" data-en="Difference">差分</button></div>
+            <button class="btn sm" id="tr-match" type="button" aria-pressed="true" data-en="Match loudness">音量を揃える</button>
+          </div>
+        </div>
+        <canvas id="trc" aria-label="テスト音の原音と処理後、または差分の波形" data-en-aria="Test sound before and after EQ, or their difference"></canvas>
+        <div class="tr-bar">
+          <div class="transport"><span class="lbl" data-en="Listen">試聴</span><button class="btn sm" id="h-dry" type="button" data-en="Dry">原音</button><button class="btn sm" id="h-wet" type="button" data-en="EQ’d">処理後</button><button class="btn sm" id="h-diff" type="button" data-en="Difference">差分</button><button class="btn sm" id="h-pre" type="button" data-en="Pre-ringing only">プリリンギングだけ</button><button class="btn sm" id="h-ab" type="button" data-en="Dry → EQ’d">原音→処理後</button></div>
+          <dl class="tr-ro"><div><dt data-en="Gain compensation">音量補正</dt><dd id="tr-g">—</dd></div><div><dt data-en="Difference level">差分のレベル</dt><dd id="tr-d">—</dd></div><div><dt data-en="Before the attack">アタック前の成分</dt><dd id="tr-p">—</dd></div></dl>
+        </div>
+        <div class="legend" id="tr-legend"></div>
+        <p class="note" id="tr-note"></p>
+      </section>
+      <section class="panel" id="p-exp">
+        <div class="ph"><h2 data-en="Current mode">今の処理方式</h2></div>
+        <p class="modeexp" id="modeexp" style="margin:0"></p>
+        <p class="note" id="ir-note"></p>
+        <p class="note" data-en="For fair comparison, playback uses the same delay for all three modes (just like a DAW’s latency compensation).">比較しやすいように、再生音は3方式とも同じ遅れに揃えています（DAWの遅延補正と同じ考え方）。</p>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="panel" id="p-les">
+        <div class="tabs" role="tablist">
+          <button role="tab" id="t-les" aria-selected="true" type="button" data-en="Lessons">レッスン</button>
+          <button role="tab" id="t-quiz" aria-selected="false" type="button" data-en="Ear training">耳トレ</button>
+        </div>
+        <div id="pane-les"><ol class="lessons" id="lessons"></ol></div>
+        <div id="pane-quiz" class="quiz" hidden>
+          <div class="ph"><div class="seg" id="qtype" role="group" aria-label="問題の種類" data-en-aria="Question type"><button type="button" data-v="freq" aria-pressed="true" data-en="Guess the frequency">周波数当て</button><button type="button" data-v="phase" data-en="Spot linear phase">位相モード当て</button></div><span class="score" id="score">0 / 0</span></div>
+          <p class="q" id="qtext" data-en="Press “New question”. The graphs are hidden until you answer.">「出題する」を押すと、グラフを隠して問題を出します。</p>
+          <div class="ans" id="qctl"></div>
+          <div class="ans" id="qans"></div>
+          <p class="fb" id="qfb" aria-live="polite"></p>
+          <div class="transport"><button class="btn primary" id="qnew" type="button" data-en="New question">出題する</button><button class="btn" id="qend" type="button" hidden data-en="End ear training">耳トレを終える</button></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div data-en="All sound is generated and processed in your browser. Audio files you load are never uploaded.">音はすべてブラウザ内で合成・処理しています。読み込んだ音声ファイルはサーバーに送られません。</div>
+    <div data-en="Product names are trademarks of their owners. Filter coefficients follow R. Bristow-Johnson’s “Audio EQ Cookbook”. Proportional Q is a simplified model.">製品名は各社の商標です。フィルターの係数は R. Bristow-Johnson「Audio EQ Cookbook」に基づいています。比例Qは振る舞いを簡略化したモデルです。</div>
+    <div class="sign">EQ Anatomy Lab — by Johan Plus Kei</div>
+  </footer>
+</div>
+
+<script id="eq-core">
+// EQ Anatomy Lab — DSP core (shared by the page and Node tests)
+// Three ways to realise the same EQ curve:
+//   iir    : RBJ-cookbook biquads (bilinear transform, prewarped at f0) — zero latency, minimum phase, "cramps" near Nyquist
+//   analog : minimum-phase FIR whose magnitude follows the analog prototype exactly (cepstral method) — no cramping
+//   linear : linear-phase FIR (frequency sampling + window) — symmetric impulse, constant delay, pre-ringing
+const EQCore = (() => {
+  const TAU = 2 * Math.PI;
+  const SLOPES = { 6: 1, 12: 2, 18: 3, 24: 4, 36: 6, 48: 8 };
+  const RES = { low: 2048, mid: 8192, high: 32768 };
+  const MIN_LEN = 16384;
+
+  // ---------- FFT (radix-2, in place) ----------
+  const tw = {};
+  function twid(n) {
+    if (tw[n]) return tw[n];
+    const c = new Float64Array(n / 2), s = new Float64Array(n / 2);
+    for (let i = 0; i < n / 2; i++) { c[i] = Math.cos(TAU * i / n); s[i] = -Math.sin(TAU * i / n); }
+    return (tw[n] = { c, s });
+  }
+  function fft(re, im, inv) {
+    const n = re.length;
+    for (let i = 1, j = 0; i < n; i++) {
+      let b = n >> 1;
+      for (; j & b; b >>= 1) j ^= b;
+      j ^= b;
+      if (i < j) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; }
+    }
+    const { c, s } = twid(n), sg = inv ? -1 : 1;
+    for (let len = 2; len <= n; len <<= 1) {
+      const h = len >> 1, st = n / len;
+      for (let i = 0; i < n; i += len) {
+        for (let k = 0; k < h; k++) {
+          const wr = c[k * st], wi = sg * s[k * st];
+          const a = i + k, b = a + h;
+          const xr = re[b] * wr - im[b] * wi, xi = re[b] * wi + im[b] * wr;
+          re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi;
+        }
+      }
+    }
+    if (inv) for (let i = 0; i < n; i++) { re[i] /= n; im[i] /= n; }
+  }
+
+  // ---------- band helpers ----------
+  // Proportional Q: narrow at large gain, wide at small gain (API / SSL-E style behaviour, simplified)
+  function effQ(b, qMode) {
+    if (qMode !== 'prop' || !(b.type === 'bell')) return b.q;
+    return b.q * Math.max(0.3, Math.min(2.2, (0.35 + Math.abs(b.g) / 9.25)));
+  }
+  function butterQs(n) { // pole Qs of an order-n Butterworth (biquad sections only)
+    const qs = [];
+    for (let k = 1; k <= Math.floor(n / 2); k++) qs.push(1 / (2 * Math.sin((2 * k - 1) * Math.PI / (2 * n))));
+    return qs;
+  }
+  // Sections in analog form: {kind, Q, A} evaluated at normalised s = j f/f0
+  function sections(b, qMode) {
+    const A = Math.pow(10, b.g / 40), Q = Math.max(0.025, effQ(b, qMode));
+    switch (b.type) {
+      case 'bell': return [{ k: 'bell', A, Q }];
+      case 'ls': return [{ k: 'ls', A, Q }];
+      case 'hs': return [{ k: 'hs', A, Q }];
+      case 'notch': return [{ k: 'notch', Q }];
+      case 'ap': return [{ k: 'ap', Q }];
+      case 'lc': case 'hc': {
+        const n = SLOPES[b.slope] || 2, qs = butterQs(n), out = [];
+        const res = b.q / Math.SQRT1_2; // resonance applied to the highest-Q section
+        qs.forEach((q, i) => out.push({ k: b.type === 'lc' ? 'hp2' : 'lp2', Q: i === 0 ? q * res : q }));
+        if (n % 2) out.push({ k: b.type === 'lc' ? 'hp1' : 'lp1' });
+        return out;
+      }
+    }
+    return [];
+  }
+
+  // ---------- analog prototype response ----------
+  function analogSec(sec, w) { // w = f/f0 ; returns [re, im]
+    const s2r = -w * w; // s^2 = -w^2 (real), s = j w
+    const div = (nr, ni, dr, di) => { const d = dr * dr + di * di; return [(nr * dr + ni * di) / d, (ni * dr - nr * di) / d]; };
+    const { A, Q } = sec;
+    switch (sec.k) {
+      case 'bell': return div(s2r + 1, w * A / Q, s2r + 1, w / (A * Q));
+      case 'ls': { const sa = Math.sqrt(A); const r = div(s2r + A, w * sa / Q, A * s2r + 1, w * sa / Q); return [r[0] * A, r[1] * A]; }
+      case 'hs': { const sa = Math.sqrt(A); const r = div(A * s2r + 1, w * sa / Q, s2r + A, w * sa / Q); return [r[0] * A, r[1] * A]; }
+      case 'notch': return div(s2r + 1, 0, s2r + 1, w / Q);
+      case 'ap': return div(s2r + 1, -w / Q, s2r + 1, w / Q); // flat magnitude, 360° of phase rotation
+      case 'hp2': return div(s2r, 0, s2r + 1, w / Q);
+      case 'lp2': return div(1, 0, s2r + 1, w / Q);
+      case 'hp1': return div(0, w, 1, w);
+      case 'lp1': return div(1, 0, 1, w);
+    }
+    return [1, 0];
+  }
+
+  // ---------- digital biquads (bilinear, prewarped at f0) ----------
+  function digitalSec(sec, f0, fs) {
+    const w0 = TAU * Math.min(f0, fs * 0.4999) / fs, cw = Math.cos(w0), sw = Math.sin(w0);
+    const { A, Q } = sec, al = sw / (2 * Q);
+    let b0, b1, b2, a0, a1, a2;
+    switch (sec.k) {
+      case 'bell': b0 = 1 + al * A; b1 = -2 * cw; b2 = 1 - al * A; a0 = 1 + al / A; a1 = -2 * cw; a2 = 1 - al / A; break;
+      case 'ls': { const sa = 2 * Math.sqrt(A) * al;
+        b0 = A * ((A + 1) - (A - 1) * cw + sa); b1 = 2 * A * ((A - 1) - (A + 1) * cw); b2 = A * ((A + 1) - (A - 1) * cw - sa);
+        a0 = (A + 1) + (A - 1) * cw + sa; a1 = -2 * ((A - 1) + (A + 1) * cw); a2 = (A + 1) + (A - 1) * cw - sa; break; }
+      case 'hs': { const sa = 2 * Math.sqrt(A) * al;
+        b0 = A * ((A + 1) + (A - 1) * cw + sa); b1 = -2 * A * ((A - 1) + (A + 1) * cw); b2 = A * ((A + 1) + (A - 1) * cw - sa);
+        a0 = (A + 1) - (A - 1) * cw + sa; a1 = 2 * ((A - 1) - (A + 1) * cw); a2 = (A + 1) - (A - 1) * cw - sa; break; }
+      case 'notch': b0 = 1; b1 = -2 * cw; b2 = 1; a0 = 1 + al; a1 = -2 * cw; a2 = 1 - al; break;
+      case 'ap': b0 = 1 - al; b1 = -2 * cw; b2 = 1 + al; a0 = 1 + al; a1 = -2 * cw; a2 = 1 - al; break;
+      case 'hp2': b0 = (1 + cw) / 2; b1 = -(1 + cw); b2 = (1 + cw) / 2; a0 = 1 + al; a1 = -2 * cw; a2 = 1 - al; break;
+      case 'lp2': b0 = (1 - cw) / 2; b1 = 1 - cw; b2 = (1 - cw) / 2; a0 = 1 + al; a1 = -2 * cw; a2 = 1 - al; break;
+      case 'hp1': case 'lp1': { const K = Math.tan(w0 / 2), d = 1 + K;
+        if (sec.k === 'hp1') { b0 = 1 / d; b1 = -1 / d; } else { b0 = K / d; b1 = K / d; }
+        return { b0, b1, b2: 0, a1: (K - 1) / d, a2: 0 }; }
+    }
+    return { b0: b0 / a0, b1: b1 / a0, b2: b2 / a0, a1: a1 / a0, a2: a2 / a0 };
+  }
+  function biquadResp(c, f, fs) {
+    const w = TAU * f / fs, c1 = Math.cos(w), s1 = Math.sin(w), c2 = Math.cos(2 * w), s2 = Math.sin(2 * w);
+    const nr = c.b0 + c.b1 * c1 + c.b2 * c2, ni = -(c.b1 * s1 + c.b2 * s2);
+    const dr = 1 + c.a1 * c1 + c.a2 * c2, di = -(c.a1 * s1 + c.a2 * s2);
+    const d = dr * dr + di * di;
+    return [(nr * dr + ni * di) / d, (ni * dr - nr * di) / d];
+  }
+
+  // ---------- whole-EQ model ----------
+  function build(state, fs) {
+    const active = state.bands.filter(b => b.on);
+    const ana = [], dig = [];
+    const ap = [];
+    for (const b of active) for (const s of sections(b, state.qMode)) { const d = digitalSec(s, b.f, fs); ana.push({ s, f0: b.f }); dig.push(d); if (s.k === 'ap') ap.push(d); }
+    return { ana, dig, ap, fs, state };
+  }
+  function cmul(a, b) { return [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]]; }
+  function respAnalog(m, f) { let h = [1, 0]; for (const x of m.ana) h = cmul(h, analogSec(x.s, f / x.f0)); return h; }
+  function respIIR(m, f) { let h = [1, 0]; for (const c of m.dig) h = cmul(h, biquadResp(c, f, m.fs)); return h; }
+
+  // Curves for display at frequency array fr. Phase unwrapped, re-centred to the passband.
+  function curves(m, fr, mode) {
+    const n = fr.length, mag = new Float64Array(n), ph = new Float64Array(n), gd = new Float64Array(n);
+    const R = mode === 'iir' ? f => respIIR(m, f) : f => respAnalog(m, f);
+    let prev = 0, off = 0, best = -1e9, bestI = 0;
+    for (let i = 0; i < n; i++) {
+      const h = R(fr[i]); mag[i] = 20 * Math.log10(Math.hypot(h[0], h[1]) + 1e-15);
+      let p = Math.atan2(h[1], h[0]);
+      if (i) { while (p + off - prev > Math.PI) off -= TAU; while (p + off - prev < -Math.PI) off += TAU; }
+      ph[i] = prev = p + off;
+      if (mag[i] > best + 0.01) { best = mag[i]; bestI = i; }
+    }
+    // centre: reference = middle (in log-frequency) of the passband (within 1 dB of the maximum)
+    const pass = []; for (let i = 0; i < n; i++) if (mag[i] > best - 1) pass.push(i);
+    const k = Math.round(ph[pass[pass.length >> 1] || 0] / TAU);
+    for (let i = 0; i < n; i++) ph[i] -= k * TAU;
+    for (let i = 0; i < n; i++) {
+      const a = Math.max(0, i - 1), b = Math.min(n - 1, i + 1);
+      gd[i] = -(ph[b] - ph[a]) / (TAU * (fr[b] - fr[a])) * 1000; // ms
+    }
+    if (mode === 'linear') { ph.fill(0); gd.fill(0); }
+    return { mag, ph, gd };
+  }
+
+  // ---------- impulse responses ----------
+  function irIIR(m, len, secs, input) {
+    const h = input ? Float64Array.from(input) : new Float64Array(len); if (!input) h[0] = 1;
+    for (const c of (secs || m.dig)) {
+      let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+      for (let i = 0; i < len; i++) {
+        const x = h[i], y = c.b0 * x + c.b1 * x1 + c.b2 * x2 - c.a1 * y1 - c.a2 * y2;
+        x2 = x1; x1 = x; y2 = y1; y1 = y; h[i] = y;
+      }
+    }
+    return h;
+  }
+  function magGrid(m, M) { // analog magnitude on the FFT grid 0..M/2
+    const g = new Float64Array(M / 2 + 1);
+    for (let k = 0; k <= M / 2; k++) { const f = Math.max(k * m.fs / M, 1e-3); const h = respAnalog(m, f); g[k] = Math.hypot(h[0], h[1]); }
+    return g;
+  }
+  function irLinear(m, N) {
+    const M = Math.max(65536, N * 2), g = magGrid(m, M);
+    const re = new Float64Array(M), im = new Float64Array(M);
+    for (let k = 0; k <= M / 2; k++) { re[k] = g[k]; if (k && k < M / 2) re[M - k] = g[k]; }
+    fft(re, im, true);
+    const h = new Float64Array(N), c = N / 2;
+    for (let n = 0; n < N; n++) {
+      const w = 0.42 - 0.5 * Math.cos(TAU * n / N) + 0.08 * Math.cos(2 * TAU * n / N); // Blackman, symmetric about N/2
+      h[n] = re[((n - c) % M + M) % M] * w;
+    }
+    return h;
+  }
+  function irAnalogMin(m, N) {
+    const M = 65536, g = magGrid(m, M);
+    const re = new Float64Array(M), im = new Float64Array(M);
+    for (let k = 0; k <= M / 2; k++) { const v = Math.log(Math.max(g[k], 1e-12)); re[k] = v; if (k && k < M / 2) re[M - k] = v; }
+    fft(re, im, true); // real cepstrum
+    for (let n = 1; n < M / 2; n++) { re[n] *= 2; re[M - n] = 0; im[n] = 0; im[M - n] = 0; }
+    im[0] = 0; im[M / 2] = 0;
+    fft(re, im, false);
+    for (let k = 0; k < M; k++) { const e = Math.exp(re[k]); const p = im[k]; re[k] = e * Math.cos(p); im[k] = e * Math.sin(p); }
+    fft(re, im, true);
+    const h = new Float64Array(N), fade = N >> 2;
+    for (let n = 0; n < N; n++) h[n] = re[n] * (n < N - fade ? 1 : 0.5 + 0.5 * Math.cos(Math.PI * (n - (N - fade)) / fade));
+    return h;
+  }
+  // Full IR for a mode, aligned so the "main moment" sits at `lat` samples (same delay for every mode, like DAW PDC)
+  function impulse(m, mode, res) {
+    const N = RES[res] || RES.mid, lat = N / 2;
+    if (mode === 'linear') return { h: irLinear(m, N), lat };
+    // An all-pass has a flat magnitude, so the magnitude-only designs cannot recreate it:
+    // 'analog' runs its min-phase FIR through the all-pass sections; 'linear' leaves them out (zero phase by design).
+    let core = mode === 'iir' ? irIIR(m, MIN_LEN) : irAnalogMin(m, MIN_LEN);
+    if (mode === 'analog' && m.ap.length) core = irIIR(m, MIN_LEN, m.ap, core);
+    if (mode === 'iir') { const fade = MIN_LEN >> 2; for (let n = MIN_LEN - fade; n < MIN_LEN; n++) core[n] *= 0.5 + 0.5 * Math.cos(Math.PI * (n - (MIN_LEN - fade)) / fade); } // no truncation click
+    const h = new Float64Array(lat + MIN_LEN); h.set(core, lat);
+    return { h, lat };
+  }
+  // Actual magnitude of an IR, sampled at frequencies fr (dB)
+  function irMag(h, fs, fr) {
+    let M = 1; while (M < h.length * 2) M <<= 1; M = Math.max(M, 65536);
+    const re = new Float64Array(M), im = new Float64Array(M); re.set(h); fft(re, im, false);
+    const out = new Float64Array(fr.length);
+    for (let i = 0; i < fr.length; i++) {
+      const x = fr[i] * M / fs, k = Math.floor(x), t = x - k;
+      const a = Math.hypot(re[k], im[k]), b = Math.hypot(re[k + 1], im[k + 1]);
+      out[i] = 20 * Math.log10(a + (b - a) * t + 1e-15);
+    }
+    return out;
+  }
+  // Pre-ringing: energy before the main moment (excluding a 0.25 ms guard) and how early it starts (-60 dB)
+  function preRing(h, lat, fs) {
+    const guard = Math.round(fs * 0.00025);
+    let tot = 0, pre = 0, rk = 0;
+    for (let i = 0; i < h.length; i++) {
+      const v = h[i] * h[i]; tot += v; if (i < lat - guard) pre += v;
+      if (Math.abs(i - lat) > guard) rk = Math.max(rk, Math.abs(h[i]));
+    }
+    let first = lat;
+    for (let i = 0; i < lat - guard; i++) if (Math.abs(h[i]) > rk * 0.01) { first = i; break; } // 40 dB below the strongest ringing
+    return { db: pre > 0 ? 10 * Math.log10(pre / tot) : -Infinity, ms: pre > 0 ? (lat - first) / fs * 1000 : 0 };
+  }
+  // Loudness-matching gain: mean power over log frequency, 30 Hz – 16 kHz (pink-weighted)
+  function matchGain(m, mode) {
+    let s = 0, n = 0;
+    for (let i = 0; i <= 120; i++) {
+      const f = 30 * Math.pow(16000 / 30, i / 120), h = mode === 'iir' ? respIIR(m, f) : respAnalog(m, f);
+      s += h[0] * h[0] + h[1] * h[1]; n++;
+    }
+    return 1 / Math.sqrt(s / n);
+  }
+  function convolve(x, h) { // FFT convolution, returns length x+h-1
+    const L = x.length + h.length - 1; let M = 1; while (M < L) M <<= 1;
+    const ar = new Float64Array(M), ai = new Float64Array(M), br = new Float64Array(M), bi = new Float64Array(M);
+    ar.set(x); br.set(h); fft(ar, ai, false); fft(br, bi, false);
+    for (let k = 0; k < M; k++) { const r = ar[k] * br[k] - ai[k] * bi[k], i = ar[k] * bi[k] + ai[k] * br[k]; ar[k] = r; ai[k] = i; }
+    fft(ar, ai, true);
+    return ar.subarray(0, L);
+  }
+  return { SLOPES, RES, MIN_LEN, fft, effQ, sections, digitalSec, build, curves, respAnalog, respIIR, impulse, irMag, preRing, matchGain, convolve };
+})();
+
+
+</script>
+<script type="text/plain" id="eq-worklet">
+// ---- EQ worklet: RBJ biquad cascade with smoothed parameters (continuous sweeps, no zipper noise) ----
+class EQLabProc extends AudioWorkletProcessor{
+  constructor(){
+    super();this.fs=sampleRate;this.N=1<<16;this.ring=[new Float32Array(this.N),new Float32Array(this.N)];this.w=0;this.chains=[];this.xf=Math.round(this.fs*0.03);
+    this.k=1-Math.exp(-32/(this.fs*0.012)); // ~12 ms parameter smoothing, updated every 32 samples
+    this.port.onmessage=e=>this.set(e.data);
+  }
+  tgtOf(b){return {f:Math.log2(Math.max(10,b.f)),g:b.g,q:Math.log2(Math.max(0.05,b.q))};}
+  set(d){
+    const key=JSON.stringify([d.qMode,d.lat,d.out,d.bands.map(b=>[b.on,b.type,b.slope])]);
+    const cur=this.chains[this.chains.length-1];
+    if(cur&&cur.key===key){cur.bands.forEach((b,i)=>{b.tgt=this.tgtOf(d.bands[i]);});return;}
+    // structural change (band on/off, type, slope, Q mode, latency, bypass/delta): new chain, warmed on recent input, then crossfaded
+    const ch={key,lat:Math.min(this.N-8192,d.lat|0),out:d.out,qMode:d.qMode,fade:cur?0:this.xf,bands:d.bands.map(b=>{const t=this.tgtOf(b);return {on:b.on,type:b.type,slope:b.slope,cur:{...t},tgt:{...t},secs:[]};})};
+    this.coefs(ch,true);
+    const W=Math.min(8192,this.N-ch.lat-8);
+    for(let n=W;n>0;n--){const r=(this.w-ch.lat-n+this.N*4)%this.N;this.run(ch,this.ring[0][r],this.ring[1][r]);}
+    this.chains.push(ch);if(this.chains.length>2)this.chains.splice(0,this.chains.length-2);
+  }
+  coefs(ch,init){
+    for(const b of ch.bands){
+      if(!b.on){b.secs=[];continue;}
+      if(!init){b.cur.f+=(b.tgt.f-b.cur.f)*this.k;b.cur.g+=(b.tgt.g-b.cur.g)*this.k;b.cur.q+=(b.tgt.q-b.cur.q)*this.k;}
+      const p={type:b.type,slope:b.slope,f:Math.pow(2,b.cur.f),g:b.cur.g,q:Math.pow(2,b.cur.q)};
+      const ss=EQCore.sections(p,ch.qMode);
+      ss.forEach((s,i)=>{const c=EQCore.digitalSec(s,p.f,this.fs);const o=b.secs[i]||(b.secs[i]={z:[0,0,0,0]});o.b0=c.b0;o.b1=c.b1;o.b2=c.b2;o.a1=c.a1;o.a2=c.a2;});
+      b.secs.length=ss.length;
+    }
+  }
+  run(ch,xl,xr){ // Transposed Direct Form II, both channels; result in this.yl / this.yr (no allocation per sample)
+    let l=xl,r=xr;
+    for(const b of ch.bands)for(const s of b.secs){const z=s.z;
+      let y=s.b0*l+z[0];z[0]=s.b1*l-s.a1*y+z[1];z[1]=s.b2*l-s.a2*y;l=y;
+      y=s.b0*r+z[2];z[2]=s.b1*r-s.a1*y+z[3];z[3]=s.b2*r-s.a2*y;r=y;}
+    this.yl=l;this.yr=r;
+  }
+  process(inputs,outputs){
+    const inp=inputs[0],out=outputs[0],n=out[0].length,iL=inp[0],iR=inp[1]||inp[0];
+    for(let i=0;i<n;i++){this.ring[0][(this.w+i)%this.N]=iL?iL[i]:0;this.ring[1][(this.w+i)%this.N]=iR?iR[i]:0;}
+    const oL=out[0],oR=out[1]||out[0];oL.fill(0);if(oR!==oL)oR.fill(0);
+    const chs=this.chains,last=chs.length-1;
+    for(let c=0;c<chs.length;c++){
+      const ch=chs[c];
+      for(let i0=0;i0<n;i0+=32){
+        this.coefs(ch,false);
+        for(let i=i0;i<Math.min(n,i0+32);i++){
+          const r=(this.w+i-ch.lat+this.N*4)%this.N,dl=this.ring[0][r],dr=this.ring[1][r];
+          this.run(ch,dl,dr);let l=this.yl,rr=this.yr;
+          if(ch.out==='dry'){l=dl;rr=dr;}else if(ch.out==='delta'){l-=dl;rr-=dr;}
+          let wgt=1;
+          if(chs.length>1){const nf=Math.min(1,(chs[last].fade+(i-0))/this.xf);wgt=c===last?nf:1-nf;}
+          oL[i]+=l*wgt;if(oR!==oL)oR[i]+=rr*wgt;
+        }
+      }
+    }
+    if(chs.length>1){chs[last].fade+=n;if(chs[last].fade>=this.xf)chs.splice(0,last);}
+    this.w=(this.w+n)%this.N;
+    return true;
+  }
+}
+registerProcessor('eqlab-proc',EQLabProc);
+
+</script>
+<script>
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const FS=48000, FMIN=20, FMAX=20000;
+let LANG='ja';
+const Lg=(ja,en)=>LANG==='en'?en:ja;
+const TYPES=[['bell','ベル','Bell'],['ls','ローシェルフ','Low shelf'],['hs','ハイシェルフ','High shelf'],['lc','ローカット','Low cut'],['hc','ハイカット','High cut'],['notch','ノッチ','Notch'],['ap','オールパス','All-pass']];
+const typeName=v=>{const t=TYPES.find(x=>x[0]===v);return t?Lg(t[1],t[2]):v;};
+const SLOPES=[6,12,18,24,36,48];
+const RES_JP={low:'低',mid:'中',high:'高'};
+const MODE_JP={iir:'ゼロレイテンシー',analog:'アナログ一致',linear:'リニア位相'};
+const DEF=()=>[
+  {on:true,type:'lc',f:40,g:0,q:0.707,slope:24},
+  {on:true,type:'bell',f:250,g:-2.5,q:1.4,slope:24},
+  {on:true,type:'bell',f:3000,g:3,q:0.9,slope:24},
+  {on:true,type:'hs',f:10000,g:2,q:0.707,slope:24},
+  {on:false,type:'bell',f:1000,g:0,q:1,slope:24},
+  {on:false,type:'hc',f:18000,g:0,q:0.707,slope:24}];
+const S={bands:DEF(),qMode:'const',mode:'iir',res:'mid',sel:2,phTab:'phase',phLay:'overlay',phRange:{phase:360,gd:20},irView:'db',irZoom:50,hit:'kick',trView:'over',trMatch:true,bypass:false,delta:false,autoGain:true};
+const FR=[];for(let i=0;i<=480;i++)FR.push(FMIN*Math.pow(FMAX/FMIN,i/480));
+let model,cur,ghost,gIIR,imp=null,pr={db:-Infinity,ms:0},actual=null,trc=null,heavyT=0,audioT=0;
+
+/* ---------- formatting ---------- */
+const fHz=f=>f>=1000?(f/1000).toFixed(f>=10000?1:2).replace(/\.?0+$/,'')+' kHz':Math.round(f)+' Hz';
+const fdB=(g,d=1)=>{const r=+g.toFixed(d);return (r>0?'+':r<0?'−':'')+Math.abs(r).toFixed(d)+' dB';};
+const fMs=(ms,d=1)=>ms.toFixed(d)+' ms';
+const col=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const bw=q=>2/Math.LN2*Math.asinh(1/(2*q));
+function status(t){$('#status').textContent=t||'';}
+
+/* ---------- canvas helpers ---------- */
+function prep(c){const r=c.getBoundingClientRect(),d=window.devicePixelRatio||1,w=Math.max(10,Math.round(r.width)),h=Math.max(10,Math.round(r.height));
+  if(c.width!==w*d||c.height!==h*d){c.width=w*d;c.height=h*d;}const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,w,h);return {x,w,h};}
+const PAD={l:40,r:10,t:10,b:22};
+const fx=(f,w)=>PAD.l+(Math.log(f/FMIN)/Math.log(FMAX/FMIN))*(w-PAD.l-PAD.r);
+const xf=(x,w)=>FMIN*Math.pow(FMAX/FMIN,(x-PAD.l)/(w-PAD.l-PAD.r));
+function freqGrid(x,w,top,bot,font,labels){
+  x.font=font;x.fillStyle=col('--muted');x.strokeStyle=col('--grid');x.lineWidth=1;x.textAlign='center';x.textBaseline='top';
+  for(const f of [20,30,40,50,60,70,80,90,100,200,300,400,500,600,700,800,900,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,20000]){
+    const X=Math.round(fx(f,w))+.5;x.beginPath();x.moveTo(X,top);x.lineTo(X,bot);x.stroke();
+    if(labels&&[20,50,100,200,500,1000,2000,5000,10000,20000].includes(f))x.fillText(f>=1000?f/1000+'k':f,X,bot+5);}
+}
+// lane = {t,b}: vertical extent of one plot inside a canvas
+function yGrid(x,w,h,lo,hi,step,fmt,lane){
+  const t=lane?lane.t:PAD.t,b=lane?lane.b:h-PAD.b;
+  const Y=v=>t+(hi-v)/(hi-lo)*(b-t);
+  x.textAlign='right';x.textBaseline='middle';
+  for(let v=Math.ceil(lo/step-1e-9)*step;v<=hi+1e-9;v+=step){const yy=Math.round(Y(v))+.5;x.strokeStyle=Math.abs(v)<1e-9?col('--line'):col('--grid');x.beginPath();x.moveTo(PAD.l,yy);x.lineTo(w-PAD.r,yy);x.stroke();x.fillStyle=col('--muted');x.fillText(fmt(v),PAD.l-5,yy);}
+  return Y;
+}
+function path(x,w,arr,Y,color,lw,dash,lane){const t=lane?lane.t:PAD.t,b=lane?lane.b:9999;x.save();x.beginPath();x.rect(PAD.l,t-1,w-PAD.l-PAD.r,b-t+2);x.clip();x.strokeStyle=color;x.lineWidth=lw;x.setLineDash(dash||[]);x.lineJoin='round';x.beginPath();
+  for(let i=0;i<FR.length;i++){const X=fx(FR[i],w),yy=Y(arr[i]);if(!isFinite(yy))continue;i?x.lineTo(X,yy):x.moveTo(X,yy);}x.stroke();x.restore();}
+function lanes(h){const top=PAD.t,bot=h-PAD.b;if(S.phLay==='overlay')return {amp:{t:top,b:bot},ph:{t:top,b:bot},over:true};const gap=22,a=Math.round((bot-top-gap)*0.62);return {amp:{t:top,b:top+a},ph:{t:top+a+gap,b:bot}};}
+const ampY=(v,L)=>L.amp.t+(GR-v)/(2*GR)*(L.amp.b-L.amp.t);
+const ampV=(y,L)=>GR-(y-L.amp.t)/(L.amp.b-L.amp.t)*2*GR;
+
+/* ---------- model ---------- */
+function compute(){
+  model=EQCore.build(S,FS);
+  cur=EQCore.curves(model,FR,S.mode);
+  gIIR=EQCore.curves(model,FR,'iir');
+  ghost=S.mode==='iir'?EQCore.curves(model,FR,'analog'):(S.mode==='linear'?EQCore.curves(model,FR,'analog'):gIIR);
+  drawEQ();phNote();updateReadouts();
+  clearTimeout(heavyT);heavyT=setTimeout(heavy,dragging?90:10);
+  postWorklet();clearTimeout(audioT);audioT=setTimeout(pushAudio,dragging?60:10);
+}
+function heavy(){
+  imp=EQCore.impulse(model,S.mode,S.res);
+  pr=EQCore.preRing(imp.h,imp.lat,FS);
+  actual=S.mode==='linear'?EQCore.irMag(imp.h,FS,FR):null;
+  trc=transient();
+  drawEQ();drawIR();drawTr();updateReadouts();
+}
+function hitWave(kind,sr){
+  const n=Math.round(sr*0.35),x=new Float64Array(n);let ph=0,seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647*2-1;};
+  for(let i=0;i<n;i++){const t=i/sr;
+    if(kind==='kick'){const f=48+90*Math.exp(-t*30);ph+=2*Math.PI*f/sr;x[i]=Math.sin(ph)*Math.exp(-t*7)*0.8*Math.min(1,t*4000);}
+    else if(kind==='snare'){x[i]=(rnd()*0.5*Math.exp(-t*20)+Math.sin(2*Math.PI*185*t)*0.4*Math.exp(-t*28))*Math.min(1,t*6000);}
+    else x[i]=i<3?[0.9,-0.6,0.2][i]:0;}
+  const fd=Math.round(sr*0.06);for(let i=0;i<fd;i++)x[n-1-i]*=0.5-0.5*Math.cos(Math.PI*i/fd); // fade out: no click at the end
+  return x;
+}
+// One hit through the current EQ. Arrays share an index k where time = (k - lat) / sr, so the attack sits at k = lat.
+function hitSet(sr,m,im){
+  const x=hitWave(S.hit,sr),full=EQCore.convolve(x,im.h),n=full.length,lat=im.lat;
+  const X=new Float64Array(n);X.set(x,lat);
+  let ex=0,ey=0;for(let k=0;k<n;k++){ex+=X[k]*X[k];ey+=full[k]*full[k];}
+  const g=S.trMatch&&ey>0?Math.sqrt(ex/ey):1; // match the hit's energy
+  const Y=new Float64Array(n),D=new Float64Array(n);let ed=0,ep=0;
+  for(let k=0;k<n;k++){Y[k]=full[k]*g;D[k]=Y[k]-X[k];ed+=D[k]*D[k];if(k<lat-Math.round(sr*0.00025))ep+=Y[k]*Y[k];}
+  return {X,Y,D,lat,g,dDb:ed>0?10*Math.log10(ed/ex):-Infinity,pDb:ep>0&&10*Math.log10(ep/ex)>-120?10*Math.log10(ep/ex):-Infinity};
+}
+function transient(){return hitSet(FS,model,imp);}
+
+
+/* ---------- EQ canvas: amplitude lane + phase / group-delay lane on one frequency axis ---------- */
+const GR=18; let dragging=null;
+const isCut=b=>b.type==='lc'||b.type==='hc';
+function nodePos(b,w,L){const g=(isCut(b)||b.type==='notch'||b.type==='ap')?0:b.g;return [fx(b.f,w),ampY(Math.max(-GR,Math.min(GR,g)),L)];}
+// Width handles for the selected bell / notch: placed at the band edges (f·2^±BW/2), at half the gain
+function qHandles(b,w,L){
+  if(!b||!b.on||!(b.type==='bell'||b.type==='notch'))return null;
+  const oct=bw(EQCore.effQ(b,S.qMode)),y=ampY(b.type==='notch'?-6:Math.max(-GR,Math.min(GR,b.g/2)),L);
+  return [[fx(Math.max(FMIN,b.f*Math.pow(2,-oct/2)),w),y],[fx(Math.min(FMAX,b.f*Math.pow(2,oct/2)),w),y]];
+}
+function drawEQ(){
+  const c=$('#eqc');const {x,w,h}=prep(c);const font='11px '+col('--font-mono');const L=lanes(h);
+  if(L.over)freqGrid(x,w,L.amp.t,L.amp.b,font,true);else{freqGrid(x,w,L.amp.t,L.amp.b,font,false);freqGrid(x,w,L.ph.t,L.ph.b,font,true);}
+  const Y=yGrid(x,w,h,-GR,GR,6,v=>(v>0?'+':'')+v,L.amp);
+  // analyzer (amplitude lane only)
+  if(live&&live.on){const a=live.an,b=live.buf;a.getFloatFrequencyData(b);const sr=live.ctx.sampleRate,N=a.fftSize;
+    const YA=v=>L.amp.t+(-10-v)/80*(L.amp.b-L.amp.t);
+    x.save();x.beginPath();x.rect(PAD.l,L.amp.t,w-PAD.l-PAD.r,L.amp.b-L.amp.t);x.clip();x.beginPath();x.moveTo(PAD.l,L.amp.b);
+    for(let X=PAD.l;X<=w-PAD.r;X+=2){const f=xf(X,w),k=f*N/sr,k0=Math.floor(k);let v=-140;for(let j=Math.max(1,k0-1);j<=k0+1&&j<b.length;j++)v=Math.max(v,b[j]);v+=4.5*Math.log2(f/1000);x.lineTo(X,YA(v));}
+    x.lineTo(w-PAD.r,L.amp.b);x.closePath();x.fillStyle=col('--sig');x.globalAlpha=.35;x.fill();x.restore();}
+  // selected band contribution
+  const sb=S.bands[S.sel];
+  if(sb&&sb.on){const one=EQCore.curves(EQCore.build({bands:[sb],qMode:S.qMode},FS),FR,S.mode==='iir'?'iir':'analog').mag;
+    x.save();x.beginPath();x.rect(PAD.l,L.amp.t,w-PAD.l-PAD.r,L.amp.b-L.amp.t);x.clip();x.beginPath();x.moveTo(fx(FR[0],w),Y(0));
+    for(let i=0;i<FR.length;i++)x.lineTo(fx(FR[i],w),Y(Math.max(-GR-2,Math.min(GR+2,one[i]))));x.lineTo(fx(FMAX,w),Y(0));x.closePath();
+    x.fillStyle=col('--b'+(S.sel+1));x.globalAlpha=.16;x.fill();x.restore();}
+  if(S.mode==='iir')path(x,w,ghost.mag,Y,col('--ghost'),1.3,[4,3],L.amp);
+  if(S.mode==='linear'&&actual)path(x,w,actual,Y,col('--ink'),1.3,[4,3],L.amp);
+  if(S.mode==='analog')path(x,w,gIIR.mag,Y,col('--ghost'),1.3,[4,3],L.amp);
+  path(x,w,cur.mag,Y,col('--accent'),2.4,null,L.amp);
+  // phase / group delay lane
+  drawPhLane(x,w,h,L,font);
+  // band markers: thin vertical guide through both lanes for the selected band
+  if(sb&&sb.on&&!L.over){const X=Math.round(fx(sb.f,w))+.5;x.save();x.strokeStyle=col('--b'+(S.sel+1));x.globalAlpha=.55;x.setLineDash([2,3]);x.beginPath();x.moveTo(X,L.ph.t);x.lineTo(X,L.ph.b);x.stroke();x.restore();}
+  // Q handles
+  const qh=qHandles(sb,w,L);
+  if(qh){const [a,b]=qh;x.save();x.strokeStyle=col('--b'+(S.sel+1));x.lineWidth=1;x.setLineDash([3,3]);x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(b[0],b[1]);x.stroke();x.setLineDash([]);
+    for(const [hx,hy] of qh){x.fillStyle=col('--panel');x.strokeStyle=col('--b'+(S.sel+1));x.lineWidth=2;x.beginPath();x.roundRect?x.roundRect(hx-4,hy-9,8,18,3):x.rect(hx-4,hy-9,8,18);x.fill();x.stroke();}
+    x.restore();}
+  // nodes
+  S.bands.forEach((b,i)=>{const [X,yy]=nodePos(b,w,L);x.beginPath();x.arc(X,yy,i===S.sel?8:6.5,0,7);
+    x.fillStyle=b.on?col('--b'+(i+1)):col('--panel');x.fill();x.lineWidth=i===S.sel?2.5:1.5;x.strokeStyle=b.on?col('--panel'):col('--b'+(i+1));x.stroke();
+    x.fillStyle=b.on?col('--on-accent'):col('--b'+(i+1));x.font='600 10px '+col('--font-mono');x.textAlign='center';x.textBaseline='middle';x.fillText(i+1,X,yy+.5);});
+  // lane titles
+  x.font='700 11px '+col('--font-ui');x.textAlign='left';x.textBaseline='top';x.fillStyle=col('--muted');
+  const phName=S.phTab==='gd'?Lg('群遅延（ms）','Group delay (ms)'):Lg('位相（度）','Phase (deg)');
+  if(L.over){x.fillText(Lg('振幅（dB・左の目盛り）','Magnitude (dB, left scale)'),PAD.l+4,L.amp.t+3);x.fillStyle=col('--phase');x.textAlign='right';x.fillText(phName+Lg('・右の目盛り',', right scale'),w-PAD.r-84,L.amp.t+3);x.textAlign='left';x.fillStyle=col('--muted');}
+  else{x.fillText(Lg('振幅（dB）','Magnitude (dB)'),PAD.l+4,L.amp.t+3);x.fillStyle=col('--phase');x.fillText(phName,PAD.l+4,L.ph.t+3);x.fillStyle=col('--muted');}
+  if(S.bypass){x.textAlign='left';x.fillText(Lg('バイパス中','Bypassed'),PAD.l+4,L.amp.t+18);}
+}
+const PH_RANGES={phase:[90,180,360,720],gd:[1,5,20,100]};
+function drawPhLane(x,w,h,L,font){
+  const gd=S.phTab==='gd',R=S.phRange[S.phTab];
+  const arr=gd?cur.gd:cur.ph.map(v=>v*180/Math.PI);
+  // fixed, symmetric scale chosen by the user: 0 sits on the 0 dB line when overlaid
+  const lo=-R,hi=R,step=R/2,fmt=gd?(v=>(v>0?'+':'')+(+v.toFixed(2))+' ms'):(v=>(v>0?'+':'')+v+'°');
+  x.font=font;let Y;
+  if(L.over){
+    Y=v=>L.ph.t+(hi-v)/(hi-lo)*(L.ph.b-L.ph.t);
+    x.textAlign='right';x.textBaseline='middle';
+    for(let v=lo;v<=hi+1e-9;v+=step){const yy=Math.round(Y(v))+.5;x.strokeStyle=col('--phase');x.beginPath();x.moveTo(w-PAD.r-6,yy);x.lineTo(w-PAD.r,yy);x.stroke();
+      const t=fmt(v),tw=x.measureText(t).width,ty=Math.max(L.ph.t+7,Math.min(L.ph.b-7,yy));x.fillStyle=col('--bg');x.fillRect(w-PAD.r-10-tw-3,ty-7,tw+6,14);x.fillStyle=col('--phase');x.fillText(t,w-PAD.r-10,ty);}
+  }else Y=yGrid(x,w,h,lo,hi,step,fmt,L.ph);
+  // values beyond the chosen range are clipped at the edge; mark where that happens
+  let over=false;for(const v of arr)if(Math.abs(v)>R*1.001){over=true;break;}
+  path(x,w,arr.map(v=>Math.max(lo,Math.min(hi,v))),Y,col('--phase'),2,[2,3],L.ph);
+  if(over){x.font='700 11px '+col('--font-ui');x.fillStyle=col('--phase');x.textAlign='right';x.textBaseline='bottom';x.fillText(Lg('目盛りの範囲外あり：表示範囲を広げてください','Out of range: choose a wider scale'),w-PAD.r-48,L.ph.b-4);}
+}
+
+function phNote(){
+  const gd=S.phTab==='gd',lat=EQCore.RES[S.res]/2/FS*1000;
+  const ap=S.bands.some(b=>b.on&&b.type==='ap');
+  $('#lg-ph').textContent=(gd?Lg('群遅延','Group delay'):Lg('位相','Phase'))+(S.phLay==='overlay'?Lg('（右の目盛り）',' (right scale)'):Lg('（下段）',' (lower plot)'));
+  $('#ph-note').textContent=(S.mode==='linear'
+    ?(gd?Lg(`リニア位相では全帯域が同じだけ遅れます（${fMs(lat)}）。その遅れを差し引いているので群遅延の線は0のまま。`,`With linear phase every frequency is delayed by the same amount (${fMs(lat)}). That delay is subtracted, so the group-delay line stays at 0.`):Lg('リニア位相は、遅れを差し引くと位相が全帯域でゼロ。カーブを変えても位相の線は動きません。ゼロレイテンシーに切り替えると、同じカーブでどれだけ位相が回るかが分かります。','With linear phase, once the delay is subtracted the phase is zero everywhere. The phase line does not move when you change the curve. Switch to zero latency to see how much the same curve rotates the phase.'))
+    :(gd?Lg('群遅延の線（黄色の点線）は「その帯域の音がどれだけ遅れて出てくるか」。ゲインが急に変わる周波数ほど遅れが大きくなります。','The group-delay line (yellow dots) shows how late each band comes out. The faster the gain changes with frequency, the bigger the delay.'):Lg('ゲインが変化している周波数で、位相の線（黄色の点線）も動きます。カットのスロープ6 dB/octごとに、最終的に90°ずつ回ります。','Wherever the gain changes, the phase line (yellow dots) moves too. Each 6 dB/oct of cut slope adds 90° of rotation in the end.')))
+    +(ap?(S.mode==='linear'?Lg(' オールパスは振幅が平らなので、振幅だけを再現するリニア位相では効果がなくなります。',' An all-pass has a flat magnitude, so linear phase, which only rebuilds the magnitude, removes its effect.'):Lg(' オールパスは振幅を変えずに位相だけを回します（中心周波数で180°、全体で360°）。',' An all-pass leaves the magnitude alone and only rotates phase (180° at its frequency, 360° in total).')):'');
+}
+
+/* ---------- pointer: nodes, width handles, Shift-drag ---------- */
+function canvasPt(e){const r=$('#eqc').getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top,r.width,r.height];}
+function pick(px,py,w,h){
+  const L=lanes(h),qh=qHandles(S.bands[S.sel],w,L);
+  if(qh){for(let k=0;k<2;k++)if(Math.abs(qh[k][0]-px)<14&&Math.abs(qh[k][1]-py)<18)return {i:S.sel,kind:k?'qR':'qL'};}
+  let best=-1,bd=18;S.bands.forEach((b,i)=>{const [X,Y]=nodePos(b,w,L),d=Math.hypot(X-px,Y-py);if(d<bd){bd=d;best=i;}});
+  return best<0?null:{i:best,kind:'node'};
+}
+$('#eqc').addEventListener('pointerdown',e=>{const [px,py,w,h]=canvasPt(e);const p=pick(px,py,w,h);if(!p)return;e.preventDefault();
+  S.sel=p.i;S.bands[p.i].on=true;dragging={...p,w,h,y0:py,q0:S.bands[p.i].q};$('#eqc').setPointerCapture(e.pointerId);syncEditor();compute();});
+$('#eqc').addEventListener('pointermove',e=>{
+  const [px,py,w,h]=canvasPt(e);
+  if(!dragging){const p=pick(px,py,w,h);$('#eqc').style.cursor=p?(p.kind==='node'?'grab':'ew-resize'):'crosshair';return;}
+  const b=S.bands[dragging.i],L=lanes(dragging.h);
+  if(dragging.kind==='node'){
+    if(e.shiftKey){b.q=Math.max(0.1,Math.min(18,dragging.q0*Math.pow(1.015,dragging.y0-py)));}
+    else{dragging.y0=py;dragging.q0=b.q;b.f=Math.max(FMIN,Math.min(FMAX,xf(px,dragging.w)));
+      if(!(isCut(b)||b.type==='notch'||b.type==='ap'))b.g=Math.round(Math.max(-GR,Math.min(GR,ampV(py,L)))*10)/10;}
+  }else{ // width handle → bandwidth in octaves → Q (base Q, so proportional-Q scaling is kept)
+    const side=dragging.kind==='qR'?1:-1,d=side*Math.log2(xf(px,dragging.w)/b.f); // distance on this handle's own side; crossing the centre is not allowed
+    const oct=Math.max(0.04,Math.min(6,2*Math.max(0.02,d)));
+    const qt=1/(2*Math.sinh(Math.LN2/2*oct)),k=EQCore.effQ(b,S.qMode)/b.q;
+    b.q=Math.max(0.1,Math.min(18,qt/k));
+  }
+  syncEditor();compute();});
+const endDrag=()=>{if(dragging){dragging=null;compute();}};
+$('#eqc').addEventListener('pointerup',endDrag);$('#eqc').addEventListener('pointercancel',endDrag);
+// The wheel scrolls the page as usual; Alt/Option + wheel adjusts Q (the plugin version can use the plain wheel)
+$('#eqc').addEventListener('wheel',e=>{if(!e.altKey)return;const [px,py,w,h]=canvasPt(e);const p=pick(px,py,w,h);const i=p?p.i:S.sel;const b=S.bands[i];if(!b||!b.on)return;e.preventDefault();
+  S.sel=i;b.q=Math.max(0.1,Math.min(18,b.q*Math.pow(1.1,-Math.sign(e.deltaY))));syncEditor();compute();},{passive:false});
+$('#eqc').addEventListener('dblclick',e=>{const [px,py,w,h]=canvasPt(e);const L=lanes(h);if(py>L.amp.b)return;const p=pick(px,py,w,h);
+  if(p&&p.kind==='node'){S.bands[p.i].on=!S.bands[p.i].on;S.sel=p.i;syncEditor();compute();return;}
+  const i=S.bands.findIndex(b=>!b.on);if(i<0){status(Lg('6バンドすべて使用中です。不要なバンドの点をダブルクリックするとオフにできます。','All 6 bands are in use. Double-click a band you don’t need to switch it off.'));return;}
+  Object.assign(S.bands[i],{on:true,type:'bell',f:xf(px,w),g:Math.round(ampV(py,L)*10)/10,q:1});S.sel=i;syncEditor();compute();});
+// keyboard: arrows move the selected band, Shift+↑↓ changes Q
+$('#eqc').addEventListener('keydown',e=>{const b=S.bands[S.sel];if(!b)return;let hit=true;
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){b.f=Math.max(FMIN,Math.min(FMAX,b.f*Math.pow(2,(e.key==='ArrowRight'?1:-1)/12)));}
+  else if(e.key==='ArrowUp'||e.key==='ArrowDown'){const d=e.key==='ArrowUp'?1:-1;if(e.shiftKey)b.q=Math.max(0.1,Math.min(18,b.q*Math.pow(1.1,d)));else if(!(isCut(b)||b.type==='notch'||b.type==='ap'))b.g=Math.max(-GR,Math.min(GR,Math.round((b.g+0.5*d)*10)/10));}
+  else hit=false;
+  if(hit){e.preventDefault();syncEditor();compute();}});
+
+/* ---------- editor ---------- */
+const f2s=f=>Math.round(Math.log(f/FMIN)/Math.log(FMAX/FMIN)*1000), s2f=v=>FMIN*Math.pow(FMAX/FMIN,v/1000);
+const q2s=q=>Math.round(Math.log(q/0.1)/Math.log(180)*1000), s2q=v=>0.1*Math.pow(180,v/1000);
+function buildEditor(){
+  $('#b-type').innerHTML=TYPES.map(([v])=>`<button type="button" data-v="${v}">${typeName(v)}</button>`).join('');
+  $('#b-sl').innerHTML=SLOPES.map(s=>`<button type="button" data-v="${s}">${s}</button>`).join('');
+  $('#chips').innerHTML=S.bands.map((b,i)=>`<div class="chip" data-i="${i}" style="--c:var(--b${i+1})"><button class="pw" type="button" data-pw="${i}" aria-label="${Lg('バンド'+(i+1)+'のオン／オフ','Band '+(i+1)+' on/off')}"><span class="dot"></span>${i+1}</button><button class="fq" type="button" data-i="${i}" aria-label="${Lg('バンド'+(i+1)+'を選択','Select band '+(i+1))}"></button></div>`).join('');
+}
+function syncEditor(){
+  const b=S.bands[S.sel];
+  $$('#chips .chip').forEach((c,i)=>{const x=S.bands[i];c.classList.toggle('off',!x.on);c.dataset.sel=i===S.sel;c.querySelector('.pw').setAttribute('aria-pressed',x.on);const fq=c.querySelector('.fq');fq.textContent=fHz(x.f);fq.title=typeName(x.type);fq.setAttribute('aria-pressed',i===S.sel);});
+  $$('#b-type button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===b.type));
+  const cut=b.type==='lc'||b.type==='hc';
+  $('#c-g').hidden=cut||b.type==='notch'||b.type==='ap';$('#c-sl').hidden=!cut;
+  $('#b-f').value=f2s(b.f);$('#o-f').textContent=fHz(b.f);
+  $('#b-g').value=b.g;$('#o-g').textContent=fdB(b.g);
+  $('#b-q').value=q2s(b.q);
+  const eq=EQCore.effQ(b,S.qMode);
+  $('#l-q').textContent=cut?Lg('Q（カットオフの盛り上がり）','Q (resonance at cutoff)'):b.type==='ap'?Lg('Q（位相の回り方の急さ）','Q (how fast phase turns)'):b.type==='bell'||b.type==='notch'?Lg('Q（幅）','Q (width)'):Lg('Q（傾きの形）','Q (shape of the slope)');
+  $('#o-q').textContent=b.q.toFixed(2)+(b.type==='bell'?Lg(`（約${bw(eq).toFixed(2)}オクターブ${S.qMode==='prop'?'・実効Q '+eq.toFixed(2):''}）`,` (≈${bw(eq).toFixed(2)} oct${S.qMode==='prop'?', effective Q '+eq.toFixed(2):''})`):'');
+  $$('#b-sl button').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.v===b.slope));$('#o-sl').textContent=b.slope+' dB/oct';
+}
+$('#chips').addEventListener('click',e=>{const pw=e.target.closest('[data-pw]');if(pw){const i=+pw.dataset.pw;S.bands[i].on=!S.bands[i].on;S.sel=i;syncEditor();compute();return;}const c=e.target.closest('[data-i]');if(!c)return;S.sel=+c.dataset.i;syncEditor();compute();});
+$('#b-type').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;const b=S.bands[S.sel];b.type=v;b.on=true;if(v==='lc'||v==='hc'){b.q=0.707;}syncEditor();compute();});
+$('#b-sl').addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;S.bands[S.sel].slope=v;syncEditor();compute();});
+$('#b-f').addEventListener('input',e=>{S.bands[S.sel].f=s2f(+e.target.value);syncEditor();compute();});
+$('#b-g').addEventListener('input',e=>{S.bands[S.sel].g=+e.target.value;syncEditor();compute();});
+$('#b-q').addEventListener('input',e=>{S.bands[S.sel].q=s2q(+e.target.value);syncEditor();compute();});
+for(const id of ['#b-f','#b-g','#b-q']){$(id).addEventListener('pointerdown',()=>dragging={slider:1});$(id).addEventListener('change',()=>{dragging=null;compute();});}
+
+function buildRange(){const k=S.phTab;$('#phrange').innerHTML=PH_RANGES[k].map(r=>`<button type="button" data-v="${r}" aria-pressed="${r===S.phRange[k]}">±${r}${k==='gd'?' ms':'°'}</button>`).join('');}
+$('#phrange').addEventListener('click',e=>{const v=+e.target.dataset.v;if(!v)return;S.phRange[S.phTab]=v;buildRange();drawEQ();});
+$('#phlay').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;S.phLay=v;$$('#phlay button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));drawEQ();phNote();});
+$('#phtab').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;S.phTab=v;$$('#phtab button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));buildRange();drawEQ();phNote();});
+
+/* ---------- impulse response ---------- */
+function drawIR(){
+  if(!imp)return;const c=$('#irc');const {x,w,h}=prep(c);const font='11px '+col('--font-mono');const L=PAD.l,R=w-PAD.r;
+  const z=S.irZoom,t0=-z,t1=z,T=t=>L+(t-t0)/(t1-t0)*(R-L);const {h:ir,lat}=imp;
+  const X0=T(0);x.fillStyle=col('--pre-bg');x.fillRect(L,PAD.t,X0-L,h-PAD.t-PAD.b);
+  x.font=font;x.fillStyle=col('--muted');x.textAlign='center';x.textBaseline='top';x.strokeStyle=col('--grid');
+  const st=z/5;for(let t=-z;t<=z+1e-9;t+=st){const X=Math.round(T(t))+.5;x.beginPath();x.moveTo(X,PAD.t);x.lineTo(X,h-PAD.b);x.stroke();x.fillText((Math.abs(t)<1e-9?0:+t.toFixed(1))+'',X,h-PAD.b+5);}
+  let Y;const db=S.irView==='db';
+  if(db)Y=yGrid(x,w,h,-120,0,20,v=>v+'');
+  else{Y=yGrid(x,w,h,-1,1,0.5,v=>v.toFixed(1));}
+  // scale for waveform: strongest ringing outside the main tap
+  const guard=Math.round(FS*0.00025);let rk=1e-9,pk=1e-9;for(let i=0;i<ir.length;i++){const a=Math.abs(ir[i]);pk=Math.max(pk,a);if(Math.abs(i-lat)>guard)rk=Math.max(rk,a);}
+  const sc=db?1:1/Math.max(rk,pk*0.02);
+  x.save();x.beginPath();x.rect(L,PAD.t,R-L,h-PAD.t-PAD.b);x.clip();x.lineWidth=1.4;
+  const n0=Math.max(0,Math.floor(lat+t0*FS/1000)),n1=Math.min(ir.length-1,Math.ceil(lat+t1*FS/1000)),span=n1-n0,stp=Math.max(1,Math.floor(span/(R-L)));
+  for(const part of ['pre','post']){x.beginPath();let first=true;x.strokeStyle=part==='pre'?col('--pre'):col('--accent');
+    const a=part==='pre'?n0:Math.max(n0,lat-guard),b=part==='pre'?Math.min(n1,lat-guard):n1;
+    for(let i=a;i<=b;i+=stp){let v;if(db){let m=0;for(let j=i;j<i+stp&&j<ir.length;j++)m=Math.max(m,Math.abs(ir[j]));v=20*Math.log10(m/pk+1e-12);}else{let mx=-9,mn=9;for(let j=i;j<i+stp&&j<ir.length;j++){mx=Math.max(mx,ir[j]);mn=Math.min(mn,ir[j]);}v=(Math.abs(mx)>Math.abs(mn)?mx:mn)*sc;}
+      const X=T((i-lat)/FS*1000),yy=Y(Math.max(db?-125:-1.2,Math.min(db?2:1.2,v)));first?x.moveTo(X,yy):x.lineTo(X,yy);first=false;}
+    x.stroke();}
+  x.restore();
+  x.fillStyle=col('--pre');x.font='700 11px '+col('--font-ui');x.textAlign='left';x.textBaseline='top';x.fillText(Lg('音より先','Before the sound'),L+4,PAD.t+3);
+  x.fillStyle=col('--muted');x.textAlign='right';x.fillText('ms',R-2,PAD.t+3);
+  $('#ir-note').textContent=(db?Lg('インパルスレスポンスの縦軸はピーク基準のdB。','Impulse response: dB relative to the peak. '):Lg('インパルスレスポンスの波形表示は中央の山を切り、周りの揺れが見える倍率にしています。','Impulse response wave view: the central spike is clipped so the ringing around it is visible. '))+(S.mode==='linear'?Lg('リニア位相の応答は0 msを中心に左右対称です。','A linear-phase response is symmetric around 0 ms.'):Lg('最小位相の応答は0 msより左が空です。','A minimum-phase response has nothing left of 0 ms.'));
+}
+for(const [id,key,cast] of [['#irview','irView',String],['#irzoom','irZoom',Number]])$(id).addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;S[key]=cast(v);$$(id+' button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));drawIR();});
+
+/* ---------- transient ---------- */
+function drawTr(){
+  if(!trc)return;const c=$('#trc');const {x,w,h}=prep(c);const font='11px '+col('--font-mono');const L=PAD.l,R=w-PAD.r;
+  const t0=-60,t1=140,T=t=>L+(t-t0)/(t1-t0)*(R-L),diff=S.trView==='diff';
+  x.fillStyle=col('--pre-bg');x.fillRect(L,PAD.t,T(0)-L,h-PAD.t-PAD.b);
+  x.font=font;x.fillStyle=col('--muted');x.textAlign='center';x.textBaseline='top';x.strokeStyle=col('--grid');
+  for(let t=-60;t<=140;t+=20){const X=Math.round(T(t))+.5;x.beginPath();x.moveTo(X,PAD.t);x.lineTo(X,h-PAD.b);x.stroke();x.fillText(t+'',X,h-PAD.b+5);}
+  const Y=yGrid(x,w,h,-1,1,0.5,v=>v.toFixed(1));
+  let pk=1e-9;for(const v of trc.X)pk=Math.max(pk,Math.abs(v));for(const v of trc.Y)pk=Math.max(pk,Math.abs(v));const sc=0.95/pk; // one scale for every trace, so levels compare honestly
+  const pxPer=(t1-t0)/1000*FS/(R-L);
+  const draw=(arr,color,lw,lo,hi,alpha)=>{x.save();x.beginPath();x.rect(L,PAD.t,R-L,h-PAD.t-PAD.b);x.clip();x.globalAlpha=alpha||1;x.strokeStyle=color;x.lineWidth=lw;x.beginPath();let first=true;
+    for(let X=Math.max(L,T(lo));X<=Math.min(R,T(hi));X+=1){const t=t0+(X-L)/(R-L)*(t1-t0),i0=Math.round(t*FS/1000)+trc.lat,i1=Math.round(i0+pxPer);let mx=0,mn=0;
+      for(let i=i0;i<=i1;i++){if(i<0||i>=arr.length)continue;const v=arr[i];mx=Math.max(mx,v);mn=Math.min(mn,v);}
+      if(first){x.moveTo(X,Y(mx*sc));first=false;}else x.lineTo(X,Y(mx*sc));x.lineTo(X,Y(mn*sc));}
+    x.stroke();x.restore();};
+  if(diff){draw(trc.X,col('--sig'),1,0,t1,.45);draw(trc.D,col('--accent'),1.2,0,t1);draw(trc.D,col('--pre'),1.4,t0,0);}
+  else{draw(trc.X,col('--sig'),1,0,t1);draw(trc.Y,col('--accent'),1.2,0,t1);draw(trc.Y,col('--pre'),1.4,t0,0);}
+  x.fillStyle=col('--pre');x.font='700 11px '+col('--font-ui');x.textAlign='left';x.textBaseline='top';x.fillText(Lg('アタックより前','Before the attack'),L+4,PAD.t+3);
+  x.fillStyle=col('--muted');x.textAlign='right';x.fillText(diff?Lg('差分 = 処理後 − 原音','difference = EQ’d − dry'):'ms',R-2,PAD.t+3);
+  const dbs=v=>isFinite(v)?v.toFixed(1)+' dB':Lg('なし','none');
+  $('#tr-g').textContent=S.trMatch?fdB(20*Math.log10(trc.g)):Lg('オフ','off');
+  $('#tr-d').textContent=dbs(trc.dDb);$('#tr-p').textContent=dbs(trc.pDb);
+  $('#tr-legend').innerHTML=diff
+    ?`<span><i style="background:var(--sig);opacity:.45"></i>${Lg('原音（参考）','Dry (reference)')}</span><span><i style="background:var(--accent)"></i>${Lg('差分（EQで変わった成分）','Difference (what the EQ changed)')}</span><span><i style="background:var(--pre)"></i>${Lg('アタックより前の差分','Difference before the attack')}</span>`
+    :`<span><i style="background:var(--sig)"></i>${Lg('原音','Dry')}</span><span><i style="background:var(--accent)"></i>${Lg('処理後','EQ’d')}</span><span><i style="background:var(--pre)"></i>${Lg('アタックより前に出た成分','Output before the attack')}</span>`;
+  $('#tr-note').textContent=(diff?Lg('差分は「処理後 − 原音」。EQが足した・削った成分だけが残ります。','The difference is “EQ’d − dry”: only what the EQ added or removed is left. '):Lg('打楽器1発に今のEQをかけ、アタックの位置（0 ms）を揃えて重ねています。','One drum hit through the current EQ, lined up on the attack (0 ms). '))
+    +(S.trMatch?Lg('「音量を揃える」がオンのときは、1発全体のエネルギーが原音と同じになるように処理後の音量を補正しています。音量差に引っ張られず、音色と時間の違いだけを比べられます。','With “Match loudness” on, the EQ’d hit is scaled to the same total energy as the dry hit, so you compare tone and timing rather than level.'):Lg('「音量を揃える」がオフなので、EQで増減した音量もそのまま含まれます。','“Match loudness” is off, so any level change from the EQ is included.'));
+}
+$('#hit').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;S.hit=v;$$('#hit button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));if(imp){trc=transient();drawTr();}});
+$('#trview').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;S.trView=v;$$('#trview button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));drawTr();});
+$('#tr-match').addEventListener('click',()=>{S.trMatch=!S.trMatch;$('#tr-match').setAttribute('aria-pressed',S.trMatch);if(imp){trc=transient();drawTr();}});
+// Play the hit: dry, wet, difference, or dry then wet. All share one normalisation so their levels compare honestly.
+let hitSrc=null;
+async function playHit(which){
+  await ensureCtx();if(ctx.state!=='running')await ctx.resume();
+  const sr=ctx.sampleRate,m=EQCore.build(S,sr),im=EQCore.impulse(m,S.mode,S.res),hs=hitSet(sr,m,im);
+  let pk=1e-9;for(const v of hs.X)pk=Math.max(pk,Math.abs(v));for(const v of hs.Y)pk=Math.max(pk,Math.abs(v));const k=0.7/pk;
+  const pre=Math.round(sr*0.08),gap=Math.round(sr*0.35);
+  let parts;
+  if(which==='pre'){ // only what comes out before the attack, at its true level (same normalisation as the other buttons)
+    const end=hs.lat-Math.round(sr*0.00025);let e=0;for(let i=0;i<end;i++)e+=hs.Y[i]*hs.Y[i];
+    if(end<8||e<1e-9){status(Lg('今の設定ではプリリンギングがありません。リニア位相で、低域を急にカットするか強くブーストしてください。','There is no pre-ringing with these settings. Try linear phase with a steep low cut or a strong low boost.'));return;}
+    const P=Float64Array.from(hs.Y.subarray(0,end)),fi=Math.min(P.length>>2,Math.round(sr*0.01));for(let i=0;i<fi;i++)P[i]*=i/fi;
+    parts=[P,P];status(Lg('プリリンギング（アタックより前に出る成分）だけを2回再生しています。音量は他のボタンと同じ基準です。','Playing only the pre-ringing (what comes before the attack), twice, at the same level reference as the other buttons.'));
+  }else parts=which==='ab'?[hs.X,hs.Y]:[which==='dry'?hs.X:which==='diff'?hs.D:hs.Y];
+  const len=pre+parts.reduce((a,p)=>a+p.length+gap,0),b=ctx.createBuffer(1,len,sr),d=b.getChannelData(0);
+  let o=pre;for(const p of parts){const fd=Math.min(p.length>>2,Math.round(sr*0.05));for(let i=0;i<p.length;i++){let v=p[i]*k;const r=p.length-1-i;if(r<fd)v*=0.5-0.5*Math.cos(Math.PI*r/fd);d[o+i]=v;}o+=p.length+gap;}
+  if(hitSrc){try{hitSrc.stop();}catch(e){}}
+  const s=ctx.createBufferSource();s.buffer=b;s.connect(ctx.destination);s.start();hitSrc=s;
+}
+$('#h-dry').addEventListener('click',()=>playHit('dry'));$('#h-wet').addEventListener('click',()=>playHit('wet'));$('#h-diff').addEventListener('click',()=>playHit('diff'));$('#h-ab').addEventListener('click',()=>playHit('ab'));$('#h-pre').addEventListener('click',()=>playHit('pre'));
+
+/* ---------- readouts ---------- */
+const MODE_EXP={
+  iir:['<b>ゼロレイテンシー</b>：デジタルのIIRフィルター。遅れはゼロで、音より先に何も出ません。代わりに、ゲインが変わる帯域で位相が回ります。双一次変換の都合で、ナイキスト周波数の近くはカーブが詰まります（点線がアナログの理想）。','<b>Zero latency</b>: a digital IIR filter. No delay and nothing before the sound, but the phase turns wherever the gain changes. Because of the bilinear transform, the curve gets squeezed near Nyquist (the dashed line is the analog ideal).'],
+  analog:['<b>アナログ一致</b>：アナログ回路と同じ振幅と位相を持つ最小位相フィルター。高域を触ってもカーブの形が崩れません。位相の回り方はアナログEQと同じです（点線はゼロレイテンシーの場合）。','<b>Analog-matched</b>: a minimum-phase filter with the same magnitude and phase as an analog circuit. High-frequency curves keep their shape, and the phase turns just like an analog EQ (the dashed line is zero latency).'],
+  linear:['<b>リニア位相</b>：左右対称のFIRフィルター。全帯域が同じだけ遅れるので位相は回りませんが、応答が0 msの前後に広がり、アタックより前に響き（プリリンギング）が出ます。点線は実際に作れた特性です。解像度が低いと低域のカーブが再現しきれません。','<b>Linear phase</b>: a symmetric FIR filter. Every frequency is delayed equally, so the phase does not turn, but the response spreads both sides of 0 ms and rings before the attack (pre-ringing). The dashed line is the response actually achieved; at low resolution the low end cannot be fully rebuilt.']};
+function updateReadouts(){
+  $('#modeexp').innerHTML=Lg(...MODE_EXP[S.mode]);
+  const lat=S.mode==='linear'?EQCore.RES[S.res]/2/FS*1000:0;
+  $('#r-lat').textContent=fMs(lat);$('#r-latl').textContent=S.mode==='linear'?Lg(`レイテンシー（${EQCore.RES[S.res]}タップ）`,`Latency (${EQCore.RES[S.res]} taps)`):Lg('レイテンシー','Latency');
+  const pre=$('#r-pre'),pl=$('#r-prel');
+  if(!isFinite(pr.db)||S.mode!=='linear'){pre.textContent=Lg('なし','none');pl.textContent='—';pre.classList.remove('warn');pl.classList.remove('warn');}
+  else{pre.textContent=pr.db.toFixed(1)+' dB';pl.textContent=fMs(pr.ms);const bad=pr.ms>8&&pr.db>-40;pre.classList.toggle('warn',bad);pl.classList.toggle('warn',bad);}
+  const g=EQCore.matchGain(model,S.mode==='iir'?'iir':'analog');
+  $('#r-ag').textContent=S.autoGain&&!S.bypass&&!S.delta?fdB(20*Math.log10(g)):Lg('オフ','off');
+  $('#lg-ghost').textContent=S.mode==='iir'?Lg('アナログの理想（クランプなし）','Analog ideal (no cramping)'):S.mode==='linear'?Lg('実際に作れた特性','Response actually achieved'):Lg('ゼロレイテンシーの場合','Zero-latency version');
+  $('#res-wrap').style.opacity=S.mode==='linear'?1:.5;
+}
+
+/* ---------- audio ----------
+   Zero latency runs in an AudioWorklet: the same RBJ biquads with smoothed frequency, gain and Q, so sweeps are continuous.
+   Analog-matched and linear phase are FIRs (ConvolverNode). Each new FIR waits until its convolver has filled with input
+   (its latency + 30 ms) before a 30 ms crossfade, and updates never overlap, so there are no gaps or clicks. */
+let fileName='',ctx=null,live=null,cv=[],cg=[],act=0,outG,mstr,wnode=null,wg=null,srcNode=null,playing=false,raf=0,fileBuf=null,convBusy=false,convPend=false,audioPath='none';const bufs={};
+async function ensureCtx(){
+  if(ctx)return;ctx=new (window.AudioContext||window.webkitAudioContext)();
+  outG=ctx.createGain();const an=ctx.createAnalyser();an.fftSize=8192;an.smoothingTimeConstant=0.75;
+  for(let i=0;i<2;i++){const c=ctx.createConvolver();c.normalize=false;const g=ctx.createGain();g.gain.value=0;c.connect(g);g.connect(outG);cv.push(c);cg.push(g);}
+  try{
+    const src=$('#eq-core').textContent+'\n'+$('#eq-worklet').textContent;
+    await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([src],{type:'application/javascript'})));
+    wnode=new AudioWorkletNode(ctx,'eqlab-proc',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[2],channelCount:2,channelCountMode:'explicit'});
+    wg=ctx.createGain();wg.gain.value=0;wnode.connect(wg);wg.connect(outG);
+  }catch(e){wnode=null;}
+  mstr=ctx.createGain();mstr.gain.value=0;outG.connect(mstr);mstr.connect(an);an.connect(ctx.destination);live={ctx,an,buf:new Float32Array(an.frequencyBinCount),on:false};
+  postWorklet();pushAudio();
+}
+const outMode=()=>S.bypass?'dry':S.delta?'delta':'wet';
+function postWorklet(){if(wnode)wnode.port.postMessage({bands:S.bands.map(b=>({on:b.on,type:b.type,f:b.f,g:b.g,q:b.q,slope:b.slope})),qMode:S.qMode,lat:EQCore.RES[S.res]/2,out:outMode()});}
+function ramp(g,v,t0,dur){g.gain.cancelScheduledValues(ctx.currentTime);g.gain.setValueAtTime(g.gain.value,ctx.currentTime);g.gain.setValueAtTime(g.gain.value,t0);g.gain.linearRampToValueAtTime(v,t0+dur);}
+function pushAudio(){
+  if(!ctx)return;const sr=ctx.sampleRate,m=EQCore.build(S,sr);
+  const g=S.autoGain&&!S.bypass&&!S.delta?EQCore.matchGain(m,S.mode==='iir'?'iir':'analog'):1;
+  outG.gain.setTargetAtTime(g*0.9,ctx.currentTime,0.03);
+  if(S.mode==='iir'&&wnode){ // worklet path: parameters already sent; just make sure it is the one we hear
+    if(audioPath!=='w'){const t=ctx.currentTime;ramp(wg,1,t,0.03);ramp(cg[0],0,t,0.03);ramp(cg[1],0,t,0.03);audioPath='w';}
+    return;}
+  pushConv();
+}
+function pushConv(){
+  if(convBusy){convPend=true;return;}convBusy=true;
+  const sr=ctx.sampleRate,m=EQCore.build(S,sr),im=EQCore.impulse(m,S.mode,S.res);let h=im.h;
+  if(S.bypass){h=new Float64Array(im.lat+1);h[im.lat]=1;}else if(S.delta){h=Float64Array.from(h);h[im.lat]-=1;}
+  const b=ctx.createBuffer(1,h.length,sr),d=b.getChannelData(0);for(let i=0;i<h.length;i++)d[i]=h[i];
+  const idle=1-act;
+  cv[idle].buffer=b;
+  // wait until the new convolver is full of input (its main tap is `lat` samples in), then crossfade
+  const t0=ctx.currentTime+im.lat/sr+0.03,dur=0.03;
+  ramp(cg[idle],1,t0,dur);ramp(cg[1-idle],0,t0,dur);if(wg)ramp(wg,0,t0,dur);
+  act=idle;audioPath='c';
+  setTimeout(()=>{convBusy=false;if(convPend){convPend=false;pushConv();}},(t0-ctx.currentTime+dur+0.01)*1000);
+}
+function makeLoop(kind){
+  if(bufs[kind])return bufs[kind];
+  const sr=ctx.sampleRate,beat=60/90,len=Math.round(sr*beat*8),b=ctx.createBuffer(2,len,sr),L=b.getChannelData(0),R=b.getChannelData(1);
+  const add=(t0,fn,dur,gl=1,gr=1)=>{const s=Math.round(t0*sr),n=Math.min(Math.round(dur*sr),len-s),fd=Math.round(sr*0.006);for(let i=0;i<n;i++){let v=fn(i/sr);const r=n-1-i;if(r<fd)v*=r/fd;L[s+i]+=v*gl;R[s+i]+=v*gr;}}; // short fade wherever a note is cut
+  let seed=1;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647*2-1;};const s16=beat/4;
+  if(kind==='pink'){const xf=Math.round(sr*0.05),gen=new Float32Array(len+xf);let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for(let i=0;i<len+xf;i++){const w=rnd();b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;gen[i]=b0+b1+b2+b3+b4+b5+b6+w*.5362;b6=w*.115926;}
+    for(let i=0;i<len;i++){let v=gen[i];if(i<xf){const a=i/xf;v=gen[len+i]*(1-a)+gen[i]*a;}L[i]=v;R[i]=v;} // the loop end flows into the start without a jump
+  }
+  if(kind==='hits'){for(let k=0;k<8;k++){const hw=hitWave('kick',sr);for(let i=0;i<hw.length;i++){const j=Math.round(k*beat*sr)+i;if(j<len){L[j]+=hw[i];R[j]+=hw[i];}}}}
+  const drums=kind==='mix'||kind==='drums',bass=kind==='mix'||kind==='bass',chord=kind==='mix';
+  if(drums){
+    for(const st of[0,6,8,11,16,22,24,27]){let ph=0;add(st*s16,t=>{const f=48+80*Math.exp(-t*28);ph+=2*Math.PI*f/sr;return Math.sin(ph)*Math.exp(-t*7)*0.75;},0.5);}
+    for(const st of[4,12,20,28])add(st*s16,t=>(rnd()*0.55*Math.exp(-t*22)+Math.sin(2*Math.PI*190*t)*0.35*Math.exp(-t*30)),0.3);
+    for(let st=0;st<32;st+=2){let lp=0;add(st*s16+(st%4===2?0.012:0),t=>{const n=rnd();lp+=0.6*(n-lp);return (n-lp)*0.22*Math.exp(-t*(st%4===2?40:60));},0.12,0.8,1);}
+  }
+  if(bass){for(const [st,f] of [[0,55],[3,55],[6,65.41],[8,55],[11,49],[14,49],[16,43.65],[19,43.65],[22,49],[24,43.65],[27,49],[30,51.91]])
+    add(st*s16,t=>(Math.sin(2*Math.PI*f*t)+0.25*Math.sin(4*Math.PI*f*t)+0.1*Math.sin(6*Math.PI*f*t))*0.36*Math.min(1,t*200)*Math.exp(-t*1.6)*Math.min(1,(s16*2.6-t)*60),s16*2.6);}
+  if(chord){[[220,261.63,329.63,392],[174.61,220,261.63,329.63]].forEach((c,bi)=>c.forEach((f,j)=>add(bi*beat*4,t=>{const e=Math.min(1,t*12)*Math.exp(-t*0.35)*Math.min(1,(beat*4-t)*20);
+    let v=0;for(let k=1;k<=8;k++)v+=Math.sin(2*Math.PI*f*k*t)/k*(k%2?1:0.6);return v*0.05*e;},beat*4,j%2?0.8:1.1,j%2?1.1:0.8)));}
+  let pk=1e-9;for(let i=0;i<len;i++)pk=Math.max(pk,Math.abs(L[i]),Math.abs(R[i]));const g=(kind==='pink'?0.25:0.5)/pk;for(let i=0;i<len;i++){L[i]*=g;R[i]*=g;}
+  return (bufs[kind]=b);
+}
+// Every start and stop is faded (15 ms in, 40 ms out) so no click is heard
+function fadeTo(v,dur){const t=ctx.currentTime;mstr.gain.cancelScheduledValues(t);mstr.gain.setValueAtTime(mstr.gain.value,t);mstr.gain.linearRampToValueAtTime(v,t+dur);}
+function startSource(){
+  const k=$('#src').value,old=srcNode;
+  const go=()=>{const s=ctx.createBufferSource();s.buffer=k==='file'&&fileBuf?fileBuf:makeLoop(k);s.loop=true;s.connect(cv[0]);s.connect(cv[1]);if(wnode)s.connect(wnode);s.start();srcNode=s;fadeTo(1,0.015);};
+  if(old){fadeTo(0,0.04);srcNode=null;setTimeout(()=>{killSrc(old);go();},50);}else go();
+}
+function killSrc(s){try{s.stop();}catch(e){}s.disconnect();}
+function stopSource(){if(srcNode){const s=srcNode;srcNode=null;fadeTo(0,0.04);setTimeout(()=>killSrc(s),60);}}
+function loop(){drawEQ();raf=requestAnimationFrame(loop);}
+async function play(){await ensureCtx();if(ctx.state!=='running')await ctx.resume();startSource();playing=true;live.on=true;$('#play').textContent=Lg('■ 停止','■ Stop');cancelAnimationFrame(raf);loop();}
+function stop(){stopSource();playing=false;if(live)live.on=false;$('#play').textContent=Lg('▶ 再生','▶ Play');cancelAnimationFrame(raf);drawEQ();}
+$('#play').addEventListener('click',()=>playing?stop():play().catch(()=>status(Lg('音声を開始できませんでした。iPhoneはマナーモードを解除してから再生してください。','Audio could not start. On iPhone, turn off silent mode and try again.'))));
+$('#src').addEventListener('change',()=>{if(playing)startSource();});
+// Space bar plays / stops from anywhere on the page, even after clicking other buttons or menus
+const typing=el=>el&&(el.isContentEditable||(el.tagName==='INPUT'&&!['range','button','checkbox','radio','file','submit'].includes(el.type))||el.tagName==='TEXTAREA');
+document.addEventListener('keydown',e=>{
+  if(e.code!=='Space'&&e.key!==' ')return;if(typing(e.target)||e.ctrlKey||e.metaKey||e.altKey)return;
+  e.preventDefault();e.stopPropagation(); // no page scroll, no click on the focused button
+  if(e.repeat)return;
+  const a=document.activeElement;if(a&&a!==document.body&&a.tagName!=='CANVAS')a.blur();
+  playing?stop():play().catch(()=>{});
+},true);
+document.addEventListener('keyup',e=>{if((e.code==='Space'||e.key===' ')&&!typing(e.target)){e.preventDefault();e.stopPropagation();}},true);
+$('#file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;await ensureCtx();
+  try{fileBuf=await ctx.decodeAudioData(await f.arrayBuffer());let o=$('#src option[value=file]');if(!o){o=document.createElement('option');o.value='file';$('#src').appendChild(o);}fileName=f.name;o.textContent=Lg('ファイル：','File: ')+f.name;$('#src').value='file';status(Lg('「'+f.name+'」を読み込みました。','Loaded “'+f.name+'”.'));if(playing)startSource();else play();}
+  catch(err){status(Lg('このファイルは読み込めませんでした。WAV・MP3・AACなどの音声ファイルを選んでください。','This file could not be read. Choose an audio file such as WAV, MP3 or AAC.'));}});
+for(const [id,key] of [['#bypass','bypass'],['#delta','delta'],['#autog','autoGain']])$(id).addEventListener('click',()=>{S[key]=!S[key];if(key==='bypass'&&S.bypass)S.delta=false;if(key==='delta'&&S.delta)S.bypass=false;syncToggles();compute();});
+function syncToggles(){$('#bypass').setAttribute('aria-pressed',S.bypass);$('#delta').setAttribute('aria-pressed',S.delta);$('#autog').setAttribute('aria-pressed',S.autoGain);}
+for(const [id,key] of [['#mode','mode'],['#res','res'],['#qmode','qMode']])$(id).addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;S[key]=v;syncSegs();syncEditor();compute();});
+function syncSegs(){for(const [id,key] of [['#mode','mode'],['#res','res'],['#qmode','qMode']])$$(id+' button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S[key]));}
+
+/* ---------- lessons ---------- */
+const B=(o)=>Object.assign({on:true,type:'bell',f:1000,g:0,q:1,slope:24},o);
+let offN=0;const OFF=()=>B({on:false,f:[100,500,2000,6000,15000][offN++%5]});
+const LESSONS=[
+ {t:'ベルの基本：周波数・ゲイン・Q',te:'Bell basics: frequency, gain, Q',src:'pink',set:{mode:'iir',qMode:'const',bands:[B({f:1000,g:9,q:1})],sel:0},
+  b:`<p>ピンクノイズに1 kHzを+9 dB。点を左右に動かすと周波数、上下でゲインが変わります。幅（Q）は、点の左右に出る縦長の幅ハンドルを横にドラッグ（PCならShift＋上下ドラッグでも可）。</p><ul><li>Q 1 ≒ 1.4オクターブ、Q 4 ≒ 0.36オクターブ。Qを上げるほど「ピー」という音程感が出ます。</li><li>「差分を聴く」で、足した成分だけを聴けます。</li></ul>`,
+  be:`<p>Pink noise with +9 dB at 1 kHz. Drag the dot sideways for frequency and up or down for gain. To change the width (Q), drag one of the tall handles either side of the dot (on a computer, Shift + drag up or down also works).</p><ul><li>Q 1 ≈ 1.4 octaves, Q 4 ≈ 0.36 octaves. The higher the Q, the more you hear a pitched whistle.</li><li>“Hear the difference” plays only what the EQ added.</li></ul>`},
+ {t:'一定Qと比例Q',te:'Constant Q vs proportional Q',src:'mix',set:{mode:'iir',qMode:'const',bands:[B({f:2500,g:3,q:1})],sel:0},
+  b:`<p>同じQ 1でも、比例Qにするとゲインが小さいときは幅が広く、大きいときは細くなります。API 550やSSL Eシリーズで知られる振る舞いです。</p><ul><li>ゲインを+3 dBと+12 dBで行き来し、「一定Q」「比例Q」を切り替えて塗りの形を比べてください。</li><li>小さく足す補正は広く自然に、大きく削る処理はピンポイントに。手で触るEQとしての使いやすさの理由です。</li></ul>`,
+  be:`<p>At the same Q of 1, proportional Q makes the band wide at small gains and narrow at large gains. This is the behaviour associated with the API 550 and SSL E-series.</p><ul><li>Move the gain between +3 dB and +12 dB and switch between “Constant Q” and “Proportional Q” to compare the shaded shape.</li><li>Small boosts stay broad and natural; big cuts become surgical. That is why these EQs feel easy by hand.</li></ul>`},
+ {t:'シェルフの「肩」とレゾナンス',te:'Shelf shoulders and resonance',src:'mix',set:{mode:'iir',qMode:'const',bands:[B({type:'ls',f:120,g:6,q:0.707})],sel:0},
+  b:`<p>ローシェルフ +6 dB。Qを0.7より上げると、持ち上げた帯域のすぐ上に小さなへこみ、境目に山ができます。</p><ul><li>Q 0.5前後：なだらかで自然。マスタリングの低域補正向き。</li><li>Q 1.5前後：低域に芯が出て、すぐ上の濁りが少し減る。キックやベースで使いやすい形です。</li></ul>`,
+  be:`<p>A +6 dB low shelf. Raise Q above 0.7 and a small bump appears at the corner, with a dip just above the boosted range.</p><ul><li>Around Q 0.5: smooth and natural, good for low-end correction in mastering.</li><li>Around Q 1.5: a firmer low end with a little less mud just above, handy on kick and bass.</li></ul>`},
+ {t:'Pultecトリック（同じ周波数でブーストとカット）',te:'The Pultec trick (boost and cut at one frequency)',src:'mix',set:{mode:'analog',qMode:'const',bands:[B({type:'ls',f:60,g:8,q:1.2}),B({type:'ls',f:60,g:-6,q:0.5})],sel:0},
+  b:`<p>同じ60 Hzに、ブーストとカットのシェルフを重ねています。傾きの形（Q）が違うので、差し引きで「45 Hz付近が+4 dB、100 Hz付近が−3 dB」というカーブになります。</p><ul><li>バンド2の●を押してオフにすると、ただのブーストとの違いが分かります。</li><li>低域の量感を足しつつ、すぐ上のもたつきを減らす。PultecのEQP-1Aで知られる使い方を、2つのバンドで再現した形です。</li></ul>`,
+  be:`<p>A boosting and a cutting shelf, both at 60 Hz. Their slopes (Q) differ, so together they give about +4 dB around 45 Hz and −3 dB around 100 Hz.</p><ul><li>Press band 2’s ● to switch it off and compare with a plain boost.</li><li>More low-end weight with less flab just above: the well-known Pultec EQP-1A move, rebuilt with two bands.</li></ul>`},
+ {t:'カットのスロープと位相の回転',te:'Cut slope and phase rotation',src:'bass',set:{ph:720,mode:'iir',qMode:'const',bands:[B({type:'lc',f:100,q:0.707,slope:12})],sel:0},
+  b:`<p>ローカット100 Hz。スロープを6→48 dB/octと上げながら、位相の線（黄色の点線）を見てください。目盛りは±720°にすると全体が入ります。</p><ul><li>6 dB/octごとに、最低域で位相が90°ずつ回ります。48 dB/octなら720°。</li><li>「群遅延」に切り替えると、カットオフ付近の帯域だけが数ms遅れて出てくるのが分かります。低音が「後ろに引っ込む」感じの正体です。</li></ul>`,
+  be:`<p>A 100 Hz low cut. Raise the slope from 6 to 48 dB/oct and watch the phase line (yellow dots). Set the scale to ±720° to see all of it.</p><ul><li>Each 6 dB/oct adds 90° of rotation at the very bottom, so 48 dB/oct gives 720°.</li><li>Switch to “Group delay” to see the band near the cutoff arrive a few ms late. That is why a steep low cut can make the low end feel pushed back.</li></ul>`},
+ {t:'最小位相では、ゲインと位相はセットで動く',te:'In minimum phase, gain and phase move together',src:'mix',set:{mode:'iir',qMode:'const',bands:[B({f:200,g:-6,q:4})],sel:0},
+  b:`<p>200 Hzを細く−6 dB。位相の線は、カーブがへこんだ200 Hzの前後で上下に振れます。同じ周波数軸に重ねているので、そのまま見比べてください。</p><ul><li>最小位相フィルターでは、振幅のカーブが決まると位相のカーブも一つに決まります（ヒルベルト変換の関係）。</li><li>なのでゼロレイテンシーとアナログ一致は、低〜中域では位相も同じ。違いはナイキスト付近だけです。</li></ul>`,
+  be:`<p>A narrow −6 dB cut at 200 Hz. The phase line swings up and down on either side of the dip. Both share one frequency axis, so compare them directly.</p><ul><li>In a minimum-phase filter, the magnitude curve fixes the phase curve (they are linked by the Hilbert transform).</li><li>That is why zero latency and analog-matched have the same phase in the lows and mids; they only differ near Nyquist.</li></ul>`},
+ {t:'リニア位相：位相は動かない、でも応答が前に広がる',te:'Linear phase: no phase shift, but the response spreads forward',src:'mix',set:{mode:'linear',res:'mid',qMode:'const',bands:[B({f:200,g:-6,q:4})],sel:0},
+  b:`<p>前のレッスンと同じカーブをリニア位相で。位相の線は0のまま動きません。代わりに右のインパルスレスポンスが0 msを中心に左右対称になります。</p><ul><li>インパルスレスポンスを「±50 ms」「dB」で見ると、0 msより左（赤）にも響きがあります。これがプリリンギングです。</li><li>方式を切り替えて、赤の部分が消えたり現れたりするのを確認してください。</li></ul>`,
+  be:`<p>The same curve as the previous lesson, now in linear phase. The phase line stays flat at 0. Instead, the impulse response on the right becomes symmetric around 0 ms.</p><ul><li>View the impulse response at “±50 ms” in “dB”: there is ringing left of 0 ms too (red). That is pre-ringing.</li><li>Switch modes and watch the red part appear and disappear.</li></ul>`},
+ {t:'プリリンギングを聴く',te:'Hearing pre-ringing',src:'hits',set:{mode:'linear',res:'high',qMode:'const',bands:[B({f:70,g:15,q:8})],sel:0},
+  b:`<p>キック単発に、70 Hzの細く強いブースト。リニア位相（解像度：高）では、キックの前に「ブォーン」という吸い込むような音が出ます。</p><ul><li>下の「トランジェント比較」で「処理後」や「プリリンギングだけ」を再生。0 msより左に低音の波が出ているのが見えます。</li><li>ゼロレイテンシーに切り替えると、響きはアタックの後ろだけになります。</li><li>低い周波数ほど、Qが高いほど、カットが急なほどプリリンギングは長くなります。</li></ul>`,
+  be:`<p>Single kick hits with a strong, narrow boost at 70 Hz. In linear phase (high resolution) a swelling, sucked-in “whoom” starts before each kick.</p><ul><li>In “Transient comparison” below, play “EQ’d” or “Pre-ringing only”. You can see a low wave left of 0 ms.</li><li>Switch to zero latency and the ringing only follows the attack.</li><li>Lower frequencies, higher Q and steeper cuts all make pre-ringing longer.</li></ul>`},
+ {t:'解像度（タップ数）とレイテンシー',te:'Resolution (taps) and latency',src:'bass',set:{mode:'linear',res:'low',qMode:'const',bands:[B({type:'lc',f:40,q:0.707,slope:48})],sel:0},
+  b:`<p>40 Hzの48 dB/octローカットをリニア位相で。解像度「低」では、点線（実際に作れた特性）が目標のカーブより手前で崩れています。</p><ul><li>FIRの長さ（タップ数）が、表現できる最も低い周波数の細かさを決めます。低域を急に切るには長いFIRが必要です。</li><li>「中」「高」と上げるとカーブは正確になりますが、レイテンシーとプリリンギングの長さも伸びます。</li></ul>`,
+  be:`<p>A 48 dB/oct low cut at 40 Hz in linear phase. At “Low” resolution, the dashed line (the response actually achieved) falls away from the target curve.</p><ul><li>The FIR length (taps) sets how fine the low-frequency detail can be. A steep low cut needs a long FIR.</li><li>“Mid” and “High” make the curve accurate, but latency and pre-ringing get longer too.</li></ul>`},
+ {t:'ナイキスト付近のクランプ',te:'Cramping near Nyquist',src:'mix',set:{mode:'iir',qMode:'const',bands:[B({f:16000,g:6,q:2})],sel:0},
+  b:`<p>16 kHzに+6 dB。ゼロレイテンシーでは、カーブの右側（16〜20 kHz）が細く詰まっています。点線がアナログの理想です。</p><ul><li>デジタルの双一次変換は、20 kHz付近を「ナイキスト周波数に押し込む」ため、高域ほど形がゆがみます。</li><li>アナログ一致かリニア位相にすると、点線と同じ形に戻ります。EQ EightのOversamplingは、この詰まりを軽くする機能です。</li></ul>`,
+  be:`<p>+6 dB at 16 kHz. In zero latency, the right side of the curve (16–20 kHz) is squeezed. The dashed line is the analog ideal.</p><ul><li>The bilinear transform squeezes the top of the spectrum into the Nyquist frequency, so the higher the band, the more its shape is distorted.</li><li>Analog-matched or linear phase restores the dashed shape. EQ Eight’s Oversampling reduces this cramping.</li></ul>`},
+ {t:'オールパス：振幅を変えずに位相だけ回す',te:'All-pass: turning phase without changing level',src:'hits',set:{ph:360,mode:'iir',qMode:'const',bands:[B({type:'ap',f:100,q:0.7})],sel:0},
+  b:`<p>100 Hzのオールパス。振幅は真っ平らなのに、位相の線（黄色の点線）は100 Hzで180°、全体で360°回ります。目盛りは±360°にすると全体が入ります。</p><ul><li>トランジェント比較を「差分」にすると、キックの波形が時間方向にずれて、差分が残るのが見えます。音量は同じでも、アタックが少し丸くなります。</li><li>使いどころ：キックとベースの低域の位相をそろえる、ピークを下げてヘッドルームを作る、など。</li><li>リニア位相に切り替えると、オールパスは何もしなくなります。リニア位相は振幅しか再現しないからです。</li></ul>`,
+  be:`<p>An all-pass at 100 Hz. The magnitude is perfectly flat, yet the phase line (yellow dots) reaches 180° at 100 Hz and 360° overall. Set the scale to ±360° to see all of it.</p><ul><li>Set Transient comparison to “Difference”: the kick shifts in time and a difference remains. The level is the same, but the attack gets slightly rounder.</li><li>Uses: lining up the low end of kick and bass, or lowering peaks to gain headroom.</li><li>Switch to linear phase and the all-pass does nothing, because linear phase only rebuilds the magnitude.</li></ul>`},
+ {t:'実践：どの方式を選ぶか',te:'In practice: which mode to choose',src:'mix',set:{mode:'linear',res:'mid',qMode:'const',bands:[B({type:'ls',f:90,g:1,q:0.6}),B({f:3200,g:-1,q:0.7}),B({type:'hs',f:12000,g:1.5,q:0.6})],sel:1},
+  b:`<p>マスタリングでよくある、±1.5 dB程度の緩やかな補正です。このくらいならプリリンギングは数msで、ほとんど聴こえません。</p><ul><li><b>ゼロレイテンシー</b>：ミックス中の大半の処理。特にキック、ベース、スネアのローカットや強いブースト。</li><li><b>アナログ一致</b>：ボーカルやバスの高域を大きく持ち上げるとき。</li><li><b>リニア位相</b>：マスタリングの緩やかな補正、M/S処理、複数マイクや並列処理で位相のずれを避けたいとき。急なローカットや低域の強いブーストには使わない。</li></ul>`,
+  be:`<p>A gentle mastering-style correction of about ±1.5 dB. At this size the pre-ringing lasts a few ms and is practically inaudible.</p><ul><li><b>Zero latency</b>: most mixing moves, especially low cuts and strong boosts on kick, bass and snare.</li><li><b>Analog-matched</b>: big high-frequency boosts on vocals or buses.</li><li><b>Linear phase</b>: gentle mastering moves, M/S work, and keeping multi-mic or parallel paths phase-aligned. Avoid it for steep low cuts and strong low boosts.</li></ul>`}
+];
+function buildLessons(){
+  $('#lessons').innerHTML=LESSONS.map((l,i)=>`<li><details${i===0?' open':''}><summary><span class="n">${String(i+1).padStart(2,'0')}</span><span>${Lg(l.t,l.te)}</span></summary><div class="body">${Lg(l.b,l.be)}<button class="btn sm try" type="button" data-l="${i}">${Lg('この設定で試す','Load these settings')}</button></div></details></li>`).join('');
+}
+function applyLesson(l){
+  const st=l.set;const bands=st.bands.slice(0,6);while(bands.length<6)bands.push(OFF());
+  Object.assign(S,{mode:st.mode,res:st.res||S.res,qMode:st.qMode,bands:bands.map(b=>Object.assign({},b)),sel:st.sel||0,bypass:false,delta:false});
+  if(st.ph){S.phTab='phase';S.phRange.phase=st.ph;$$('#phtab button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v==='phase'));buildRange();}
+  if(l.src){$('#src').value=l.src;if(playing)startSource();}
+  if(l.src==='hits'){S.irZoom=250;$$('#irzoom button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v==='250'));}
+  syncSegs();syncToggles();syncEditor();compute();
+  status(Lg(`「${l.t}」の設定を読み込みました。▶ 再生で音を確認できます。`,`Loaded “${l.te}”. Press ▶ Play to listen.`));
+}
+
+/* ---------- ear training ---------- */
+const Q={type:'freq',saved:null,ans:null,score:0,total:0,done:false,ab:null};
+const QF=[100,200,400,800,1600,3200,6400];
+function veil(on){for(const id of ['#p-eq','#p-tr']){const p=$(id);let v=p.querySelector('.veil');if(on&&!v){v=document.createElement('div');v.className='veil';v.innerHTML=Lg('耳トレ中<small>答えるとグラフが表示されます</small>','Ear training<small>The graphs return once you answer</small>');p.appendChild(v);}if(!on&&v)v.remove();}
+  $('#p-exp').style.visibility=on?'hidden':'';}
+function qNew(){
+  if(!Q.saved)Q.saved=JSON.parse(JSON.stringify({bands:S.bands,mode:S.mode,res:S.res,qMode:S.qMode,src:$('#src').value}));
+  Q.done=false;veil(true);$('#qend').hidden=false;$('#qfb').textContent='';
+  const off=()=>[OFF(),OFF(),OFF(),OFF(),OFF()];
+  if(Q.type==='freq'){
+    Q.ans=QF[Math.floor(Math.random()*QF.length)];
+    Object.assign(S,{mode:'iir',qMode:'const',bypass:false,delta:false,bands:[B({f:Q.ans,g:10,q:1.4}),...off()],sel:0});
+    if($('#src').value==='hits'){$('#src').value='pink';}
+    $('#qtext').textContent=Lg('どの周波数が持ち上げられている？（ベル +10 dB、Q 1.4）','Which frequency is boosted? (bell +10 dB, Q 1.4)');
+    $('#qctl').innerHTML=`<button class="btn" type="button" data-c="bypass" aria-pressed="false">${Lg('EQをオフにして比べる','Compare with EQ off')}</button>`;
+    $('#qans').innerHTML=QF.map(f=>`<button class="btn" type="button" data-a="${f}">${fHz(f)}</button>`).join('');
+  }else{
+    const opts=[[B({f:70,g:15,q:8})],[B({type:'lc',f:150,q:2,slope:48})],[B({f:55,g:12,q:6})]];
+    Q.ab=Math.random()<.5?['linear','iir']:['iir','linear'];Q.ans=Q.ab[0]==='linear'?'A':'B';
+    Object.assign(S,{mode:Q.ab[0],res:'high',qMode:'const',bypass:false,delta:false,bands:[...opts[Math.floor(Math.random()*opts.length)],...off()],sel:0});
+    $('#src').value='hits';
+    $('#qtext').textContent=Lg('AとBのどちらがリニア位相？（キックの前に注目）','Is A or B linear phase? (listen just before the kick)');
+    $('#qctl').innerHTML=`<button class="btn" type="button" data-c="A" aria-pressed="true">${Lg('Aを聴く','Play A')}</button><button class="btn" type="button" data-c="B" aria-pressed="false">${Lg('Bを聴く','Play B')}</button>`;
+    $('#qans').innerHTML=`<button class="btn" type="button" data-a="A">${Lg('Aがリニア位相','A is linear phase')}</button><button class="btn" type="button" data-a="B">${Lg('Bがリニア位相','B is linear phase')}</button>`;
+  }
+  syncSegs();syncToggles();syncEditor();compute();if(playing)startSource();else play().catch(()=>{});
+}
+$('#qctl').addEventListener('click',e=>{const c=e.target.closest('[data-c]');if(!c)return;const v=c.dataset.c;
+  if(v==='bypass'){S.bypass=!S.bypass;c.setAttribute('aria-pressed',S.bypass);c.textContent=S.bypass?Lg('EQをオンに戻す','Turn EQ back on'):Lg('EQをオフにして比べる','Compare with EQ off');}
+  else{S.mode=Q.ab[v==='A'?0:1];$$('#qctl [data-c]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===v));}
+  syncToggles();compute();});
+$('#qans').addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(!a||Q.done)return;Q.done=true;Q.total++;
+  const ok=String(Q.ans)===a.dataset.a;if(ok)Q.score++;
+  $$('#qans [data-a]').forEach(b=>{if(b.dataset.a===String(Q.ans))b.classList.add('right');else if(b===a)b.classList.add('wrong');});
+  $('#score').textContent=`${Q.score} / ${Q.total}`;
+  if(Q.type==='freq')$('#qfb').textContent=Lg((ok?'正解。':'不正解。')+`答えは ${fHz(Q.ans)}。`+(Q.ans<=200?'低域は量感やこもり、':Q.ans<=800?'中低域は箱鳴りや鼻にかかった感じ、':Q.ans<=3200?'中高域は前に出る芯や耳への刺さり、':'高域はシャリっとした空気感、')+'として聴こえます。',(ok?'Correct. ':'Not quite. ')+`It was ${fHz(Q.ans)}. `+(Q.ans<=200?'Low boosts sound like weight or boom.':Q.ans<=800?'Low-mid boosts sound boxy or nasal.':Q.ans<=3200?'Upper-mid boosts sound forward, then harsh.':'High boosts sound like air and sizzle.'));
+  else $('#qfb').textContent=Lg((ok?'正解。':'不正解。')+`リニア位相は ${Q.ans}。アタックの前に低音の響きが出ていました。グラフで確認してください。`,(ok?'Correct. ':'Not quite. ')+`${Q.ans} was linear phase: low ringing came before the attack. Check the graphs.`);
+  S.bypass=false;syncToggles();veil(false);compute();});
+$('#qnew').addEventListener('click',qNew);
+$('#qend').addEventListener('click',()=>{if(Q.saved){Object.assign(S,{bands:Q.saved.bands,mode:Q.saved.mode,res:Q.saved.res,qMode:Q.saved.qMode,bypass:false,delta:false});$('#src').value=Q.saved.src;if(playing)startSource();Q.saved=null;}
+  veil(false);$('#qend').hidden=true;$('#qctl').innerHTML='';$('#qans').innerHTML='';$('#qfb').textContent='';$('#qtext').textContent=Lg('「出題する」を押すと、グラフを隠して問題を出します。','Press “New question”. The graphs are hidden until you answer.');syncSegs();syncToggles();syncEditor();compute();});
+$('#qtype').addEventListener('click',e=>{const v=e.target.dataset.v;if(!v)return;Q.type=v;$$('#qtype button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));});
+for(const [t,p] of [['#t-les','#pane-les'],['#t-quiz','#pane-quiz']])$(t).addEventListener('click',()=>{$$('.tabs [role=tab]').forEach(b=>b.setAttribute('aria-selected',b===$(t)));$('#pane-les').hidden=p!=='#pane-les';$('#pane-quiz').hidden=p!=='#pane-quiz';});
+
+/* ---------- boot ---------- */
+// EQ reset: flat, every band off at a spread of starting positions
+const FLAT=()=>[{on:false,type:'lc',f:30,g:0,q:0.707,slope:24},{on:false,type:'ls',f:100,g:0,q:0.707,slope:24},{on:false,type:'bell',f:400,g:0,q:1,slope:24},{on:false,type:'bell',f:1500,g:0,q:1,slope:24},{on:false,type:'hs',f:6000,g:0,q:0.707,slope:24},{on:false,type:'hc',f:18000,g:0,q:0.707,slope:24}];
+$('#reset').addEventListener('click',()=>{S.bands=FLAT();S.sel=2;S.bypass=false;S.delta=false;syncToggles();syncEditor();compute();
+  status(Lg('EQを初期化しました（全バンドがオフのフラット）。点をダブルクリックするか、●を押すとバンドが使えます。','EQ reset to flat with every band off. Double-click a dot or press a ● to use a band.'));});
+// Language: Japanese / English
+function applyLang(lang,keep){
+  LANG=lang;document.documentElement.lang=lang;document.title=Lg('EQ解剖ラボ','EQ Anatomy Lab');
+  for(const el of $$('[data-en]')){if(el.dataset.ja===undefined)el.dataset.ja=el.innerHTML;el.innerHTML=lang==='en'?el.dataset.en:el.dataset.ja;}
+  for(const el of $$('[data-en-aria]')){if(el.dataset.jaAria===undefined)el.dataset.jaAria=el.getAttribute('aria-label');el.setAttribute('aria-label',lang==='en'?el.dataset.enAria:el.dataset.jaAria);}
+  $('#lang').textContent=lang==='en'?'日本語':'English';$('#lang').lang=lang==='en'?'ja':'en';
+  $('#play').textContent=playing?Lg('■ 停止','■ Stop'):Lg('▶ 再生','▶ Play');
+  const fo=$('#src option[value=file]');if(fo&&fileName)fo.textContent=Lg('ファイル：','File: ')+fileName;
+  buildEditor();buildLessons();syncEditor();phNote();updateReadouts();drawEQ();drawIR();drawTr();
+  if(!Q.saved){$('#qtext').textContent=Lg('「出題する」を押すと、グラフを隠して問題を出します。','Press “New question”. The graphs are hidden until you answer.');}
+  if(keep){try{localStorage.setItem('eqlab-lang',lang);}catch(e){}}
+}
+$('#lang').addEventListener('click',()=>{applyLang(LANG==='en'?'ja':'en',true);status('');});
+$('#lessons').addEventListener('click',e=>{const b=e.target.closest('[data-l]');if(!b)return;applyLesson(LESSONS[+b.dataset.l]);});
+buildEditor();buildRange();buildLessons();syncSegs();syncToggles();syncEditor();compute();heavy();
+{let lg=null;const hsh=location.hash.replace('#','');if(hsh==='en'||hsh==='ja')lg=hsh;if(!lg&&window.EQLAB_DEFAULT)lg=window.EQLAB_DEFAULT;if(!lg){try{lg=localStorage.getItem('eqlab-lang');}catch(e){}}
+ if(!lg)lg=(navigator.language||'ja').toLowerCase().startsWith('ja')?'ja':'en';if(lg==='en')applyLang('en');}
+if(window.parent!==window){const send=()=>{try{window.parent.postMessage({type:'eqlab-height',h:Math.ceil(document.documentElement.scrollHeight)},'*');}catch(e){}};
+  if(window.ResizeObserver)new ResizeObserver(send).observe(document.body);window.addEventListener('load',send);setTimeout(send,300);}
+let rt=0;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{drawEQ();drawIR();drawTr();},60);});
+if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{drawEQ();drawIR();drawTr();});
+new MutationObserver(()=>{drawEQ();drawIR();drawTr();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
+
+<script>
+window.JPKFP_CONF_OFF={"key": "eq-lab", "btnCls": "btn", "vars": {"bg": "var(--panel)", "bg2": "var(--bg)", "line": "var(--line)", "fg": "var(--ink)", "muted": "var(--muted)"}, "langBtn": "#lang", "targets": [{"el": "#p-les", "ja": "レッスン・耳トレ", "en": "Lessons & ear training"}, {"el": "#p-exp", "ja": "今の処理方式", "en": "Current mode"}], "buttons": [{"host": ".transport"}]};
+/* ---------- floating explanation panel (shared across JPK labs) ---------- */
+(function(){
+var C=window.JPKFP_CONF;if(!C||window.JPKFP_READY)return;window.JPKFP_READY=1;
+function $(s){return typeof s==='string'?document.querySelector(s):s}
+function lang(){return C.lang?C.lang():(document.documentElement.lang||'ja').slice(0,2)}
+var T={ja:{open:'解説をパネルで表示',close:'パネルを閉じる',ph:'パネルで表示中',back:'ここに戻す',prev:'前へ',next:'次へ',x:'閉じる',drag:'ドラッグで移動'},
+       en:{open:'Show notes in a panel',close:'Close panel',ph:'Shown in the floating panel',back:'Put it back here',prev:'Previous',next:'Next',x:'Close',drag:'Drag to move'}};
+function t(k){return (T[lang()]||T.ja)[k]}
+function i18n(el,k,attr){/* keeps EQ-lab style [data-en] toggles in sync */
+  if(attr){el.setAttribute(attr,t(k));return}
+  el.textContent=t(k);el.setAttribute('data-ja',T.ja[k]);el.setAttribute('data-en',T.en[k]);}
+var V=C.vars||{};
+var css='.jpkfp{position:fixed;z-index:60;width:420px;height:540px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);min-width:300px;min-height:220px;display:flex;flex-direction:column;'+
+ 'background:'+(V.bg||'#161922')+';color:'+(V.fg||'inherit')+';border:1px solid '+(V.line||'#2a2f3d')+';border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.38);resize:both;overflow:hidden;text-align:left;box-sizing:border-box}'+
+ '.jpkfp[hidden]{display:none!important}.jpkfp *{box-sizing:border-box}'+
+ '.jpkfp .jpkfp-head{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid '+(V.line||'#2a2f3d')+';background:'+(V.bg2||'transparent')+';cursor:move;touch-action:none;user-select:none;-webkit-user-select:none}'+
+ '.jpkfp .jpkfp-grip{color:'+(V.muted||'#8e94a4')+';font-size:16px;padding:0 4px 0 2px;line-height:1}'+
+ '.jpkfp .jpkfp-title{flex:1;min-width:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+ '.jpkfp select.jpkfp-sel{flex:1;min-width:0;font:inherit;font-size:13px;color:inherit;background:'+(V.bg||'#161922')+';border:1px solid '+(V.line||'#2a2f3d')+';border-radius:6px;padding:4px 6px;height:30px;margin:0}'+
+ '.jpkfp button.jpkfp-ib{flex:none;width:30px;height:30px;padding:0!important;margin:0;display:grid;place-items:center;font:inherit;font-size:13px;line-height:1;color:inherit;background:'+(V.bg||'#161922')+'!important;border:1px solid '+(V.line||'#2a2f3d')+'!important;border-radius:6px;cursor:pointer;box-shadow:none!important;min-width:0;min-height:0}'+
+ '.jpkfp button.jpkfp-ib:hover{border-color:'+(V.muted||'#8e94a4')+'!important}'+
+ '.jpkfp .jpkfp-body{overflow:auto;flex:1;padding:14px 16px 18px;-webkit-overflow-scrolling:touch}'+
+ '.jpkfp .jpkfp-body>.jpkfp-moved{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;max-width:none!important;width:auto!important;position:static!important}'+
+ '.jpkfp-ph{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border:1px dashed '+(V.line||'#2a2f3d')+';border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:13px;color:'+(V.muted||'#8e94a4')+'}'+
+ '@media (max-width:700px){.jpkfp{left:0!important;right:0;top:auto!important;bottom:0;width:auto!important;height:46vh!important;max-width:none;border-radius:12px 12px 0 0;resize:none;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}.jpkfp .jpkfp-head{cursor:default}}'+
+ (C.css||'');
+var st=document.createElement('style');st.textContent=css;(C.mount?$(C.mount):document.head).appendChild(st);
+
+var targets=[];C.targets.forEach(function(d){var el=$(d.el);if(el)targets.push({el:el,ja:d.ja,en:d.en})});
+if(!targets.length)return;
+function label(d){return lang()==='en'?d.en:d.ja}
+
+var fp=document.createElement('div');fp.className='jpkfp'+(C.cls?' '+C.cls:'');fp.hidden=true;fp.setAttribute('role','dialog');
+var multi=targets.length>1;
+fp.innerHTML='<div class="jpkfp-head"><span class="jpkfp-grip">⠿</span>'+
+  (multi?'<button type="button" class="jpkfp-ib" data-a="prev">◀</button><select class="jpkfp-sel"></select><button type="button" class="jpkfp-ib" data-a="next">▶</button>':'<span class="jpkfp-title"></span>')+
+  '<button type="button" class="jpkfp-ib" data-a="close">✕</button></div><div class="jpkfp-body"></div>';
+(C.mount?$(C.mount):document.body).appendChild(fp);
+var head=fp.querySelector('.jpkfp-head'),body=fp.querySelector('.jpkfp-body'),sel=fp.querySelector('.jpkfp-sel'),ttl=fp.querySelector('.jpkfp-title');
+var KEY='jpkfp-'+(C.key||location.pathname);
+var cur=0,live=-1,ph=null;
+
+function labels(){
+  fp.setAttribute('aria-label',label(targets[cur]));
+  i18n(head.querySelector('.jpkfp-grip'),'drag','title');
+  i18n(fp.querySelector('[data-a=close]'),'x','aria-label');
+  if(multi){i18n(fp.querySelector('[data-a=prev]'),'prev','aria-label');i18n(fp.querySelector('[data-a=next]'),'next','aria-label');
+    sel.innerHTML=targets.map(function(d,i){return '<option value="'+i+'">'+label(d)+'</option>'}).join('');sel.value=String(cur);}
+  else ttl.textContent=label(targets[0]);
+  btns.forEach(function(b){i18n(b,fp.hidden?'open':'close')});
+  if(ph){i18n(ph.querySelector('span'),'ph');i18n(ph.querySelector('button'),'back');}
+}
+function putBack(){
+  if(live<0)return;var el=targets[live].el;el.classList.remove('jpkfp-moved');
+  if(ph&&ph.parentNode){ph.parentNode.insertBefore(el,ph);ph.parentNode.removeChild(ph);}
+  live=-1;ph=null;
+}
+function show(i){
+  putBack();cur=(i+targets.length)%targets.length;var el=targets[cur].el;
+  ph=document.createElement('div');ph.className='jpkfp-ph';
+  ph.innerHTML='<span></span><button type="button" class="'+(C.btnCls||'')+'"></button>';
+  ph.querySelector('button').addEventListener('click',function(){setOpen(false)});
+  el.parentNode.insertBefore(ph,el);el.classList.add('jpkfp-moved');body.appendChild(el);body.scrollTop=0;live=cur;labels();
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.i=cur;localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+}
+function clamp(v,a,b){return Math.min(b,Math.max(a,v))}
+function place(x,y){
+  var w=fp.offsetWidth,h=fp.offsetHeight;
+  x=clamp(x,8,Math.max(8,innerWidth-w-8));y=clamp(y,8,Math.max(8,innerHeight-h-8));
+  fp.style.left=x+'px';fp.style.top=y+'px';
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.x=x;s.y=y;localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+}
+function setOpen(on){
+  if(on===!fp.hidden)return;
+  if(!on){putBack();fp.hidden=true;labels();return;}
+  var s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  fp.hidden=false;
+  if(s&&s.w){fp.style.width=s.w;fp.style.height=s.h;}
+  place(s&&s.x!=null?s.x:innerWidth-fp.offsetWidth-24,s&&s.y!=null?s.y:innerHeight-fp.offsetHeight-24);
+  show(s&&s.i<targets.length?s.i:0);
+}
+var btns=[];
+(C.buttons||[]).forEach(function(b){
+  var host=$(b.host);if(!host)return;
+  var el=document.createElement('button');el.type='button';el.className=b.cls||C.btnCls||'';
+  el.addEventListener('click',function(){setOpen(fp.hidden)});
+  if(b.pos==='before')host.parentNode.insertBefore(el,host);else if(b.pos==='after')host.parentNode.insertBefore(el,host.nextSibling);else host.appendChild(el);btns.push(el);
+});
+fp.querySelector('[data-a=close]').addEventListener('click',function(){setOpen(false)});
+if(multi){
+  fp.querySelector('[data-a=prev]').addEventListener('click',function(){show(cur-1)});
+  fp.querySelector('[data-a=next]').addEventListener('click',function(){show(cur+1)});
+  sel.addEventListener('change',function(){show(+sel.value)});
+}
+var drag=null;
+head.addEventListener('pointerdown',function(e){
+  if(e.target.closest('button,select')||innerWidth<=700)return;
+  drag={dx:e.clientX-fp.offsetLeft,dy:e.clientY-fp.offsetTop};try{head.setPointerCapture(e.pointerId)}catch(_){}
+});
+head.addEventListener('pointermove',function(e){if(drag)place(e.clientX-drag.dx,e.clientY-drag.dy)});
+head.addEventListener('pointerup',function(){drag=null});
+head.addEventListener('pointercancel',function(){drag=null});
+if(window.ResizeObserver)new ResizeObserver(function(){if(!fp.hidden&&innerWidth>700){try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.w=fp.offsetWidth+'px';s.h=fp.offsetHeight+'px';localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}}).observe(fp);
+addEventListener('resize',function(){if(!fp.hidden&&innerWidth>700)place(fp.offsetLeft,fp.offsetTop)});
+if(C.langBtn){var lb=$(C.langBtn);if(lb)lb.addEventListener('click',function(){setTimeout(labels,0)})}
+labels();
+})();
+</script>
+<script>window.NK={"lang": "ja", "title": "EQ・スタディノート", "sub": "EQ解剖ラボ", "links": [["← 目次", "https://kazufumi01.github.io/ja/"], ["旧版", "https://kazufumi01.github.io/eq-lab/"], ["解説記事", "https://jpk.seesaa.net/article/521891797.html", "target=\"_blank\" rel=\"noopener\""], ["English", "./en/", "hreflang=\"en\" lang=\"en\""]], "transport": [".top .transport", "#status"], "graphs": [{"sel": "#p-eq", "area": "eq", "fill": ["#eqc", "#irc"]}, {"sel": "#p-tr", "area": "tr", "fill": ["#trc"]}], "areas": "\"eq\" \"tr\"", "cols": "minmax(0,1fr)", "rows": "minmax(0,1.7fr) minmax(0,1fr)", "cw": "300px", "ctrls": ["#p-eq .modes", "#chips", "#editor"], "notes": [{"sel": "#p-exp", "label": "処理方式"}, {"sel": "#p-les", "label": "レッスン・耳トレ"}], "about": ".top .brand > p:not(.eyebrow), .wrap > footer", "hide": ".wrap"};</script>
+<script src="/note-kit/kit.js"></script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="ja" class="nk" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#15171b">
+<title>アナログディレイ・スタディノート｜アナログディレイ機器ラボ</title>
+<meta name="description" content="テープスラップ、Echoplex、Space Echo、磁気ドラム、オイル缶、BBD、初期デジタル。名機ディレイの仕組みを図解・音・リピートごとの周波数特性で学ぶ無料の学習アプリ。">
+
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="Johan Plus Kei">
+<meta property="og:title" content="アナログディレイ・スタディノート｜アナログディレイ機器ラボ">
+<meta property="og:description" content="テープスラップ、Echoplex、Space Echo、磁気ドラム、オイル缶、BBD、初期デジタル。名機ディレイの仕組みを図解・音・リピートごとの周波数特性で学ぶ無料の学習アプリ。">
+<meta property="og:url" content="https://kazufumi01.github.io/analog-delay-note/">
+<meta property="og:image" content="https://kazufumi01.github.io/analog-delay-note/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700&display=swap">
+<link rel="stylesheet" href="/note-kit/kit.css">
+<style>html.nk .dl2{--bg:var(--nk-paper)!important;--panel:var(--nk-page)!important;--panel2:#efe7d6!important;--line:var(--nk-line)!important;--ink:var(--nk-ink)!important;--mute:var(--nk-muted)!important;--acc:var(--nk-red)!important;--L:#3f7fb3!important;--R:#c0566e!important;--ok:#3f6b35!important;font-family:var(--nk-ui)!important}.nk .dl2 button{border-radius:2px!important}.nk .dl2-seg{border-radius:2px!important}.nk .dl2-play{background:var(--nk-ink)!important;border-color:var(--nk-ink)!important;color:var(--nk-on)!important}.nk .dl2-card .dl2-tag{color:var(--nk-on)!important}.nk .dl2-toggle.on{background:#e3ead8!important}.nk .dl2-warn{color:var(--nk-red)!important}.nk .dl2-card,.nk .dl2-grid,.nk .dl2-table,.nk .dl2-tempo div{border-radius:2px!important}.nk-ctrls .dl2-grid{grid-template-columns:1fr!important}.nk-body .dl2-table th{white-space:normal}.nk-head .dl2-transport{margin:0!important}@media (min-width:1100px) and (min-height:660px){.nk .nk-cv>canvas{height:100%!important}}.nk .dl2-machines.nk-card{margin:0!important;display:grid!important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}.nk .dl2-top.nk-card{margin:0!important}.nk-ctrls .dl2-transport{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px!important}@media (min-width:1100px) and (min-height:660px){.nk .dl2-top.nk-card{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:10px;overflow:auto}.nk .dl2-diagram svg{max-height:100%;width:100%}.nk .dl2-resp.nk-card{background:var(--nk-page)!important}}</style>
+<link rel="canonical" href="https://kazufumi01.github.io/analog-delay-note/">
+<link rel="alternate" hreflang="ja" href="https://kazufumi01.github.io/analog-delay-note/">
+<link rel="alternate" hreflang="en" href="https://kazufumi01.github.io/analog-delay-note/en/">
+</head>
+<body style="margin:0;padding:16px;background:#f4f2ee;">
+
+<!-- ===== Seesaa記事に貼り付け：ここから ===== -->
+<div id="dl2" class="dl2">
+<style>
+.dl2{--bg:#17150f;--panel:#221f17;--panel2:#2b271d;--line:#3b3527;--ink:#efe9dc;--mute:#a79f8c;--acc:#e9a23b;--tape:#7a5532;--tape2:#c99256;--rec:#e0685a;--play:#5fb0e0;--metal:#8f949b;--ok:#86d39f;
+font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",Meiryo,sans-serif;
+background:var(--bg);color:var(--ink);border-radius:16px;padding:20px 18px 22px;max-width:780px;margin:24px auto;line-height:1.7;font-size:15px;box-sizing:border-box;text-align:left}
+.dl2 *{box-sizing:border-box}
+.dl2 h3,.dl2 h4,.dl2 p{margin:0;padding:0;border:0;background:none;color:inherit}
+.dl2-kicker{font-size:11px;letter-spacing:.18em;color:var(--acc);font-weight:700}
+.dl2-title{font-size:22px!important;font-weight:800;margin:2px 0 4px!important}
+.dl2-lead{color:var(--mute);font-size:14px}
+.dl2 button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:7px 12px;font-size:14px;line-height:1.3}
+.dl2 button:hover{border-color:#5a5140}
+.dl2 button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.dl2-machines{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;margin:14px 0 4px;scrollbar-width:thin}
+.dl2-machines button{flex:0 0 auto;text-align:left;padding:8px 11px}
+.dl2-machines button b{display:block;font-size:13.5px}
+.dl2-machines button span{display:block;font-size:11px;color:var(--mute)}
+.dl2-machines button.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.dl2-top{display:grid;grid-template-columns:1.05fr 1fr;gap:12px;margin-bottom:12px}
+.dl2-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.dl2-diagram{background:#100e0a;border:1px solid var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column}
+.dl2-diagram svg{width:100%;height:auto;display:block}
+.dl2-diagram figcaption{font-size:12px;color:var(--mute);padding:4px 6px 2px}
+.dl2-name{font-size:18px;font-weight:800;line-height:1.35}
+.dl2-era{font-size:12px;color:var(--acc);font-weight:700;letter-spacing:.04em;margin-bottom:6px}
+.dl2-txt{font-size:14px}
+.dl2-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.dl2-chips span{font-size:11.5px;border:1px solid var(--line);background:var(--panel2);border-radius:99px;padding:1px 9px;color:var(--ink)}
+.dl2-transport{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 12px}
+.dl2-play{background:var(--acc)!important;color:#1d1405!important;border-color:var(--acc)!important;font-weight:800;min-width:98px}
+.dl2-seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.dl2-seg button{border:0;background:transparent;padding:5px 10px;border-radius:7px;color:var(--mute)}
+.dl2-seg button.on{background:var(--panel2);color:var(--ink);box-shadow:inset 0 0 0 1px #5a5140}
+.dl2-toggle.on{background:#26382b!important;border-color:var(--ok)!important;color:var(--ok)!important}
+.dl2-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.dl2-ctl label{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.dl2-ctl output{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.dl2-ctl small{display:block;font-size:11.5px;color:#857d6b;line-height:1.45}
+.dl2 input[type=range]{width:100%;accent-color:var(--acc);margin:3px 0}
+.dl2-heads{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--mute);border-top:1px dashed var(--line);padding-top:8px}
+.dl2-sec{font-size:13px;color:var(--acc);font-weight:800;letter-spacing:.06em;margin:16px 2px 6px}
+.dl2-resp{background:#100e0a;border:1px solid var(--line);border-radius:12px;padding:8px}
+.dl2-resp canvas{display:block;width:100%;height:200px}
+.dl2-note{font-size:12.5px;color:var(--mute);margin:6px 2px 0}
+.dl2-calc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.dl2-calc .rows{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
+.dl2-calc .res{margin-top:10px;font-size:15px;background:var(--panel2);border-radius:10px;padding:10px 12px}
+.dl2-calc .res b{color:var(--acc);font-size:20px;font-variant-numeric:tabular-nums}
+.dl2-table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--panel);border-radius:12px;overflow:hidden}
+.dl2-table th,.dl2-table td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;background:none;color:var(--ink)}
+.dl2-table th{white-space:nowrap;color:var(--acc);width:9.5em}
+.dl2-table tr:last-child th,.dl2-table tr:last-child td{border-bottom:0}
+.dl2-foot{font-size:12px;color:var(--mute);margin-top:14px}
+.dl2-run{stroke-dasharray:9 7;animation:dl2dash .8s linear infinite}
+@keyframes dl2dash{to{stroke-dashoffset:-16}}
+.dl2-spin{transform-box:view-box;animation:dl2spin 2.6s linear infinite}
+@keyframes dl2spin{to{transform:rotate(360deg)}}
+.dl2-charge{animation:dl2ch 3.2s steps(16,end) infinite}
+@keyframes dl2ch{from{transform:translateX(0)}to{transform:translateX(320px)}}
+.dl2-wptr{animation:dl2wp 2.4s steps(8,end) infinite}
+@keyframes dl2wp{from{transform:translateX(0)}to{transform:translateX(176px)}}
+.dl2-clk{animation:dl2dash .5s linear infinite;stroke-dasharray:none}
+@media (prefers-reduced-motion:reduce){.dl2-run,.dl2-spin,.dl2-charge,.dl2-wptr{animation:none}}
+@media (max-width:600px){.dl2{padding:16px 12px}.dl2-top,.dl2-grid,.dl2-calc .rows{grid-template-columns:1fr}.dl2-table th{width:auto}}
+.dl2-lang{float:right;margin:-2px 0 0 10px;font-size:12px;font-weight:700;text-decoration:none!important;color:var(--ink)!important;border:1px solid var(--line);border-radius:99px;padding:1px 10px;line-height:1.6}.dl2-lang:hover{border-color:var(--acc);color:var(--acc)!important}
+</style>
+
+<a class="dl2-lang" href="https://kazufumi01.github.io/analog-delay-lab/en/" hreflang="en" lang="en" target="_blank" rel="noopener">English</a><a class="dl2-lang" href="https://jpk.seesaa.net/article/521891797.html" target="_blank" rel="noopener">記事メニュー ↗</a>
+<div class="dl2-kicker">DELAY LEARNING LAB 02</div>
+<h3 class="dl2-title">アナログディレイ機器ラボ</h3>
+<p class="dl2-lead">テープ、磁気ドラム、オイル缶、BBD、初期デジタル。機器を選ぶと、仕組みの図解・音・「繰り返すほどどう劣化するか」が切り替わります。Valhalla DelayやEchoBoyの各モードが何を真似しているのかを、ここで掴みましょう。</p>
+
+<div class="dl2-machines" data-el="machines" role="tablist"></div>
+
+<div class="dl2-top">
+  <figure class="dl2-diagram" style="margin:0"><div data-el="svg"></div><figcaption data-el="cap"></figcaption></figure>
+  <div class="dl2-card"><div class="dl2-era" data-el="era"></div><div class="dl2-name" data-el="name"></div><p class="dl2-txt" data-el="how" style="margin-top:6px"></p><div class="dl2-chips" data-el="chips"></div></div>
+</div>
+
+<div class="dl2-sec" style="margin-top:4px">リピートごとの周波数特性（何回目のエコーで、どの帯域が残るか）</div>
+<div class="dl2-resp"><canvas data-el="resp"></canvas></div>
+<p class="dl2-note" data-el="respnote"></p>
+<div style="height:14px"></div>
+<div class="dl2-transport">
+  <button class="dl2-play" data-act="play">▶ 再生</button>
+  <div class="dl2-seg" data-group="src"><button data-v="pluck" class="on">プラック</button><button data-v="snare">スネア</button><button data-v="vox">ボーカル風</button></div>
+  <button class="dl2-toggle" data-t="clean">比較：クリーンなデジタル</button>
+  <button class="dl2-toggle" data-t="wetonly">Wetのみ</button>
+  <button class="dl2-toggle" data-t="spring" data-el="springbtn">スプリングリバーブ</button>
+</div>
+
+<div class="dl2-grid">
+  <div class="dl2-ctl"><label>Time <output data-o="time"></output></label><input type="range" data-k="time" min="0" max="1000"><small data-el="timehint"></small></div>
+  <div class="dl2-ctl"><label>Feedback（リピート） <output data-o="fb"></output></label><input type="range" data-k="fb" min="0" max="98" step="1"><small>ループ内の劣化はリピートごとに積み重なる</small></div>
+  <div class="dl2-ctl"><label>Drive（飽和） <output data-o="drive"></output></label><input type="range" data-k="drive" min="0" max="1" step="0.01"><small>テープ／回路が歪む量。ループ内なので繰り返すほど丸くなる</small></div>
+  <div class="dl2-ctl"><label>Tone（ハイカット） <output data-o="lp"></output></label><input type="range" data-k="lp" min="0" max="1000"><small data-el="lphint">再生ヘッドや回路の帯域限界</small></div>
+  <div class="dl2-ctl"><label>Wow（ゆっくりした揺れ） <output data-o="wow"></output></label><input type="range" data-k="wow" min="0" max="1" step="0.01"><small>モーターや回転体の速度ムラ（0.3〜3Hz程度）</small></div>
+  <div class="dl2-ctl"><label>Flutter（細かい揺れ） <output data-o="flutter"></output></label><input type="range" data-k="flutter" min="0" max="1" step="0.01"><small>キャプスタンやテープの微振動（5〜10Hz程度）</small></div>
+  <div class="dl2-ctl"><label>Age（ノイズ） <output data-o="noise"></output></label><input type="range" data-k="noise" min="0" max="1" step="0.01"><small data-el="noisehint"></small></div>
+  <div class="dl2-ctl"><label>Wet レベル <output data-o="wet"></output></label><input type="range" data-k="wet" min="-30" max="0" step="0.5"><small>原音に対するエコーの音量</small></div>
+  <div class="dl2-heads" data-el="heads"></div>
+</div>
+
+
+<div class="dl2-sec">原理を数字で確かめる</div>
+<div class="dl2-calc" data-el="calc"></div>
+
+<div data-fp="map"><div class="dl2-sec">この機器の音に近づけるなら</div>
+<table class="dl2-table" data-el="map"></table></div>
+
+<p class="dl2-foot">※音はブラウザ内で合成した簡易モデルです（実機の完全な再現ではありません）。原理による「傾向の違い」を聴き比べるための教材です。製品名・機種名は各社の商標で、説明のために使用しています。</p>
+
+<script>
+(function(){
+var root=document.getElementById('dl2');if(!root||root.dataset.ready)return;root.dataset.ready='1';
+function q(s){return root.querySelector(s)}function qa(s){return Array.prototype.slice.call(root.querySelectorAll(s))}
+
+/* ---------- SVG diagrams ---------- */
+function T(x,y,s,c,sz,anc){return '<text x="'+x+'" y="'+y+'" fill="'+(c||'#a79f8c')+'" font-size="'+(sz||11)+'" text-anchor="'+(anc||'middle')+'" font-family="sans-serif">'+s+'</text>'}
+function head(x,y,lab,type){var c=type==='rec'?'#e0685a':type==='play'?'#5fb0e0':'#8f949b';return '<rect x="'+(x-8)+'" y="'+y+'" width="16" height="17" rx="3" fill="'+c+'"/>'+T(x,y+30,lab,c,11)}
+function svgLoop(multi){var p='M70,116 H310 A42,42 0 0 0 310,32 H70 A42,42 0 0 0 70,116 Z';
+ var s='<svg viewBox="0 0 380 172" role="img" aria-label="テープループ式エコーの図">';
+ s+='<path d="'+p+'" fill="none" stroke="#7a5532" stroke-width="8"/><path d="'+p+'" fill="none" stroke="#c99256" stroke-width="2" class="dl2-run"/>';
+ s+=T(190,24,'テープループ（エンドレス）','#c99256',11)+T(190,80,'テープの進行 → （下側）','#6f6754',10);
+ var H=multi?[['E',92,'er'],['R',128,'rec'],['P1',180,'play'],['P2',222,'play'],['P3',264,'play']]:[['E',100,'er'],['R',138,'rec'],['P',228,'play']];
+ H.forEach(function(h){s+=head(h[1],119,h[0],h[2])});
+ var r=H[1][1],pl=H[2][1];s+='<line x1="'+r+'" y1="100" x2="'+pl+'" y2="100" stroke="#e9a23b" stroke-width="1.3" marker-end="url(#dl2a)" marker-start="url(#dl2a)"/>'+T((r+pl)/2,96,'距離 d','#e9a23b',11);
+ if(!multi)s+=T(228,166,'↔ 再生ヘッドを動かして時間を変える','#5fb0e0',10);else s+=T(222,166,'ヘッドの組み合わせ＝リズムパターン','#5fb0e0',10);
+ s+='<circle cx="332" cy="126" r="6" fill="#8f949b"/>'+T(352,140,'キャプスタン','#6f6754',9);
+ return s+'<defs><marker id="dl2a" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e9a23b"/></marker></defs></svg>'}
+function reel(cx,cy){return '<circle cx="'+cx+'" cy="'+cy+'" r="38" fill="#2b271d" stroke="#8f949b" stroke-width="2"/><circle cx="'+cx+'" cy="'+cy+'" r="26" fill="#5a3f26"/><g class="dl2-spin" style="transform-origin:'+cx+'px '+cy+'px"><circle cx="'+cx+'" cy="'+cy+'" r="7" fill="#8f949b"/><line x1="'+cx+'" y1="'+(cy-24)+'" x2="'+cx+'" y2="'+(cy+24)+'" stroke="#8f949b" stroke-width="3"/><line x1="'+(cx-21)+'" y1="'+(cy+12)+'" x2="'+(cx+21)+'" y2="'+(cy-12)+'" stroke="#8f949b" stroke-width="3"/></g>'}
+function svgReel(){var s='<svg viewBox="0 0 380 172" role="img" aria-label="オープンリールのテープスラップの図">'+reel(70,52)+reel(310,52);
+ s+='<path d="M70,90 L130,122 H250 L310,90" fill="none" stroke="#7a5532" stroke-width="5"/><path d="M70,90 L130,122 H250 L310,90" fill="none" stroke="#c99256" stroke-width="1.6" class="dl2-run"/>';
+ s+=head(158,125,'E','er')+head(188,125,'R','rec')+head(226,125,'P','play');
+ s+='<path d="M226,160 V166 H188 V160" fill="none" stroke="#e9a23b" stroke-width="1.4" stroke-dasharray="4 3"/>';
+ s+=T(190,14,'送り出しリール → 巻き取りリール','#c99256',11)+T(300,166,'P→Rへ戻すとリピート','#e9a23b',9.5);
+ s+=T(207,112,'d','#e9a23b',11);return s+'</svg>'}
+function svgDrum(){var cx=190,cy=84,s='<svg viewBox="0 0 380 172" role="img" aria-label="磁気ドラム式エコーの図">';
+ s+='<circle cx="'+cx+'" cy="'+cy+'" r="54" fill="#2b271d" stroke="#8f949b" stroke-width="3"/>';
+ s+='<g class="dl2-spin" style="transform-origin:'+cx+'px '+cy+'px"><circle cx="'+cx+'" cy="'+cy+'" r="48" fill="none" stroke="#c99256" stroke-width="5" stroke-dasharray="12 7"/></g>';
+ s+=T(cx,cy+4,'回転ドラム','#c99256',11);
+ var H=[['E',140,'er'],['R',178,'rec'],['P1',216,'play'],['P2',252,'play'],['P3',288,'play'],['P4',324,'play']];
+ H.forEach(function(h){var a=h[1]*Math.PI/180,x=cx+66*Math.cos(a),y=cy+66*Math.sin(a),lx=cx+86*Math.cos(a),ly=cy+86*Math.sin(a);var c=h[2]==='rec'?'#e0685a':h[2]==='play'?'#5fb0e0':'#8f949b';
+  s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7" fill="'+c+'"/>'+T(lx.toFixed(1),(ly+4).toFixed(1),h[0],c,11)});
+ s+=T(320,150,'等間隔の再生ヘッド','#5fb0e0',10)+T(60,22,'回転方向 ↻','#6f6754',10);return s+'</svg>'}
+function svgOil(){var s='<svg viewBox="0 0 380 172" role="img" aria-label="オイル缶ディレイの図">';
+ s+='<rect x="110" y="20" width="160" height="132" rx="14" fill="#3a2c12" stroke="#8f949b" stroke-width="2"/><rect x="114" y="46" width="152" height="102" rx="10" fill="#7a5a1f" opacity=".55"/>';
+ s+='<ellipse cx="190" cy="98" rx="62" ry="16" fill="none" stroke="#c99256" stroke-width="5" class="dl2-run"/><line x1="190" y1="30" x2="190" y2="98" stroke="#8f949b" stroke-width="3"/>';
+ s+='<path d="M86,70 L132,94" stroke="#e0685a" stroke-width="3"/><path d="M294,70 L248,94" stroke="#5fb0e0" stroke-width="3"/>';
+ s+=T(70,64,'書込ブラシ','#e0685a',10.5)+T(312,64,'読出ブラシ','#5fb0e0',10.5)+T(190,138,'絶縁オイルに浸った回転ディスク','#e9d29b',10.5)+T(190,14,'電荷（静電気）で記録する“缶”','#c99256',11);
+ return s+'</svg>'}
+function svgBBD(){var s='<svg viewBox="0 0 380 172" role="img" aria-label="BBD（バケツリレー素子）の図">';
+ function box(x,y,w,l,c){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="24" rx="5" fill="#2b271d" stroke="'+(c||'#8f949b')+'"/>'+T(x+w/2,y+16,l,'#efe9dc',10.5)}
+ s+=T(16,22,'IN','#a79f8c',11,'start')+box(40,6,92,'圧縮（コンパンダ）','#e9a23b')+box(146,6,74,'LPF','#5fb0e0')+T(240,22,'↓','#a79f8c',13);
+ for(var i=0;i<16;i++){s+='<rect x="'+(28+i*20.5)+'" y="58" width="15" height="22" rx="2" fill="none" stroke="#8f949b"/>'}
+ s+='<circle class="dl2-charge" cx="35.5" cy="69" r="6" fill="#e9a23b"/>';
+ s+='<path d="M28,100 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10 h10 v-10 h10 v10" fill="none" stroke="#5fb0e0" stroke-width="1.4"/>';
+ s+=T(190,52,'BBD：コンデンサーの列を電荷がバケツリレー（例：4096段）','#c99256',10.5)+T(190,116,'クロック fc がバケツを渡す速さ ＝ ディレイタイムを決める','#5fb0e0',10);
+ s+=box(120,132,74,'LPF','#5fb0e0')+box(206,132,104,'伸張（コンパンダ）','#e9a23b')+T(330,148,'→ OUT','#a79f8c',11,'start');
+ return s+'</svg>'}
+function svgDigital(){var s='<svg viewBox="0 0 380 172" role="img" aria-label="初期デジタルディレイの図">';
+ s+='<rect x="12" y="62" width="62" height="34" rx="6" fill="#2b271d" stroke="#e0685a"/>'+T(43,84,'A/D','#efe9dc',12);
+ s+='<rect x="306" y="62" width="62" height="34" rx="6" fill="#2b271d" stroke="#5fb0e0"/>'+T(337,84,'D/A','#efe9dc',12);
+ for(var r=0;r<3;r++)for(var c=0;c<9;c++){s+='<rect x="'+(96+c*22)+'" y="'+(46+r*22)+'" width="18" height="18" rx="2" fill="#2b271d" stroke="#5a5140"/>'}
+ s+='<rect class="dl2-wptr" x="96" y="68" width="18" height="18" rx="2" fill="none" stroke="#e0685a" stroke-width="2.5"/>';
+ s+='<rect class="dl2-wptr" x="96" y="68" width="18" height="18" rx="2" fill="none" stroke="#5fb0e0" stroke-width="2.5" style="animation-delay:-1.2s"/>';
+ s+=T(190,36,'RAM（メモリ）に数値として記録','#c99256',11)+T(190,128,'書込位置（赤）と読出位置（青）の差 ＝ ディレイタイム','#a79f8c',10.5)+T(190,148,'12bit・低めのサンプリング周波数 → 粗さと帯域の限界','#a79f8c',10.5);
+ s+='<line x1="74" y1="79" x2="94" y2="79" stroke="#a79f8c"/><line x1="294" y1="79" x2="306" y2="79" stroke="#a79f8c"/>';
+ return s+'</svg>'}
+
+/* ---------- Machine data ---------- */
+var M={
+studio:{n:'スタジオ・テープスラップ',s:'オープンリール',era:'1950年代〜｜テープ（リール・トゥ・リール）',svg:svgReel,cap:'録音ヘッドの少し後ろにある再生ヘッドの信号を戻すと、ヘッド間の距離ぶん遅れた音が出る。',
+ how:'本来は録音機のオープンリールを流用したエコー。録音ヘッド（R）で書いた音を、数cm先の再生ヘッド（P）で読むと、その距離をテープが進む時間だけ遅れる。テープ速度の切替（例：15ips / 7.5ips）でディレイタイムがほぼ倍・半分に変わる。',
+ chips:['短めで太いスラップ','高域は比較的きれい','テープ飽和で丸い','わずかなWow/Flutter'],
+ P:{heads:[1],hg:[1],time:125,tmin:40,tmax:400,fb:15,drive:.35,lp:9500,hp:60,wow:.12,flutter:.12,wowRate:.55,noise:.12,ntype:'hiss',bits:24,peak:[0,0],spring:false},
+ calc:'tape',
+ map:[['Valhalla Delay','Mode：HiFi（スタジオのリール機を想定したクリーンなテープ）または Chrome Tape／Style：Single／Drive少しで丸み'],['EchoBoy','Style：Studio Tape（ATR-102がモデル）／Saturationで“テープに突っ込む”量を調整'],['Ableton Echo','Character › Wobble 5〜10%、Noise少量、Filter LP 8〜10kHz。飽和は別途Saturatorを後段に']],
+ use:'ロカビリーや50年代ポップスのボーカル・スラップの原点。現代でもボーカルを“前に出す”短いディレイの定番。'},
+plex:{n:'Echoplex 系テープエコー',s:'可動ヘッド',era:'1960年代〜｜テープ・カートリッジ',svg:function(){return svgLoop(false)},cap:'再生ヘッドの位置をスライドさせ、録音ヘッドとの距離＝ディレイタイムを変える。',
+ how:'カートリッジに入ったエンドレステープを使う持ち運べるテープエコー。再生ヘッドを物理的にスライドさせて時間を決める。プリアンプの色付けも含めて「ギターが太く前に出る」音として愛された。',
+ chips:['中域が前に出る','プリアンプの色付け','リピートごとに暗く・歪む','Wow/Flutterやや多め'],
+ P:{heads:[1],hg:[1],time:330,tmin:60,tmax:700,fb:20,drive:.55,lp:4800,hp:120,wow:.32,flutter:.35,wowRate:.7,noise:.3,ntype:'hiss',bits:24,peak:[1100,3.5],spring:false},
+ calc:'tape',
+ map:[['Valhalla Delay','Mode：Tape（Era：Past/Presentで汚れ多め）／Drive・Ageを上げる／Wow・Flutterで経年感'],['EchoBoy','Style：EchoPlex 系／Saturationを中〜高に。インサートで使うとプリアンプ的な太さも出る'],['Ableton Echo','Wobble 20%前後＋Noise。中域の押し出しはEQ Eightで1kHz付近を+2〜3dB（Echoの後段）']],
+ use:'ギターのリードやカッティング。ボーカルに使うと中域が張り出すので、ハイパスとローパスで帯域を絞るのがコツ。'},
+space:{n:'Space Echo 系（マルチヘッド）',s:'3ヘッド＋スプリング',era:'1970年代〜｜テープループ＋複数再生ヘッド',svg:function(){return svgLoop(true)},cap:'3つの再生ヘッドを組み合わせてリズムを作り、モーター速度で全体の時間を伸縮する。',
+ how:'エンドレステープに1つの録音ヘッドと3つの再生ヘッド。どのヘッドを鳴らすかの組み合わせで、付点や3連のようなリズムが生まれる。ディレイタイムはモーター速度（Repeat Rate）で変えるため、回しながら動かすとピッチが「ウニョーン」と滑る。スプリングリバーブ内蔵。',
+ chips:['複数ヘッドのリズム','速度変更でピッチが滑る','発振させてダブ','スプリングリバーブ'],
+ P:{heads:[1,2,3],hg:[1,0,.85],time:170,tmin:60,tmax:420,fb:20,drive:.55,lp:3800,hp:150,wow:.45,flutter:.5,wowRate:.8,noise:.35,ntype:'hiss',bits:24,peak:[1500,2],spring:true},
+ calc:'tape',
+ map:[['Valhalla Delay','Mode：Tape（RE-201/301がモデル）／Style：Quadでヘッド（Tap A〜D）を組み合わせる／Feedbackを上げて発振ダブ'],['EchoBoy','Style：Space Echo／Rhythm Echoモードで複数ヘッド的なパターンも作れる'],['Ableton Echo','Ping Pongではなく Stereo＋L/R別時間で近似。Reverb（Location：Feedback）でスプリング風の混ざり方に']],
+ use:'ダブ／レゲエの代名詞（Lee "Scratch" Perryらの作品）。インディーやローファイでは、短めのリピート＋スプリングで“古いテープの空気”を付けるのに最適。'},
+drum:{n:'磁気ドラム式エコー',s:'回転ドラム',era:'1950年代〜｜回転する磁気ドラム／ディスク',svg:svgDrum,cap:'回転するドラムの周囲に録音・再生ヘッドが並ぶ。テープではないので揺れが少なめ。',
+ how:'テープの代わりに、磁性体を塗った金属のドラム（ディスク）を回転させて記録する方式（Binson Echorecなど）。等間隔に並んだ複数の再生ヘッドを選んでリズムを作る。全ヘッドを重ねるとエコーが積み重なって膨らむ「スウェル」のような使い方もできる。',
+ chips:['等間隔マルチタップ','テープより安定','エコーが膨らむスウェル','中域が太く少しザラつく'],
+ P:{heads:[1,2,3,4],hg:[1,.8,.7,.6],time:95,tmin:40,tmax:200,fb:18,drive:.5,lp:4300,hp:100,wow:.12,flutter:.22,wowRate:.5,noise:.22,ntype:'hiss',bits:24,peak:[900,2],spring:false},
+ calc:'drum',
+ map:[['Valhalla Delay','Style：Quad（60〜70年代のマルチヘッド・エコーを想定）＋Mode：Tape/HiFi／REPEAT/SWELLボタンでフィードバックの挙動を切替'],['EchoBoy','Rhythm Echoモードで等間隔のタップを並べ、Shapeで音量カーブを作る'],['Ableton Echo','単体では難しい。Audio Effect Rackで時間違いのEchoを並列に並べて近似']],
+ use:'サイケデリック・ロックの浮遊感（Pink Floydの初期作品で有名）。ギターやオルガンの“回る”空間に。'},
+oil:{n:'オイル缶ディレイ',s:'静電記録',era:'1950〜60年代｜回転ディスク＋絶縁オイル',svg:svgOil,cap:'磁気ではなく“電荷”を回転ディスクに書き込み、オイルの中で保持して読み出す。',
+ how:'缶の中で絶縁オイルに浸ったディスクを回し、ブラシで電荷を書き込み・読み出す（Tel-Ray系）。記録が不安定なぶん、ピッチの揺れと高域の欠落が大きく、エコーというより“にじんだコーラス／ビブラート”のような独特の質感になる。',
+ chips:['暗くにじむ','大きく速い揺れ','コーラス的','ローファイな濁り'],
+ P:{heads:[1],hg:[1],time:140,tmin:40,tmax:300,fb:18,drive:.3,lp:2200,hp:220,wow:.85,flutter:.25,wowRate:2.8,noise:.25,ntype:'hiss',bits:24,peak:[650,2.5],spring:false},
+ calc:'drum',
+ map:[['Valhalla Delay','直接のモデルはなし。Mode：BBD または LoFi＋Mod Depthを深めに、High Cut 2〜3kHz、Diffusion少量で近い質感'],['EchoBoy','Style：TelRay（オイル缶ディレイがモデル）'],['Ableton Echo','LP 2kHz前後＋Modulation（Rate 2〜3Hz、Mod Delay大きめ）＋Character › Wobble']],
+ use:'サーフ・ギターやガレージ、ローファイ・ビート。Bedroom Pop系の“ぼやけた記憶”のような質感作りにも合う。'},
+bbd:{n:'BBD アナログディレイ',s:'バケツリレー素子',era:'1970年代後半〜80年代｜BBD（Bucket Brigade Device）',svg:svgBBD,cap:'電荷をコンデンサーの列で“手渡し”して遅らせる。テープを使わない純アナログ回路。',
+ how:'BBDチップの中で、音を電荷として数千個のコンデンサーにバケツリレーで送る。クロック周波数を下げるほど長いディレイになるが、同時に扱える帯域が狭くなるため、長い設定ほど暗くなる。ノイズを抑えるコンパンダ（圧縮→伸張）の副作用で、音量に合わせてノイズが“息づく”のも特徴。クロックを揺らすとコーラスやビブラートになる。',
+ chips:['暗く甘い','長いほど暗くなる','ノイズが音量に追従','揺らしてコーラス'],
+ P:{heads:[1],hg:[1],time:300,tmin:20,tmax:600,fb:20,drive:.45,lp:0,hp:80,wow:.18,flutter:0,wowRate:.6,noise:.28,ntype:'bbd',bits:24,peak:[800,1.5],spring:false,lpTrack:true},
+ calc:'bbd',
+ map:[['Valhalla Delay','Mode：BBD（暗く汚い）／Analog（現代的に明るいBBD）／BBDuck（明るめ＋ダッキング）。Age＝BBDノイズ量'],['EchoBoy','Style：Memory Man 系、DM-2 系'],['Ableton Echo','Filter LP 2.5〜3kHz、Modulation（Rate 0.5Hz前後）で揺らし、Character › Noise少量']],
+ use:'ギターペダルの定番（U2のThe EdgeとMemory Manなど）。シンセやボーカルに使うと、テープより“柔らかく奥に引っ込む”エコーになる。'},
+digi:{n:'初期デジタルディレイ',s:'12bit時代',era:'1970年代末〜80年代｜A/D → RAM → D/A',svg:svgDigital,cap:'音を数値にしてメモリへ書き、少し後の番地から読み出す。原理上は劣化しないが、当時は帯域と解像度に限界があった。',
+ how:'A/D変換した数値をRAMに書き込み、一定時間あとに読み出してD/A変換する。理屈の上ではリピートしても劣化しないので、アナログより明るく正確。ただし初期の機材はメモリが高価で、ビット数やサンプリング周波数が低め＝細かな粗さと高域の限界が“80年代の質感”になっている。',
+ chips:['明るく正確','リピートで劣化しにくい','低ビットの粗さ','ルーパー的な長時間'],
+ P:{heads:[1],hg:[1],time:360,tmin:5,tmax:1200,fb:20,drive:.1,lp:11000,hp:40,wow:0,flutter:0,wowRate:.5,noise:.04,ntype:'hiss',bits:12,peak:[0,0],spring:false},
+ calc:'digital',
+ map:[['Valhalla Delay','Mode：Digital（80年代の浮動小数点コンバーター機がモデル。Age 50%で12bit相当）／完全にクリーンならQuartz'],['EchoBoy','クリーン寄りのスタイルを選び、Saturationを下げる'],['Ableton Delay','最もクリーンな基準器。Echoを使うならCharacterをすべてOFFに']],
+ use:'80年代ポップスのくっきりしたリズム・ディレイ、ボーカルのロング・スロー。テープ系と比べて「エコーが前に残る」ので、ミックスではLPで落とすのが基本。'}
+};
+var ORDER=['studio','plex','space','drum','oil','bbd','digi'];
+
+/* ---------- state ---------- */
+var S={m:'studio',src:'pluck',clean:false,wetonly:false,spring:false,wet:-7};
+function cur(){return M[S.m].P}
+var V={};
+function loadMachine(k){S.m=k;var p=M[k].P;V={time:p.time,fb:p.fb,drive:p.drive,lp:p.lp,wow:p.wow,flutter:p.flutter,noise:p.noise,hg:p.hg.slice()};S.spring=!!p.spring;S.clean=false;render();if(ctx)rebuild()}
+function effLP(){var p=cur();if(S.clean)return 18000;if(p.lpTrack)return Math.max(1200,Math.min(9000,800000/V.time));return V.lp}
+function logTo(x,a,b){return a*Math.pow(b/a,x/1000)}function logFrom(v,a,b){return 1000*Math.log(v/a)/Math.log(b/a)}
+function fmtHz(v){return v>=1000?(v/1000).toFixed(1)+' kHz':Math.round(v)+' Hz'}
+
+/* ---------- render ---------- */
+var mbox=q('[data-el=machines]');
+ORDER.forEach(function(k){var b=document.createElement('button');b.dataset.m=k;b.setAttribute('role','tab');b.innerHTML='<b>'+M[k].n.replace(' 系','系')+'</b><span>'+M[k].s+'</span>';mbox.appendChild(b)});
+function render(){var m=M[S.m],p=m.P;
+ qa('[data-m]').forEach(function(b){b.classList.toggle('on',b.dataset.m===S.m);b.setAttribute('aria-selected',b.dataset.m===S.m)});
+ q('[data-el=svg]').innerHTML=m.svg();q('[data-el=cap]').textContent=m.cap;q('[data-el=era]').textContent=m.era;q('[data-el=name]').textContent=m.n;q('[data-el=how]').textContent=m.how;
+ q('[data-el=chips]').innerHTML=m.chips.map(function(c){return '<span>'+c+'</span>'}).join('');
+ q('[data-el=map]').innerHTML=m.map.map(function(r){return '<tr><th>'+r[0]+'</th><td>'+r[1]+'</td></tr>'}).join('')+'<tr><th>こんな曲・用途に</th><td>'+m.use+'</td></tr>';
+ q('[data-el=springbtn]').style.display=p.spring?'':'none';
+ q('[data-el=timehint]').textContent=m.calc==='tape'?'テープ速度（モーター）を変える操作。動かすとピッチが滑る':m.calc==='bbd'?'クロックを下げる＝長く・暗くなる（Toneが自動で連動）':m.calc==='digital'?'読み出し位置を変えるだけ。帯域は時間に左右されない':'回転速度を変える操作';
+ q('[data-el=noisehint]').textContent=p.ntype==='bbd'?'BBDノイズ。コンパンダで音量に合わせて“息づく”':p.bits<16?'量子化ノイズ（12bitの粗さ）＋わずかなヒス':'テープヒス（サーッという音）';
+ q('[data-el=lphint]').textContent=p.lpTrack?'BBDはTimeに連動して自動で暗くなる（手動不可）':'再生ヘッドや回路の帯域限界';
+ q('input[data-k=lp]').disabled=!!p.lpTrack;
+ var hb='';if(p.heads.length>1){hb='再生ヘッド：';p.heads.forEach(function(r,i){hb+='<button class="dl2-toggle'+(V.hg[i]>0?' on':'')+'" data-h="'+i+'">'+(S.m==='space'?'P':'P')+(i+1)+'（×'+r+'）</button>'})}else hb='<span>再生ヘッド：1つ（シングル）</span>';
+ q('[data-el=heads]').innerHTML=hb;
+ renderCalc();syncCtl();}
+function syncCtl(){var p=cur();
+ var ti=q('input[data-k=time]');ti.value=logFrom(V.time,p.tmin,p.tmax);
+ q('input[data-k=fb]').value=V.fb;q('input[data-k=drive]').value=V.drive;q('input[data-k=wow]').value=V.wow;q('input[data-k=flutter]').value=V.flutter;q('input[data-k=noise]').value=V.noise;q('input[data-k=wet]').value=S.wet;
+ if(!p.lpTrack)q('input[data-k=lp]').value=logFrom(V.lp,800,16000);
+ q('[data-o=time]').textContent=Math.round(V.time)+' ms';q('[data-o=fb]').textContent=V.fb+' %';q('[data-o=drive]').textContent=Math.round(V.drive*100)+' %';
+ q('[data-o=lp]').textContent=fmtHz(effLP());q('[data-o=wow]').textContent=Math.round(V.wow*100)+' %';q('[data-o=flutter]').textContent=Math.round(V.flutter*100)+' %';q('[data-o=noise]').textContent=Math.round(V.noise*100)+' %';q('[data-o=wet]').textContent=S.wet.toFixed(1)+' dB';
+ qa('.dl2-transport [data-t]').forEach(function(b){b.classList.toggle('on',!!S[b.dataset.t])});
+ drawResp();}
+
+/* ---------- response chart ---------- */
+var rc=q('[data-el=resp]');
+function lp2(f,fc){return 1/Math.sqrt(1+Math.pow(f/fc,4))}function hp2(f,fc){return 1/Math.sqrt(1+Math.pow(fc/f,4))}
+function pk(f,fc,g){if(!fc||!g)return 1;var x=Math.log2(f/fc);return Math.pow(10,(g*Math.exp(-x*x/0.6))/20)}
+function drawResp(){var dpr=window.devicePixelRatio||1,W=rc.clientWidth||700,H=(window.NK_H?NK_H(rc,200):200);rc.width=W*dpr;rc.height=H*dpr;var c=rc.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+ var p=cur(),lp=effLP(),hp=S.clean?20:p.hp,pf=S.clean?0:p.peak[0],pg=S.clean?0:p.peak[1];
+ var L=40,R=W-12,Tp=24,B=H-24,f0=50,f1=16000;function X(f){return L+(R-L)*Math.log(f/f0)/Math.log(f1/f0)}function Y(db){return Tp+(B-Tp)*(-db)/42}
+ c.font='10.5px sans-serif';c.strokeStyle='#2c271d';c.fillStyle='#857d6b';
+ [100,300,1000,3000,10000].forEach(function(f){c.beginPath();c.moveTo(X(f),Tp);c.lineTo(X(f),B);c.stroke();c.fillText(f>=1000?f/1000+'k':f,X(f)-8,H-8)});
+ [0,-12,-24,-36].forEach(function(d){c.beginPath();c.moveTo(L,Y(d));c.lineTo(R,Y(d));c.stroke();c.fillText(d+'dB',4,Y(d)+4)});
+ var cols=['#f3c46a','#e9a23b','#d07a35','#a9592f','#7c432b','#5a3326'];
+ for(var n=1;n<=6;n++){c.strokeStyle=cols[n-1];c.lineWidth=n===1?2.4:1.6;c.beginPath();for(var i=0;i<=160;i++){var f=f0*Math.pow(f1/f0,i/160);var h=lp2(f,lp)*hp2(f,hp)*pk(f,pf,pg);var db=Math.max(-42,20*n*Math.log10(h));i?c.lineTo(X(f),Y(db)):c.moveTo(X(f),Y(db))}c.stroke();
+  c.fillStyle=cols[n-1];c.fillRect(L+6+(n-1)*46,7,10,3);c.fillText(n+'回目',L+6+(n-1)*46+13,12)}
+ var note='';if(S.clean)note='クリーンなデジタル：フィルターがほぼ無いので、何回繰り返しても帯域が変わらない（＝エコーが前に残り続ける）。';
+ else if(p.lpTrack)note='BBD：Time '+Math.round(V.time)+'ms → 実効ハイカット約'+fmtHz(lp)+'。Timeを伸ばすとカーブ全体が左（暗い側）へ動く。';
+ else note='ループ内のフィルターがリピートごとに掛け算で効くので、6回目には中域だけが細く残る。これがアナログ・エコーが“奥へ消えていく”理由。';
+ q('[data-el=respnote]').textContent=note;}
+
+/* ---------- calculator ---------- */
+var C={d:6,v:19,deg:72,rpm:300,st:4096,fc:20,fs:32,mem:16,bits:12};
+function renderCalc(){var k=M[S.m].calc,h='';
+ function rg(key,lab,min,max,step,unit){return '<div class="dl2-ctl"><label>'+lab+' <output data-co="'+key+'">'+C[key]+unit+'</output></label><input type="range" data-c="'+key+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+C[key]+'"></div>'}
+ if(k==='tape')h='<div class="rows">'+rg('d','録音〜再生ヘッドの距離 d',1,20,.5,' cm')+rg('v','テープ速度 v',4.75,38,.25,' cm/s')+'</div><div class="res" data-el="cres"></div>';
+ else if(k==='drum')h='<div class="rows">'+rg('deg','ヘッド間の角度',10,180,1,'°')+rg('rpm','回転数',60,1200,10,' rpm')+'</div><div class="res" data-el="cres"></div>';
+ else if(k==='bbd')h='<div class="rows">'+rg('st','BBDの段数 N',512,4096,512,' 段')+rg('fc','クロック周波数 fc',5,200,1,' kHz')+'</div><div class="res" data-el="cres"></div>';
+ else h='<div class="rows">'+rg('fs','サンプリング周波数',16,48,1,' kHz')+rg('mem','メモリ量',2,128,2,' k サンプル')+rg('bits','ビット数',8,16,1,' bit')+'</div><div class="res" data-el="cres"></div>';
+ q('[data-el=calc]').innerHTML=h;calc()}
+function calc(){var k=M[S.m].calc,el=q('[data-el=cres]');if(!el)return;var t;
+ if(k==='tape'){t=C.d/C.v*1000;el.innerHTML='ディレイタイム ＝ d ÷ v ＝ <b>'+t.toFixed(0)+' ms</b><br><span style="font-size:13px;color:#a79f8c">テープ速度を半分にすると時間は2倍。ただし同じ距離に記録できる情報が減るので高域が落ち、揺れも目立つ＝「長いテープエコーほど暗く揺れる」。19cm/s は7.5ips、38cm/s は15ipsに相当。</span>'}
+ else if(k==='drum'){t=(C.deg/360)/(C.rpm/60)*1000;el.innerHTML='ディレイタイム ＝ (角度 ÷ 360) ÷ 毎秒回転数 ＝ <b>'+t.toFixed(0)+' ms</b><br><span style="font-size:13px;color:#a79f8c">ヘッドが等間隔なら、各ヘッドの時間は 1:2:3:4 の整数比。だから全ヘッドを重ねると規則正しいリズムで“積み上がる”。</span>'}
+ else if(k==='bbd'){t=C.st/(2*C.fc*1000)*1000;var bw=C.fc/2;el.innerHTML='ディレイタイム ＝ N ÷ (2 × fc) ＝ <b>'+t.toFixed(1)+' ms</b>　｜　理論上の帯域上限 ≒ fc ÷ 2 ＝ <b>'+bw.toFixed(1)+' kHz</b><br><span style="font-size:13px;color:#a79f8c">時間を伸ばす（fcを下げる）と帯域の上限も下がる。折り返しノイズ（エイリアス）を防ぐため、実機ではさらに低めのLPFを入れる＝長い設定ほど暗い。</span>'}
+ else{t=C.mem*1000/(C.fs*1000)*1000;el.innerHTML='最大ディレイ ＝ メモリ量 ÷ サンプリング周波数 ＝ <b>'+t.toFixed(0)+' ms</b>　｜　帯域上限 ≒ <b>'+(C.fs/2).toFixed(1)+' kHz</b>　｜　ダイナミックレンジ ≒ <b>'+(6.02*C.bits+1.76).toFixed(0)+' dB</b><br><span style="font-size:13px;color:#a79f8c">メモリが高価だった時代は「長い時間が欲しい→サンプリング周波数を下げる」のトレードオフがあった。ビット数が少ないほど小さな音の残響が粗くなる。</span>'}
+ qa('[data-co]').forEach(function(o){var u={d:' cm',v:' cm/s',deg:'°',rpm:' rpm',st:' 段',fc:' kHz',fs:' kHz',mem:' k サンプル',bits:' bit'}[o.dataset.co];o.textContent=C[o.dataset.co]+u})}
+
+/* ---------- audio ---------- */
+var ctx,A={},net=[],playing=false,timer,nextT=0,step=0,noiseBuf;
+function bq(t,f,qq,g){var n=ctx.createBiquadFilter();n.type=t;n.frequency.value=f;if(qq!=null)n.Q.value=qq;if(g!=null)n.gain.value=g;return n}
+function satCurve(k){var n=2048,c=new Float32Array(n);for(var i=0;i<n;i++){var x=i/(n-1)*2-1;c[i]=Math.tanh(k*x)/k}return c}
+function crushCurve(bits){var n=8192,c=new Float32Array(n),st=Math.pow(2,bits-1);for(var i=0;i<n;i++){var x=i/(n-1)*2-1;c[i]=bits>=16?x:Math.round(x*st)/st}return c}
+function absCurve(){var n=1024,c=new Float32Array(n);for(var i=0;i<n;i++){c[i]=Math.abs(i/(n-1)*2-1)}return c}
+function springIR(){var sr=ctx.sampleRate,len=Math.floor(sr*2.2),b=ctx.createBuffer(2,len,sr);for(var ch=0;ch<2;ch++){var d=b.getChannelData(ch),D=Math.floor(sr*(ch?.0347:.0311));for(var i=0;i<len;i++){var t=i/sr;var v=(Math.random()*2-1)*Math.exp(-t/.5)*.35;if(i>=D)v+=d[i-D]*.62;d[i]=v}}return b}
+function init(){ctx=new(window.AudioContext||window.webkitAudioContext)();
+ noiseBuf=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);var d=noiseBuf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+ A.master=ctx.createGain();A.master.gain.value=.55;A.lim=ctx.createDynamicsCompressor();A.lim.threshold.value=-8;A.lim.ratio.value=12;A.lim.attack.value=.003;A.lim.release.value=.2;A.master.connect(A.lim);A.lim.connect(ctx.destination);
+ A.src=ctx.createGain();A.dry=ctx.createGain();A.src.connect(A.dry);A.dry.connect(A.master);
+ A.wet=ctx.createGain();A.wet.connect(A.master);
+ A.spConv=ctx.createConvolver();A.spConv.buffer=springIR();A.spBP=bq('bandpass',1800,.6);A.spG=ctx.createGain();A.spConv.connect(A.spBP);A.spBP.connect(A.spG);A.spG.connect(A.master);
+ A.spIn=ctx.createGain();A.spIn.connect(A.spConv);A.src.connect(A.spIn);
+ A.wow1=ctx.createOscillator();A.wow2=ctx.createOscillator();A.flu=ctx.createOscillator();A.wow1.start();A.wow2.start();A.flu.start();
+ A.nsrc=ctx.createBufferSource();A.nsrc.buffer=noiseBuf;A.nsrc.loop=true;A.nsrc.start();
+ rebuild()}
+function rebuild(){net.forEach(function(n){try{n.disconnect()}catch(e){}});[A.wow1,A.wow2,A.flu,A.nsrc].forEach(function(n){try{n.disconnect()}catch(e){}});net=[];
+ var p=cur();
+ var inG=ctx.createGain(),pre=ctx.createWaveShaper(),rec=ctx.createGain(),hsum=ctx.createGain(),lp=bq('lowpass',5000,.707),hp=bq('highpass',100,.707),peak=bq('peaking',1000,.9,0),sat=ctx.createWaveShaper(),crush=ctx.createWaveShaper(),out=ctx.createGain(),fb=ctx.createGain();
+ var wowG=ctx.createGain(),wow2G=ctx.createGain(),fluG=ctx.createGain(),modSum=ctx.createGain();
+ var nHP=bq('highpass',p.ntype==='bbd'?800:2500,.7),nG=ctx.createGain(),envR=ctx.createWaveShaper(),envLP=bq('lowpass',7,.5),envG=ctx.createGain();
+ pre.oversample='2x';sat.oversample='2x';envR.curve=absCurve();fb.gain.value=0;nG.gain.value=0;envG.gain.value=0;
+ net.push(inG,pre,rec,hsum,lp,hp,peak,sat,crush,out,fb,wowG,wow2G,fluG,modSum,nHP,nG,envR,envLP,envG);
+ A.src.connect(inG);inG.connect(pre);pre.connect(rec);
+ A.wow1.connect(wowG);A.wow2.connect(wow2G);A.flu.connect(fluG);wowG.connect(modSum);wow2G.connect(modSum);fluG.connect(modSum);
+ A.dl=[];A.hgN=[];
+ p.heads.forEach(function(r,i){var d=ctx.createDelay(5),g=ctx.createGain(),ms=ctx.createGain();ms.gain.value=r;g.gain.value=0;rec.connect(d);modSum.connect(ms);ms.connect(d.delayTime);d.connect(g);g.connect(hsum);net.push(d,g,ms);A.dl.push(d);A.hgN.push(g)});
+ A.nsrc.connect(nHP);nHP.connect(nG);nG.connect(hsum);
+ rec.connect(envR);envR.connect(envLP);envLP.connect(envG);envG.connect(nG.gain);
+ hsum.connect(lp);lp.connect(hp);hp.connect(peak);peak.connect(sat);sat.connect(crush);crush.connect(out);out.connect(fb);fb.connect(rec);out.connect(A.wet);out.connect(A.spIn);
+ A.N={inG:inG,pre:pre,lp:lp,hp:hp,peak:peak,sat:sat,crush:crush,fb:fb,wowG:wowG,wow2G:wow2G,fluG:fluG,nG:nG,envG:envG,out:out};
+ A.lastCurve={};apply(true)}
+function apply(now){if(!ctx||!A.N)return;var p=cur(),n=A.N,t=ctx.currentTime,cl=S.clean;
+ var dr=cl?0:V.drive,k=1+dr*5;
+ var key=dr.toFixed(2);if(A.lastCurve.sat!==key){n.pre.curve=satCurve(1+dr*2.5);n.sat.curve=satCurve(k);A.lastCurve.sat=key}
+ var bits=cl?24:(p.bits<16?Math.round(14-V.noise*6):24);if(A.lastCurve.bits!==bits){n.crush.curve=crushCurve(bits);A.lastCurve.bits=bits}
+ n.inG.gain.setTargetAtTime(1+dr*1.5,t,.02);n.out.gain.setTargetAtTime(1,t,.02);
+ var base=V.time/1000;A.dl.forEach(function(d,i){d.delayTime.setTargetAtTime(base*p.heads[i],t,now?.001:(p.calc==='digital'?.01:.18))});
+ A.hgN.forEach(function(g,i){g.gain.setTargetAtTime(V.hg[i]>0?V.hg[i]:0,t,.02)});
+ var hs=V.hg.reduce(function(a,b){return a+(b>0?b:0)},0)||1;
+ var pkLin=cl?1:Math.pow(10,(p.peak[1]||0)/20);n.fb.gain.setTargetAtTime(Math.min(.99,(V.fb/100)/Math.max(1,hs)/pkLin),t,.03);
+ n.lp.frequency.setTargetAtTime(effLP(),t,.05);n.hp.frequency.setTargetAtTime(cl?20:p.hp,t,.05);
+ n.peak.frequency.value=p.peak[0]||1000;n.peak.gain.setTargetAtTime(cl?0:p.peak[1],t,.05);
+ A.wow1.frequency.setTargetAtTime(p.wowRate,t,.1);A.wow2.frequency.setTargetAtTime(p.wowRate*.63,t,.1);A.flu.frequency.setTargetAtTime(p.calc==='bbd'?.6:7.3,t,.1);
+ var wd=cl?0:V.wow*(p.calc==='bbd'?.0025:.0018),fd=cl?0:V.flutter*.00022;
+ n.wowG.gain.setTargetAtTime(wd*.65,t,.05);n.wow2G.gain.setTargetAtTime(wd*.35,t,.05);n.fluG.gain.setTargetAtTime(fd,t,.05);
+ var nl=(cl||!playing)?0:V.noise;if(p.ntype==='bbd'){n.nG.gain.setTargetAtTime(nl*.004,t,.05);n.envG.gain.setTargetAtTime(nl*.09,t,.05)}else{n.nG.gain.setTargetAtTime(nl*.012,t,.05);n.envG.gain.setTargetAtTime(0,t,.05)}
+ A.wet.gain.setTargetAtTime(Math.pow(10,S.wet/20),t,.02);A.dry.gain.setTargetAtTime(S.wetonly?0:1,t,.02);
+ A.spG.gain.setTargetAtTime(p.spring&&S.spring&&!cl?.55:0,t,.03)}
+
+/* ---------- sources ---------- */
+function mtof(m){return 440*Math.pow(2,(m-69)/12)}
+function env(g,t,a,pk,dc){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(pk,t+a);g.gain.exponentialRampToValueAtTime(.0005,t+a+dc)}
+function pluck(t,m){var f=mtof(m),o1=ctx.createOscillator(),o2=ctx.createOscillator(),lp=bq('lowpass',3800,1.2),g=ctx.createGain();o1.type='sawtooth';o2.type='triangle';o1.frequency.value=f;o2.frequency.value=f*2.003;lp.frequency.setValueAtTime(4200,t);lp.frequency.exponentialRampToValueAtTime(700,t+.22);env(g,t,.003,.32,.38);o1.connect(lp);o2.connect(lp);lp.connect(g);g.connect(A.src);o1.start(t);o2.start(t);o1.stop(t+.5);o2.stop(t+.5)}
+function snare(t){var ns=ctx.createBufferSource();ns.buffer=noiseBuf;var bp=bq('bandpass',2200,.7),hp=bq('highpass',700),g=ctx.createGain();env(g,t,.001,.55,.17);ns.connect(hp);hp.connect(bp);bp.connect(g);g.connect(A.src);ns.start(t,Math.random());ns.stop(t+.25);var o=ctx.createOscillator(),og=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(230,t);o.frequency.exponentialRampToValueAtTime(170,t+.06);env(og,t,.001,.5,.09);o.connect(og);og.connect(A.src);o.start(t);o.stop(t+.15)}
+function kick(t){var o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(48,t+.12);env(g,t,.002,.8,.32);o.connect(g);g.connect(A.src);o.start(t);o.stop(t+.4)}
+function vox(t,m,dur){var f=mtof(m),o=ctx.createOscillator(),vib=ctx.createOscillator(),vg=ctx.createGain(),g=ctx.createGain(),sum=ctx.createGain();o.type='sawtooth';o.frequency.value=f;vib.frequency.value=5.4;vg.gain.setValueAtTime(0,t);vg.gain.linearRampToValueAtTime(f*.012,t+Math.min(dur,.35));vib.connect(vg);vg.connect(o.frequency);
+ [[730,9,1],[1090,11,.55],[2440,14,.28],[3400,16,.12]].forEach(function(F){var b=bq('bandpass',F[0],F[1]),bg=ctx.createGain();bg.gain.value=F[2]*3;o.connect(b);b.connect(bg);bg.connect(sum)});
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.5,t+.05);g.gain.setValueAtTime(.5,t+dur);g.gain.exponentialRampToValueAtTime(.0005,t+dur+.14);sum.connect(g);g.connect(A.src);o.start(t);vib.start(t);var e=t+dur+.2;o.stop(e);vib.stop(e)}
+var PL={0:76,3:79,6:81,10:74,16:72,19:76,22:79,26:67},VX={0:[69,.9],8:[72,.45],12:[71,.3],16:[67,1.3]},BPM=92;
+function playStep(s,t){var six=60/BPM/4;if(S.src==='pluck'){if(PL[s]!=null)pluck(t,PL[s])}else if(S.src==='snare'){if(s%16===4||s%16===12)snare(t);if(s===0||s===16||s===26)kick(t)}else{var v=VX[s];if(v)vox(t,v[0],v[1]*six*4)}}
+function tick(){var six=60/BPM/4;while(nextT<ctx.currentTime+.15){playStep(step,nextT);nextT+=six;step=(step+1)%32}}
+function play(){if(!ctx)init();if(ctx.state==='suspended')ctx.resume();var b=q('[data-act=play]');if(playing){playing=false;clearInterval(timer);b.textContent='▶ 再生';apply();return}playing=true;apply();step=0;nextT=ctx.currentTime+.06;timer=setInterval(tick,25);tick();b.textContent='■ 停止'}
+
+/* ---------- events ---------- */
+root.addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!root.contains(b))return;
+ if(b.dataset.act==='play'){play();return}
+ if(b.dataset.m){loadMachine(b.dataset.m);return}
+ if(b.dataset.t){S[b.dataset.t]=!S[b.dataset.t];apply();syncCtl();return}
+ if(b.dataset.h!=null){var i=+b.dataset.h,p=cur();V.hg[i]=V.hg[i]>0?0:(p.hg[i]||.8);if(!V.hg.some(function(x){return x>0}))V.hg[i]=p.hg[i]||.8;b.classList.toggle('on',V.hg[i]>0);apply();return}
+ if(b.parentNode.dataset.group==='src'){S.src=b.dataset.v;qa('[data-group=src] button').forEach(function(x){x.classList.toggle('on',x===b)})}});
+root.addEventListener('input',function(e){var el=e.target;
+ if(el.dataset.c){C[el.dataset.c]=+el.value;calc();return}
+ var k=el.dataset.k;if(!k)return;var p=cur();
+ if(k==='time')V.time=logTo(+el.value,p.tmin,p.tmax);else if(k==='lp')V.lp=logTo(+el.value,800,16000);else if(k==='wet')S.wet=+el.value;else V[k]=+el.value;
+ apply();syncCtl()});
+window.addEventListener('resize',drawResp);
+loadMachine('studio');
+})();
+</script>
+</div>
+<script>
+window.JPKFP_CONF_OFF={"key": "analog-delay-lab", "mount": "#dl2", "css": ".jpkfp .dl2-top{grid-template-columns:1fr!important}", "vars": {"bg": "var(--bg)", "bg2": "var(--panel)", "line": "var(--line)", "fg": "var(--ink)", "muted": "var(--mute)"}, "targets": [{"el": "#dl2 .dl2-top", "ja": "仕組みと解説", "en": "How it works"}, {"el": "#dl2 [data-fp=map]", "ja": "プラグインで近づけるなら", "en": "Getting this sound in plugins"}], "buttons": [{"host": "#dl2 .dl2-transport"}]};
+/* ---------- floating explanation panel (shared across JPK labs) ---------- */
+(function(){
+var C=window.JPKFP_CONF;if(!C||window.JPKFP_READY)return;window.JPKFP_READY=1;
+function $(s){return typeof s==='string'?document.querySelector(s):s}
+function lang(){return C.lang?C.lang():(document.documentElement.lang||'ja').slice(0,2)}
+var T={ja:{open:'解説をパネルで表示',close:'パネルを閉じる',ph:'パネルで表示中',back:'ここに戻す',prev:'前へ',next:'次へ',x:'閉じる',drag:'ドラッグで移動'},
+       en:{open:'Show notes in a panel',close:'Close panel',ph:'Shown in the floating panel',back:'Put it back here',prev:'Previous',next:'Next',x:'Close',drag:'Drag to move'}};
+function t(k){return (T[lang()]||T.ja)[k]}
+function i18n(el,k,attr){/* keeps EQ-lab style [data-en] toggles in sync */
+  if(attr){el.setAttribute(attr,t(k));return}
+  el.textContent=t(k);el.setAttribute('data-ja',T.ja[k]);el.setAttribute('data-en',T.en[k]);}
+var V=C.vars||{};
+var css='.jpkfp{position:fixed;z-index:60;width:420px;height:540px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);min-width:300px;min-height:220px;display:flex;flex-direction:column;'+
+ 'background:'+(V.bg||'#161922')+';color:'+(V.fg||'inherit')+';border:1px solid '+(V.line||'#2a2f3d')+';border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.38);resize:both;overflow:hidden;text-align:left;box-sizing:border-box}'+
+ '.jpkfp[hidden]{display:none!important}.jpkfp *{box-sizing:border-box}'+
+ '.jpkfp .jpkfp-head{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid '+(V.line||'#2a2f3d')+';background:'+(V.bg2||'transparent')+';cursor:move;touch-action:none;user-select:none;-webkit-user-select:none}'+
+ '.jpkfp .jpkfp-grip{color:'+(V.muted||'#8e94a4')+';font-size:16px;padding:0 4px 0 2px;line-height:1}'+
+ '.jpkfp .jpkfp-title{flex:1;min-width:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+ '.jpkfp select.jpkfp-sel{flex:1;min-width:0;font:inherit;font-size:13px;color:inherit;background:'+(V.bg||'#161922')+';border:1px solid '+(V.line||'#2a2f3d')+';border-radius:6px;padding:4px 6px;height:30px;margin:0}'+
+ '.jpkfp button.jpkfp-ib{flex:none;width:30px;height:30px;padding:0!important;margin:0;display:grid;place-items:center;font:inherit;font-size:13px;line-height:1;color:inherit;background:'+(V.bg||'#161922')+'!important;border:1px solid '+(V.line||'#2a2f3d')+'!important;border-radius:6px;cursor:pointer;box-shadow:none!important;min-width:0;min-height:0}'+
+ '.jpkfp button.jpkfp-ib:hover{border-color:'+(V.muted||'#8e94a4')+'!important}'+
+ '.jpkfp .jpkfp-body{overflow:auto;flex:1;padding:14px 16px 18px;-webkit-overflow-scrolling:touch}'+
+ '.jpkfp .jpkfp-body>.jpkfp-moved{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;max-width:none!important;width:auto!important;position:static!important}'+
+ '.jpkfp-ph{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border:1px dashed '+(V.line||'#2a2f3d')+';border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:13px;color:'+(V.muted||'#8e94a4')+'}'+
+ '@media (max-width:700px){.jpkfp{left:0!important;right:0;top:auto!important;bottom:0;width:auto!important;height:46vh!important;max-width:none;border-radius:12px 12px 0 0;resize:none;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}.jpkfp .jpkfp-head{cursor:default}}'+
+ (C.css||'');
+var st=document.createElement('style');st.textContent=css;(C.mount?$(C.mount):document.head).appendChild(st);
+
+var targets=[];C.targets.forEach(function(d){var el=$(d.el);if(el)targets.push({el:el,ja:d.ja,en:d.en})});
+if(!targets.length)return;
+function label(d){return lang()==='en'?d.en:d.ja}
+
+var fp=document.createElement('div');fp.className='jpkfp'+(C.cls?' '+C.cls:'');fp.hidden=true;fp.setAttribute('role','dialog');
+var multi=targets.length>1;
+fp.innerHTML='<div class="jpkfp-head"><span class="jpkfp-grip">⠿</span>'+
+  (multi?'<button type="button" class="jpkfp-ib" data-a="prev">◀</button><select class="jpkfp-sel"></select><button type="button" class="jpkfp-ib" data-a="next">▶</button>':'<span class="jpkfp-title"></span>')+
+  '<button type="button" class="jpkfp-ib" data-a="close">✕</button></div><div class="jpkfp-body"></div>';
+(C.mount?$(C.mount):document.body).appendChild(fp);
+var head=fp.querySelector('.jpkfp-head'),body=fp.querySelector('.jpkfp-body'),sel=fp.querySelector('.jpkfp-sel'),ttl=fp.querySelector('.jpkfp-title');
+var KEY='jpkfp-'+(C.key||location.pathname);
+var cur=0,live=-1,ph=null;
+
+function labels(){
+  fp.setAttribute('aria-label',label(targets[cur]));
+  i18n(head.querySelector('.jpkfp-grip'),'drag','title');
+  i18n(fp.querySelector('[data-a=close]'),'x','aria-label');
+  if(multi){i18n(fp.querySelector('[data-a=prev]'),'prev','aria-label');i18n(fp.querySelector('[data-a=next]'),'next','aria-label');
+    sel.innerHTML=targets.map(function(d,i){return '<option value="'+i+'">'+label(d)+'</option>'}).join('');sel.value=String(cur);}
+  else ttl.textContent=label(targets[0]);
+  btns.forEach(function(b){i18n(b,fp.hidden?'open':'close')});
+  if(ph){i18n(ph.querySelector('span'),'ph');i18n(ph.querySelector('button'),'back');}
+}
+function putBack(){
+  if(live<0)return;var el=targets[live].el;el.classList.remove('jpkfp-moved');
+  if(ph&&ph.parentNode){ph.parentNode.insertBefore(el,ph);ph.parentNode.removeChild(ph);}
+  live=-1;ph=null;
+}
+function show(i){
+  putBack();cur=(i+targets.length)%targets.length;var el=targets[cur].el;
+  ph=document.createElement('div');ph.className='jpkfp-ph';
+  ph.innerHTML='<span></span><button type="button" class="'+(C.btnCls||'')+'"></button>';
+  ph.querySelector('button').addEventListener('click',function(){setOpen(false)});
+  el.parentNode.insertBefore(ph,el);el.classList.add('jpkfp-moved');body.appendChild(el);body.scrollTop=0;live=cur;labels();
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.i=cur;localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+}
+function clamp(v,a,b){return Math.min(b,Math.max(a,v))}
+function place(x,y){
+  var w=fp.offsetWidth,h=fp.offsetHeight;
+  x=clamp(x,8,Math.max(8,innerWidth-w-8));y=clamp(y,8,Math.max(8,innerHeight-h-8));
+  fp.style.left=x+'px';fp.style.top=y+'px';
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.x=x;s.y=y;localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+}
+function setOpen(on){
+  if(on===!fp.hidden)return;
+  if(!on){putBack();fp.hidden=true;labels();return;}
+  var s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  fp.hidden=false;
+  if(s&&s.w){fp.style.width=s.w;fp.style.height=s.h;}
+  place(s&&s.x!=null?s.x:innerWidth-fp.offsetWidth-24,s&&s.y!=null?s.y:innerHeight-fp.offsetHeight-24);
+  show(s&&s.i<targets.length?s.i:0);
+}
+var btns=[];
+(C.buttons||[]).forEach(function(b){
+  var host=$(b.host);if(!host)return;
+  var el=document.createElement('button');el.type='button';el.className=b.cls||C.btnCls||'';
+  el.addEventListener('click',function(){setOpen(fp.hidden)});
+  if(b.pos==='before')host.parentNode.insertBefore(el,host);else if(b.pos==='after')host.parentNode.insertBefore(el,host.nextSibling);else host.appendChild(el);btns.push(el);
+});
+fp.querySelector('[data-a=close]').addEventListener('click',function(){setOpen(false)});
+if(multi){
+  fp.querySelector('[data-a=prev]').addEventListener('click',function(){show(cur-1)});
+  fp.querySelector('[data-a=next]').addEventListener('click',function(){show(cur+1)});
+  sel.addEventListener('change',function(){show(+sel.value)});
+}
+var drag=null;
+head.addEventListener('pointerdown',function(e){
+  if(e.target.closest('button,select')||innerWidth<=700)return;
+  drag={dx:e.clientX-fp.offsetLeft,dy:e.clientY-fp.offsetTop};try{head.setPointerCapture(e.pointerId)}catch(_){}
+});
+head.addEventListener('pointermove',function(e){if(drag)place(e.clientX-drag.dx,e.clientY-drag.dy)});
+head.addEventListener('pointerup',function(){drag=null});
+head.addEventListener('pointercancel',function(){drag=null});
+if(window.ResizeObserver)new ResizeObserver(function(){if(!fp.hidden&&innerWidth>700){try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.w=fp.offsetWidth+'px';s.h=fp.offsetHeight+'px';localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}}).observe(fp);
+addEventListener('resize',function(){if(!fp.hidden&&innerWidth>700)place(fp.offsetLeft,fp.offsetTop)});
+if(C.langBtn){var lb=$(C.langBtn);if(lb)lb.addEventListener('click',function(){setTimeout(labels,0)})}
+labels();
+})();
+</script>
+<!-- ===== Seesaa記事に貼り付け：ここまで ===== -->
+
+<script>
+(function(){if(window.parent===window)return;var last=0;
+function send(){var h=Math.ceil(document.documentElement.scrollHeight);if(Math.abs(h-last)<2)return;last=h;window.parent.postMessage({type:'jpk-lab-height',height:h},'*')}
+if(window.ResizeObserver)new ResizeObserver(send).observe(document.body);window.addEventListener('load',send);setTimeout(send,300)})();
+</script>
+<script>window.NK={"lang": "ja", "mount": "#dl2", "title": "アナログディレイ・スタディノート", "sub": "アナログディレイ機器ラボ", "links": [["← 目次", "https://kazufumi01.github.io/ja/"], ["旧版", "https://kazufumi01.github.io/analog-delay-lab/"], ["解説記事", "https://jpk.seesaa.net/article/521843924.html", "target=\"_blank\" rel=\"noopener\""], ["English", "./en/", "hreflang=\"en\" lang=\"en\""]], "transport": [".dl2-play"], "graphs": [{"sel": ".dl2-machines", "area": "ma"}, {"sel": ".dl2-top", "area": "tp"}, {"sel": ".dl2-resp", "area": "rs", "fill": ["canvas"], "with": ["[data-el=respnote]"]}], "areas": "\"ma\" \"tp\" \"rs\"", "cols": "minmax(0,1fr)", "rows": "auto minmax(0,1.25fr) minmax(0,1fr)", "cw": "330px", "ctrls": [".dl2-transport", ".dl2-grid"], "notes": [{"sel": ".dl2-calc", "label": "数字で確かめる"}, {"sel": "[data-fp=map]", "label": "実機に近づける"}], "about": ".dl2-lead, .dl2-foot", "hide": "#dl2 > .dl2-kicker, #dl2 > .dl2-title, #dl2 > .dl2-lang, #dl2 > .dl2-sec"};</script>
+<script src="/note-kit/kit.js"></script>
+</body>
+</html>
