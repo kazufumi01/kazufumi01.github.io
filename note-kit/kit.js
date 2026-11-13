@@ -2,7 +2,7 @@
 (function () {
   var C = window.NK; if (!C) return;
   var $ = function (s, r) { return (r || document).querySelector(s); };
-  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var $$ = function (s, r) { return s ? Array.prototype.slice.call((r || document).querySelectorAll(s)) : []; };
   var ja = C.lang !== 'en';
   var root = document.documentElement; root.classList.add('nk'); root.setAttribute('data-theme', 'light');
   var mq = matchMedia('(min-width:1100px) and (min-height:660px)');
@@ -23,19 +23,21 @@
   var body = document.createElement('div'); body.className = 'nk-body';
   notes.appendChild(tabs); notes.appendChild(body);
   main.appendChild(graphs); main.appendChild(ctrls); main.appendChild(notes);
-  document.body.insertBefore(head, document.body.firstChild);
+  var M = C.mount ? $(C.mount) : document.body; if (C.mount) M.classList.add('nk-mounted');
+  M.insertBefore(head, M.firstChild);
   head.parentNode.insertBefore(main, head.nextSibling);
   var guide = [];
   C.graphs.forEach(function (g) {
     var el = typeof g.sel === 'string' ? $(g.sel) : g.sel(); if (!el) return;
     el.classList.add('nk-card'); el.style.gridArea = g.area; graphs.appendChild(el);
+    (g.with || []).forEach(function (q) { $$(q).forEach(function (x) { el.appendChild(x); }); });
     (g.fill || []).forEach(function (s) {
       var cv = $(s, el); if (!cv) return;
       var w = document.createElement('div'); w.className = 'nk-cv'; cv.parentNode.insertBefore(w, cv); w.appendChild(cv);
     });
     var h = $('h2', el), parts = [];
     $$('.legend', el).forEach(function (lg) { parts.push('<div class="nk-leg">' + lg.innerHTML + '</div>'); });
-    $$('p.note', el).forEach(function (p) { parts.push('<p>' + p.innerHTML + '</p>'); });
+    $$('p.note, p.cap', el).forEach(function (p) { parts.push('<p>' + p.innerHTML + '</p>'); });
     if (g.guide) parts.push(g.guide);
     if (h && parts.length) guide.push('<section><h4>' + h.textContent + '</h4>' + parts.join('') + '</section>');
   });
