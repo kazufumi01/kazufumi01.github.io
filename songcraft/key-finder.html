@@ -1,0 +1,809 @@
+<!doctype html><html lang="ja"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><div style="font:12px/1.6 system-ui,sans-serif;padding:6px max(12px,env(safe-area-inset-left));display:flex;gap:14px;flex-wrap:wrap"><a href="https://kazufumi01.github.io/ja/#tools" style="color:inherit;opacity:.75">← Audio Anatomy Labs 目次</a><span style="opacity:.6">Songcraft Lab：<a href="first-song.html" style="color:inherit">First Song</a> · <a href="hum-to-song.html" style="color:inherit">Hum to Song</a> · <a href="key-finder.html" style="color:inherit">Key Finder</a> · <a href="call-response.html" style="color:inherit">Call &amp; Response</a> · <a href="riff-lab.html" style="color:inherit">Riff Lab</a></span></div>
+<title>Songcraft Key Finder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one working column like a channel strip — question deck and input on top, verdict strip, six-step analysis rack below */
+:root{
+  --bg:#E9ECEF; --panel:#FFFFFF; --ink:#15181E; --muted:#5B6370; --line:#CDD2D9;
+  --amber:#A85F00; --amber-soft:#F6E6CC; --teal:#0E7A70; --teal-soft:#D3EEEA;
+  --clash:#B3261E; --clash-soft:#F7DAD7;
+  --key-w:#FAFAF9; --key-b:#1C1F26; --key-ink:#3A3F48;
+  --roll-bg:#F4F6F8; --grid:#E1E5EA; --grid-bar:#C2C8D0; --sub:#F3F5F7;
+  --f-display:"Unbounded","Zen Kaku Gothic New",system-ui,sans-serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101216; --panel:#181B21; --ink:#E6E8EC; --muted:#9AA2AE; --line:#2C313A;
+  --amber:#F0A63A; --amber-soft:#3A2C17; --teal:#3CC2B2; --teal-soft:#12302D;
+  --clash:#F07167; --clash-soft:#3B1D1B;
+  --key-w:#D5D8DE; --key-b:#0A0B0E; --key-ink:#2C3038;
+  --roll-bg:#14171C; --grid:#22262D; --grid-bar:#363C47; --sub:#1D2027; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101216; --panel:#181B21; --ink:#E6E8EC; --muted:#9AA2AE; --line:#2C313A;
+  --amber:#F0A63A; --amber-soft:#3A2C17; --teal:#3CC2B2; --teal-soft:#12302D;
+  --clash:#F07167; --clash-soft:#3B1D1B;
+  --key-w:#D5D8DE; --key-b:#0A0B0E; --key-ink:#2C3038;
+  --roll-bg:#14171C; --grid:#22262D; --grid-bar:#363C47; --sub:#1D2027; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,6vw,44px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 span{color:var(--amber)}
+.lede{margin:0;color:var(--muted);max-width:62ch}
+h2{font-size:16px;margin:0;font-weight:700;letter-spacing:.02em}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.spread{justify-content:space-between}
+button,select,input[type=text]{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 11px;cursor:pointer;line-height:1.4}
+input[type=text]{cursor:text;font-family:var(--f-mono);width:140px}
+button:hover:not(:disabled){border-color:var(--muted)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+button.primary{background:var(--ink);color:var(--panel);border-color:var(--ink);font-weight:700}
+button.on{background:var(--amber-soft);border-color:var(--amber);color:var(--ink);font-weight:700}
+button.tonic-on{background:var(--teal-soft);border-color:var(--teal);font-weight:700}
+.lbl{font-size:12px;color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+input[type=range]{accent-color:var(--amber);width:120px}
+
+/* question deck */
+.deck{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:10px}
+.deck-cell{background:var(--sub);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.deck-cell h3{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+@media (max-width:680px){.deck{grid-template-columns:1fr}}
+.source{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.source b{color:var(--ink)}
+
+/* piano roll */
+.roll-box{overflow-x:auto;background:var(--roll-bg);border:1px solid var(--line);border-radius:8px;min-height:140px}
+.roll-box svg{display:block}
+.roll-empty{padding:40px 16px;text-align:center;color:var(--muted);font-size:13px}
+.n-rect{fill:var(--amber);opacity:.85;cursor:pointer}
+.n-rect.playing{fill:var(--teal);opacity:1}
+.n-txt{fill:var(--panel);font-family:var(--f-mono);font-size:9px;pointer-events:none}
+.g-line{stroke:var(--grid)}
+.g-bar{stroke:var(--grid-bar)}
+.p-lbl{fill:var(--muted);font-family:var(--f-mono);font-size:9px}
+
+/* keyboard */
+.kb-wrap{overflow-x:auto}
+.kb{position:relative;height:118px;display:flex;user-select:none;-webkit-user-select:none;min-width:330px;touch-action:manipulation}
+.wk{flex:1;background:var(--key-w);border:1px solid var(--line);border-left-width:0;border-radius:0 0 6px 6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;padding-bottom:6px;font-family:var(--f-mono);font-size:10px;color:var(--key-ink);cursor:pointer;position:relative}
+.wk:first-child{border-left-width:1px}
+.bk{position:absolute;top:0;height:60%;background:var(--key-b);border-radius:0 0 4px 4px;z-index:2;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px}
+.wk.down,.bk.down{background:var(--amber)}
+.dot{width:7px;height:7px;border-radius:50%;background:transparent}
+.used .dot{background:var(--amber)}
+.tonicKey .dot{background:var(--teal);box-shadow:0 0 0 2px var(--teal-soft)}
+
+/* verdict */
+.verdict{display:flex;flex-direction:column;gap:12px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.vcell{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--panel);display:flex;flex-direction:column;gap:2px;min-width:0}
+.vcell .big{font-family:var(--f-display);font-size:21px;font-weight:700;line-height:1.25}
+.vcell.locked .big{color:var(--muted);font-family:var(--f-mono);font-size:18px;letter-spacing:.2em}
+.vcell.ok{border-color:var(--teal);background:var(--teal-soft)}
+.vcell.ng{border-color:var(--clash)}
+.vnote{font-size:13px;color:var(--muted);margin:0}
+.vnote b{color:var(--ink)}
+
+/* steps */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.tab{display:flex;align-items:center;gap:8px;white-space:nowrap;background:transparent}
+.tab .num{font-family:var(--f-display);font-size:12px;width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;border:1px solid var(--line)}
+.tab.active{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.tab.active .num{border-color:var(--panel)}
+.step{display:flex;flex-direction:column;gap:14px}
+.step h3{margin:0;font-size:18px}
+.step p{margin:0;max-width:66ch}
+.why{font-size:13px;color:var(--muted);border-left:2px solid var(--line);padding-left:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--f-mono);font-size:12px;padding:3px 8px;border-radius:5px;border:1px solid var(--line);background:var(--panel)}
+.c-stable{background:var(--teal-soft);border-color:var(--teal)}
+.c-third{background:var(--amber-soft);border-color:var(--amber)}
+.c-tension{border-style:dashed}
+.c-clash{background:var(--clash-soft);border-color:var(--clash);color:var(--ink)}
+.chip.playing{outline:2px solid var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;border:1px solid var(--line);display:inline-block}
+.stat{display:flex;flex-wrap:wrap;gap:20px}
+.stat div{display:flex;flex-direction:column}
+.stat b{font-family:var(--f-mono);font-size:20px}
+.pcs{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;align-items:end}
+.pc{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.pc .bar{width:100%;max-width:28px;background:var(--grid);border-radius:3px 3px 0 0;min-height:3px}
+.pc.u .bar{background:var(--amber)}
+.pc.u{color:var(--ink);font-weight:600}
+.keylist{display:flex;flex-wrap:wrap;gap:6px}
+.locked-box{background:var(--sub);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.cf-list{display:flex;flex-direction:column;gap:10px}
+.cf{border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.cf-tag{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--amber)}
+.cf-key{font-family:var(--f-display);font-size:18px;font-weight:700;line-height:1.3}
+.cf p{font-size:14px}
+.cf-h{display:block;font-size:12px;font-weight:700;color:var(--muted)}
+.cf-algo{background:var(--sub);border-radius:8px;padding:12px 14px}
+.cf-algo summary{cursor:pointer;font-weight:700;font-size:14px}
+.cf-algo[open]{display:flex;flex-direction:column;gap:10px}
+.cf-steps{margin:8px 0 0;padding-left:1.4em;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.tbl-box{overflow-x:auto}
+abbr.term{text-decoration:underline dotted;text-underline-offset:3px;cursor:help}
+.gloss{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0 0;font-size:13px}
+.gloss dt{font-weight:700}
+.gloss dd{margin:0;color:var(--muted)}
+@media (max-width:520px){.gloss{grid-template-columns:1fr}.gloss dd{margin-bottom:6px}}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:520px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.meter{height:8px;background:var(--grid);border-radius:4px;overflow:hidden;width:110px}
+.meter i{display:block;height:100%;background:var(--amber)}
+tr.top .meter i{background:var(--teal)}
+.yes{color:var(--teal);font-weight:700}
+.no{color:var(--muted)}
+.bad{color:var(--clash);font-weight:700}
+footer{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+footer a{color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Songcraft Lab · Vol.2 module</div>
+    <h1>Key <span>Finder</span></h1>
+    <p class="lede">出題されたメロディのキーを、6つの方法で順番に探します。トニックと長調・短調を決めたら答え合わせ。正解とアルゴリズムの推定はそれまで表示されません。</p>
+  </header>
+
+  <section class="panel" aria-labelledby="h-mel">
+    <div class="row spread">
+      <h2 id="h-mel">出題とメロディ</h2>
+      <div class="source" id="source"></div>
+    </div>
+    <div class="deck">
+      <div class="deck-cell">
+        <h3>サンプル問題</h3>
+        <select id="sample" aria-label="サンプル問題"></select>
+      </div>
+      <div class="deck-cell">
+        <h3>自動出題</h3>
+        <div class="row">
+          <select id="g-diff" aria-label="難易度">
+            <option value="E">やさしい</option>
+            <option value="N" selected>ふつう</option>
+            <option value="H">むずかしい</option>
+          </select>
+          <select id="g-mode" aria-label="長調・短調">
+            <option value="B" selected>メジャー・マイナー両方</option>
+            <option value="M">メジャーのみ</option>
+            <option value="N">マイナーのみ</option>
+          </select>
+          <select id="g-bars" aria-label="長さ">
+            <option value="4">4小節</option>
+            <option value="8" selected>8小節</option>
+          </select>
+          <button class="primary" id="g-new">新しい問題を生成</button>
+        </div>
+        <div class="row">
+          <label class="lbl" for="g-code">問題番号</label>
+          <input type="text" id="g-code" placeholder="NB8-48213" spellcheck="false" autocomplete="off">
+          <button id="g-load">読み込み</button>
+          <span class="lbl" id="g-msg"></span>
+        </div>
+      </div>
+    </div>
+    <div class="roll-box" id="roll"></div>
+    <div class="row spread">
+      <div class="row">
+        <button class="primary" id="btn-play" title="再生／停止（スペースキー）" aria-keyshortcuts="Space">▶ 再生</button>
+        <button id="btn-stop">■ 停止</button>
+        <span class="lbl">テンポ</span>
+        <input type="range" id="bpm" min="60" max="140" value="92" aria-label="テンポ">
+        <span class="mono lbl" id="bpm-val">92</span>
+      </div>
+      <div class="row">
+        <span class="lbl">音価</span>
+        <button data-dur="0.5" class="dur">8分</button>
+        <button data-dur="1" class="dur on">4分</button>
+        <button data-dur="2" class="dur">2分</button>
+        <button id="btn-undo">1音戻す</button>
+        <button id="btn-clear">クリア</button>
+      </div>
+    </div>
+    <div class="kb-wrap"><div class="kb" id="kb"></div></div>
+    <p class="lbl" style="margin:0">鍵盤クリック、またはPCキー A W S E D F T G Y H U J K（C4〜C5）で入力できます。出題中のメロディを編集すると「自作メロディ」扱いになり、正解は表示されません。オレンジの点はメロディで使っている音、緑の点は現在のトニック候補です。</p>
+  </section>
+
+  <section class="verdict" id="verdict" aria-label="判定と答え合わせ"></section>
+
+  <section class="panel" aria-labelledby="h-steps">
+    <h2 id="h-steps">判別ステップ</h2>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div id="panel" class="step" role="tabpanel"></div>
+  </section>
+
+  <details class="panel" id="gloss-box"><summary style="cursor:pointer;font-weight:700">用語集</summary><dl class="gloss" id="glossary"></dl></details>
+
+  <footer>
+    <div>鼻歌の録音とMIDI化はVol.2「Hum to Song」で追加予定です。ここでは鍵盤入力と出題で判別の考え方を体験します。</div>
+    <div>判別法の出典: <a href="https://chordlookup.com/learn/lessons/transcribing-music-by-ear" target="_blank" rel="noopener">ChordLookup</a> · <a href="https://violetrecording.com/how-to-find-the-key-of-a-song" target="_blank" rel="noopener">Violet Recording</a> · <a href="https://www.mazmazika.com/blog/how-to-find-the-key-of-a-song" target="_blank" rel="noopener">Mazmazika</a> · <a href="https://sonid.app/en/blog/post/how-to-know-which-key-you-re-in" target="_blank" rel="noopener">Sonid</a>。自動推定はKrumhansl–Kesslerのキープロファイル相関を使っています。</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+const PC_SHARP=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const PC_FLAT =['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+const MAJ_N=['C','D♭','D','E♭','E','F','F♯','G','A♭','A','B♭','B'];
+const MIN_N=['C','C♯','D','E♭','E','F','F♯','G','G♯','A','B♭','B'];
+const FLAT_MAJ=[5,10,3,8,1], FLAT_MIN=[2,7,0,5,10,3];
+const MAJ=[0,2,4,5,7,9,11], NAT=[0,2,3,5,7,8,10];
+const KK_MAJ=[6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
+const KK_MIN=[6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+const SIG={0:'調号なし',7:'♯×1',2:'♯×2',9:'♯×3',4:'♯×4',11:'♯×5',6:'♯×6',1:'♭×5',8:'♭×4',3:'♭×3',10:'♭×2',5:'♭×1'};
+const LO=60, HI=84;
+const DIFF_NAME={E:'やさしい',N:'ふつう',H:'むずかしい'};
+
+/* fixed samples: [tonic pc, mode, hidden name, notes] */
+const SAMPLES=[
+  [9,'minor','導音 G♯ を含む短調',[[69,1],[72,1],[76,1],[74,1],[72,1],[71,1],[69,1],[68,1],[69,2],[71,1],[72,1],[74,1],[72,.5],[71,.5],[68,1],[69,2]]],
+  [0,'major','白鍵だけの長調',[[64,1],[67,1],[69,1],[67,1],[64,1],[62,1],[60,2],[62,1],[64,1],[67,1],[64,1],[62,2],[60,2]]],
+  [5,'major','B♭ を1つ含む長調',[[65,1],[69,1],[72,1],[70,1],[69,1],[67,1],[65,2],[67,1],[69,1],[70,1],[72,1],[69,1],[67,1],[65,2]]],
+  [2,'minor','F メジャーと同じ音で D に落ち着く',[[74,1],[77,1],[76,1],[74,1],[69,1],[70,1],[69,2],[67,1],[65,1],[64,1],[65,1],[64,1],[62,.5],[64,.5],[62,2]]],
+  [4,'minor','ペンタトニックのリフ（G メジャーと同じ音）',[[64,.5],[67,.5],[69,.5],[71,.5],[74,1],[71,.5],[69,.5],[67,1],[64,1],[64,.5],[67,.5],[69,.5],[67,.5],[64,2]]],
+  [7,'major','F♯ を1つ含む長調',[[67,1],[71,1],[74,1],[71,1],[69,1],[66,1],[67,2],[76,1],[74,1],[72,1],[71,1],[69,1],[66,1],[67,2]]],
+  [4,'minor','導音 D♯ を含む短調',[[64,1],[67,1],[71,1],[72,1],[71,1],[69,1],[67,1],[66,1],[64,2],[71,1],[69,1],[67,1],[66,1],[63,1],[64,2]]],
+  [2,'major','♯2つの長調',[[62,1],[66,1],[69,1],[74,2],[73,1],[71,1],[69,1],[66,1],[67,1],[64,1],[61,1],[62,2]]],
+  [10,'major','♭2つの長調（F から始まる）',[[65,1],[70,1],[74,1],[72,1],[70,1],[69,1],[70,2],[75,1],[74,1],[72,1],[69,1],[70,2]]],
+  [7,'minor','導音 F♯ を含む短調',[[67,1],[70,1],[74,1],[75,1],[74,1],[72,1],[70,1],[69,1],[66,1],[67,2],[70,1],[69,1],[67,1],[66,1],[67,2]]],
+  [4,'major','♯4つの長調',[[64,1],[68,1],[71,1],[76,2],[75,1],[73,1],[71,1],[68,1],[69,1],[66,1],[63,1],[64,2]]],
+  [11,'minor','導音 A♯ を含む短調',[[71,1],[74,1],[78,1],[76,1],[74,1],[73,1],[71,2],[70,1],[71,1],[67,1],[66,1],[70,1],[71,2]]],
+  [3,'major','♭3つの長調',[[63,1],[67,1],[70,1],[68,1],[67,1],[65,1],[63,2],[70,1],[72,1],[70,1],[68,1],[67,1],[65,1],[63,2]]],
+  [0,'minor','導音 B を含む短調（上の音域）',[[72,1],[75,1],[79,1],[77,1],[75,1],[74,1],[72,2],[68,1],[67,1],[71,1],[74,1],[72,2]]],
+  [9,'major','♯3つの長調',[[69,1],[73,1],[76,1],[78,1],[76,1],[73,1],[71,1],[69,2],[74,1],[73,1],[71,1],[68,1],[69,2]]],
+  [0,'major','5度で終わる長調（最後の音がトニックではない）',[[64,1],[67,1],[72,2],[71,1],[69,1],[67,1],[65,1],[64,1],[62,1],[60,2],[62,1],[64,1],[65,1],[62,1],[67,2]]]
+];
+
+const state={melody:[],dur:1,bpm:92,tonic:null,mode:null,tab:1,playIdx:-1,revealed:false,
+  source:{type:'sample',label:'',name:'',answer:null}};
+let useFlats=false, A=null;
+
+function pcName(pc){return (useFlats?PC_FLAT:PC_SHARP)[((pc%12)+12)%12]}
+function noteName(m){return pcName(m%12)+(Math.floor(m/12)-1)}
+function keyName(t,mode){return mode==='major'?MAJ_N[t]+' メジャー':MIN_N[t]+' マイナー'}
+function prefersFlat(t,mode){return mode==='major'?FLAT_MAJ.includes(t):FLAT_MIN.includes(t)}
+function sigOf(t,mode){return SIG[mode==='major'?t:(t+3)%12]}
+
+function pearson(x,y){const n=x.length;let mx=0,my=0;for(let i=0;i<n;i++){mx+=x[i];my+=y[i]}mx/=n;my/=n;let a=0,b=0,c=0;for(let i=0;i<n;i++){const dx=x[i]-mx,dy=y[i]-my;a+=dx*dy;b+=dx*dx;c+=dy*dy}return (b===0||c===0)?0:a/Math.sqrt(b*c)}
+
+function analyze(){
+  const mel=state.melody, hist=Array(12).fill(0), count=Array(12).fill(0);
+  mel.forEach(n=>{hist[n.m%12]+=n.d;count[n.m%12]++});
+  const used=[...new Set(mel.map(n=>n.m%12))].sort((a,b)=>a-b);
+  const first=mel.length?mel[0].m%12:null, last=mel.length?mel[mel.length-1].m%12:null;
+  const ranking=[];
+  if(mel.length){
+    for(const mode of ['major','minor']){
+      const P=mode==='major'?KK_MAJ:KK_MIN;
+      for(let t=0;t<12;t++){
+        const rot=hist.map((_,i)=>P[(i-t+12)%12]);
+        const corr=pearson(hist,rot);
+        const rel=used.map(pc=>(pc-t+12)%12);
+        const scale=mode==='major'?MAJ:NAT;
+        const allowed=mode==='major'?MAJ:NAT.concat([9,11]);
+        const outside=rel.filter(i=>!allowed.includes(i));
+        const strict=rel.filter(i=>!scale.includes(i));
+        const leading=mode==='minor'&&rel.includes(11);
+        const score=corr+(last===t?0.25:0)+(first===t?0.05:0)-0.3*outside.length+(leading?0.1:0);
+        ranking.push({t,mode,corr,outside,strict,leading,score});
+      }
+    }
+    ranking.sort((a,b)=>b.score-a.score);
+    const ref=state.source.answer||ranking[0];
+    useFlats=prefersFlat(ref.t,ref.mode);
+  }
+  A={hist,count,used,first,last,ranking};
+}
+
+/* ---------- melody generator ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function generate(diff,modeOpt,bars,seed){
+  const R=mulberry32(seed*7919+bars*31+diff.charCodeAt(0)*131+modeOpt.charCodeAt(0));
+  const pick=a=>a[Math.floor(R()*a.length)];
+  const mode=modeOpt==='M'?'major':modeOpt==='N'?'minor':(R()<0.5?'major':'minor');
+  const t=diff==='E'?pick(mode==='major'?[0,7,5]:[9,4,2]):Math.floor(R()*12);
+  const scale=mode==='major'?MAJ:NAT;
+  const tonicMidi=60+t;
+  const midiOf=(d,raise)=>{const oct=Math.floor(d/7),r=((d%7)+7)%7;let m=tonicMidi+12*oct+scale[r];if(raise&&r===6)m+=1;return m};
+  const ds=[];for(let d=-7;d<=16;d++){const m=midiOf(d,false);if(m>=LO&&m<=HI-2)ds.push(d)}
+  const inRange=d=>ds.includes(d);
+  const nearest=(cands,cur)=>{const ok=cands.filter(inRange);if(!ok.length)return cur;ok.sort((a,b)=>Math.abs(a-cur)-Math.abs(b-cur));return (ok.length>1&&R()<0.25&&Math.abs(ok[1]-cur)<=4)?ok[1]:ok[0]};
+  const allOf=degs=>{const out=[];ds.forEach(d=>{if(degs.includes(((d%7)+7)%7))out.push(d)});return out};
+  const A_T=mode==='major'?[[0,3,4,4],[0,5,3,4],[0,3,0,4],[0,5,1,4]]:[[0,3,4,4],[0,5,3,4],[0,2,3,4],[0,3,0,4]];
+  const B_T=mode==='major'?[[0,3,4,0],[0,5,4,0],[5,3,4,0],[0,1,4,0]]:[[0,3,4,0],[0,5,4,0],[5,3,4,0],[2,5,4,0]];
+  const prog=bars===8?pick(A_T).concat(pick(B_T)):pick(B_T);
+  const RHY=[[1,1,1,1],[1,.5,.5,1,1],[2,1,1],[1,1,2],[1.5,.5,1,1],[.5,.5,1,.5,.5,1],[1,1,.5,.5,1]];
+  const END_RHY=[[1,1,2],[2,2],[1,.5,.5,2]];
+  const FINAL_RHY=diff==='E'?[[1,1,2],[2,2]]:[[1,1,2],[2,2],[1,.5,.5,2]];
+  const notes=[];
+  const firstTones=[0,2,4];
+  let cur;
+  if(diff==='E') cur=nearest([0,7],3);
+  else if(diff==='N') cur=nearest(allOf([pick(firstTones)]),4);
+  else cur=nearest(allOf([pick([2,4])]),4);
+  const tonicBeat=diff==='H';
+  let firstNote=true;
+  prog.forEach((c,bi)=>{
+    const lastBar=bi===prog.length-1, phraseEnd=bars===8&&bi===3;
+    const raise=mode==='minor'&&c===4&&diff!=='H';
+    const rhy=lastBar?pick(FINAL_RHY):phraseEnd?pick(END_RHY):pick(RHY);
+    const chord=[c,(c+2)%7,(c+4)%7];
+    let pos=0;
+    rhy.forEach((dur,ni)=>{
+      const isLast=lastBar&&ni===rhy.length-1;
+      const isPenult=lastBar&&ni===rhy.length-2;
+      let d;
+      if(firstNote){d=cur;firstNote=false}
+      else if(isLast){
+        if(diff==='H') d=nearest(allOf([pick([2,4])]),cur);
+        else d=nearest([0,7,-7,14],cur);
+      }else if(isPenult&&diff!=='H'){
+        const T=nearest([0,7,14],cur);
+        d=(Math.abs((T-1)-cur)<=Math.abs((T+1)-cur)&&inRange(T-1))?T-1:(inRange(T+1)?T+1:T-1);
+      }else if(phraseEnd&&ni===rhy.length-1){
+        d=nearest(allOf([4,1,6]),cur);
+      }else if(pos%2===0||dur>=2){
+        const pool=(diff==='H'&&c===0&&pos===0)?[0]:(diff==='H'&&pos===0&&R()<0.6)?[c]:chord;
+        const cands=allOf(pool).filter(x=>Math.abs(x-cur)<=5);
+        d=cands.length?nearest(cands,cur):nearest(allOf(pool),cur);
+      }else{
+        let step=(R()<0.5?-1:1)*(R()<0.8?1:2);
+        d=cur+step;
+        if(!inRange(d))d=cur-step;
+        if(raise&&((d%7)+7)%7===5)d=cur+(d>cur?2:-2);
+        if(!inRange(d))d=cur;
+      }
+      notes.push({m:midiOf(d,raise),d:dur});
+      cur=d;pos+=dur;
+    });
+  });
+  return {t,mode,notes};
+}
+function newSeed(){return 10000+Math.floor(Math.random()*90000)}
+function loadGenerated(diff,modeOpt,bars,seed){
+  stopAll();
+  const g=generate(diff,modeOpt,bars,seed);
+  const code=`${diff}${modeOpt}${bars}-${seed}`;
+  state.melody=g.notes.map(n=>({m:n.m,d:n.d}));
+  state.source={type:'gen',label:`自動出題 <b>${code}</b>（${DIFF_NAME[diff]}・${bars}小節）`,name:`自動出題 ${code}`,answer:{t:g.t,mode:g.mode}};
+  document.getElementById('g-code').value=code;
+  document.getElementById('sample').value='';
+  resetJudgement();update();
+}
+
+/* ---------- audio ---------- */
+let ctx=null, master=null, drone=null, voices=[], timers=[];
+function ensureCtx(){
+  if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0.55;
+    const comp=ctx.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=3;master.connect(comp);comp.connect(ctx.destination)}
+  if(ctx.state==='suspended')ctx.resume();
+}
+const hz=m=>440*Math.pow(2,(m-69)/12);
+function tone(m,t,dur,vol){
+  vol=vol||0.22;
+  const g=ctx.createGain(), f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=2800;
+  const o1=ctx.createOscillator(), o2=ctx.createOscillator(), g2=ctx.createGain();
+  o1.type='triangle'; o1.frequency.value=hz(m); o2.type='sine'; o2.frequency.value=hz(m)*2; g2.gain.value=0.25;
+  o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(f); f.connect(master);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+0.012);
+  g.gain.exponentialRampToValueAtTime(vol*0.55,t+0.18);
+  g.gain.setValueAtTime(vol*0.55,t+Math.max(0.2,dur));
+  g.gain.exponentialRampToValueAtTime(0.0001,t+Math.max(0.2,dur)+0.25);
+  o1.start(t); o2.start(t); o1.stop(t+dur+0.35); o2.stop(t+dur+0.35);
+  voices.push(o1,o2);
+}
+function startDrone(pc){
+  ensureCtx(); stopDrone();
+  const g=ctx.createGain(), f=ctx.createBiquadFilter(); f.type='lowpass'; f.frequency.value=650; f.Q.value=0.5;
+  const oscs=[36+pc,36+pc+7,48+pc].map((m,i)=>{const o=ctx.createOscillator();o.type='sawtooth';o.frequency.value=hz(m);o.detune.value=(i-1)*4;o.connect(f);o.start();return o});
+  f.connect(g); g.connect(master); g.gain.setValueAtTime(0,ctx.currentTime); g.gain.linearRampToValueAtTime(0.07,ctx.currentTime+0.4);
+  drone={g,oscs};
+}
+function stopDrone(){
+  if(!drone)return; const d=drone; drone=null; const t=ctx.currentTime;
+  d.g.gain.cancelScheduledValues(t); d.g.gain.setValueAtTime(d.g.gain.value,t); d.g.gain.linearRampToValueAtTime(0,t+0.3);
+  d.oscs.forEach(o=>o.stop(t+0.35));
+}
+function stopAll(){
+  timers.forEach(clearTimeout); timers=[];
+  if(ctx){const t=ctx.currentTime; voices.forEach(o=>{try{o.stop(t+0.02)}catch(e){}}); voices=[]}
+  stopDrone(); setPlayIdx(-1);
+}
+function playMelody(withDrone){
+  if(!state.melody.length)return;
+  ensureCtx(); stopAll();
+  if(withDrone&&state.tonic!==null)startDrone(state.tonic);
+  const spb=60/state.bpm; let t=0; const t0=ctx.currentTime+(withDrone?0.5:0.08);
+  state.melody.forEach((n,i)=>{
+    tone(n.m,t0+t,n.d*spb*0.92);
+    timers.push(setTimeout(()=>setPlayIdx(i),(t0-ctx.currentTime+t)*1000));
+    t+=n.d*spb;
+  });
+  timers.push(setTimeout(()=>{setPlayIdx(-1);stopDrone()},(t0-ctx.currentTime+t+0.4)*1000));
+}
+function playNote(m,d){ensureCtx();tone(m,ctx.currentTime+0.01,d||0.6)}
+function playChord(ms,d){ensureCtx();const t=ctx.currentTime+0.01;ms.forEach(m=>tone(m,t,d||1.2,0.16))}
+function setPlayIdx(i){
+  state.playIdx=i;
+  document.querySelectorAll('[data-ni]').forEach(el=>el.classList.toggle('playing',+el.dataset.ni===i));
+}
+
+/* ---------- melody state ---------- */
+function resetJudgement(){state.tonic=null;state.mode=null;state.revealed=false;state.tab=1}
+function toCustom(){
+  if(state.source.type!=='custom'){
+    const was=state.source.type==='empty'?'':'（出題を編集）';
+    state.source={type:'custom',label:`<b>自作メロディ</b>${was}`,name:'自作メロディ',answer:null};
+    document.getElementById('sample').value='custom';
+  }
+}
+function addNote(m){toCustom();state.melody.push({m,d:state.dur});playNote(m,state.dur*60/state.bpm*0.9);update()}
+function loadSample(i){
+  stopAll();const s=SAMPLES[i];
+  state.melody=s[3].map(([m,d])=>({m,d}));
+  const no=String(i+1).padStart(2,'0');
+  state.source={type:'sample',label:`サンプル <b>${no}</b>`,name:`サンプル ${no}「${s[2]}」`,answer:{t:s[0],mode:s[1]}};
+  resetJudgement();update();
+}
+
+/* ---------- render: roll ---------- */
+function renderRoll(){
+  const box=document.getElementById('roll'), mel=state.melody;
+  if(!mel.length){box.innerHTML='<div class="roll-empty">鍵盤をクリックしてメロディを入力するか、サンプル問題・自動出題を選んでください。</div>';return}
+  const ms=mel.map(n=>n.m); let lo=Math.min(...ms)-2, hi=Math.max(...ms)+2; while(hi-lo<12){lo--;hi++}
+  const RH=14, BW=36, LW=34, beats=mel.reduce((s,n)=>s+n.d,0), totalBeats=Math.max(8,Math.ceil(beats/4)*4);
+  const W=LW+totalBeats*BW+8, H=(hi-lo+1)*RH+4;
+  let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="ピアノロール">`;
+  for(let p=hi;p>=lo;p--){const y=(hi-p)*RH+2; if(p%12===0||p===hi||p===lo) s+=`<text class="p-lbl" x="4" y="${y+10}">${noteName(p)}</text>`; s+=`<line class="g-line" x1="${LW}" x2="${W}" y1="${y+RH}" y2="${y+RH}"/>`}
+  for(let b=0;b<=totalBeats;b++){const x=LW+b*BW; s+=`<line class="${b%4===0?'g-bar':'g-line'}" x1="${x}" x2="${x}" y1="2" y2="${H-2}"/>`}
+  let t=0; mel.forEach((n,i)=>{const x=LW+t*BW+1, y=(hi-n.m)*RH+3, w=n.d*BW-2;
+    s+=`<rect class="n-rect${i===state.playIdx?' playing':''}" data-ni="${i}" data-m="${n.m}" x="${x}" y="${y}" width="${w}" height="${RH-2}" rx="3"><title>${noteName(n.m)}</title></rect>`;
+    if(w>=28) s+=`<text class="n-txt" x="${x+4}" y="${y+9}">${noteName(n.m)}</text>`;
+    t+=n.d});
+  s+='</svg>'; box.innerHTML=s;
+}
+
+/* ---------- render: keyboard ---------- */
+const PCKEYS={a:60,w:61,s:62,e:63,d:64,f:65,t:66,g:67,y:68,h:69,u:70,j:71,k:72,o:73,l:74,p:75,';':76};
+function renderKeyboard(){
+  const kb=document.getElementById('kb'), used=new Set(A.used); const whites=[];
+  for(let m=LO;m<=HI;m++) if(![1,3,6,8,10].includes(m%12)) whites.push(m);
+  const w=100/whites.length; let h='';
+  whites.forEach(m=>{const pc=m%12; h+=`<div class="wk${used.has(pc)?' used':''}${state.tonic===pc?' tonicKey':''}" data-key="${m}" role="button" aria-label="${noteName(m)}"><span class="dot"></span>${pc===0?noteName(m):PC_SHARP[pc]}</div>`});
+  for(let m=LO;m<=HI;m++){const pc=m%12; if(![1,3,6,8,10].includes(pc))continue;
+    const wi=whites.indexOf(m-1); const left=(wi+1)*w-w*0.31;
+    h+=`<div class="bk${used.has(pc)?' used':''}${state.tonic===pc?' tonicKey':''}" style="left:${left}%;width:${w*0.62}%" data-key="${m}" role="button" aria-label="${noteName(m)}"><span class="dot"></span></div>`}
+  kb.innerHTML=h;
+}
+
+/* ---------- render: verdict ---------- */
+function relation(a,b){
+  if(a.t===b.t&&a.mode===b.mode)return 'same';
+  if(a.mode!==b.mode){const relMaj=a.mode==='major'?a.t:(a.t+3)%12, relMaj2=b.mode==='major'?b.t:(b.t+3)%12; if(relMaj===relMaj2)return 'relative'; if(a.t===b.t)return 'parallel'}
+  if(a.mode===b.mode&&((a.t-b.t+12)%12===7||(b.t-a.t+12)%12===7))return 'fifth';
+  return 'other';
+}
+function renderVerdict(){
+  const v=document.getElementById('verdict'), top=A.ranking[0], ans=state.source.answer;
+  const judged=state.tonic!==null&&state.mode!==null;
+  const mine=state.tonic===null?'未判定':(pcName(state.tonic)+(state.mode?(state.mode==='major'?' メジャー':' マイナー'):' ・長短は未判定'));
+  const me=judged?{t:state.tonic,mode:state.mode}:null;
+  const rev=state.revealed&&state.melody.length;
+  let okMine='', note='';
+  if(rev&&me&&ans){okMine=relation(me,ans)==='same'?'ok':'ng'}
+  const ansCell=!rev?`<div class="vcell locked"><span class="lbl">正解</span><span class="big">？？？</span></div>`
+    :ans?`<div class="vcell ${okMine}"><span class="lbl">正解</span><span class="big">${keyName(ans.t,ans.mode)}</span><span class="lbl">${sigOf(ans.t,ans.mode)}</span></div>`
+    :`<div class="vcell"><span class="lbl">正解</span><span class="big" style="font-size:15px">自作メロディのため正解はありません</span></div>`;
+  const algoOk=rev&&ans&&top?(relation(top,ans)==='same'?'ok':'ng'):'';
+  const algoCell=!rev?`<div class="vcell locked"><span class="lbl">アルゴリズムの推定</span><span class="big">？？？</span></div>`
+    :`<div class="vcell ${algoOk}"><span class="lbl">アルゴリズムの推定</span><span class="big">${top?keyName(top.t,top.mode):'—'}</span>${top?`<span class="lbl">${sigOf(top.t,top.mode)}</span>`:''}</div>`;
+  if(!state.melody.length) note='メロディを読み込むか入力してください。';
+  else if(!judged&&!rev) note='ステップ1でトニック、ステップ5で長調・短調を決めると答え合わせできます。';
+  else if(!rev) note='判定がそろいました。答え合わせをすると、正解・出題名・アルゴリズムの推定が表示されます。';
+  else if(ans&&me){
+    const r=relation(me,ans);
+    note=r==='same'?'<b>正解です。</b>':
+      r==='relative'?'<b>平行調と取り違えています。</b>構成音が同じ長調と短調です。どの音に落ち着くか（ステップ1・2）を聴き直してください。':
+      r==='parallel'?'<b>同主調と取り違えています。</b>トニックは合っています。ステップ5で第3音を聴き比べてください。':
+      r==='fifth'?'<b>属調または下属調と取り違えています。</b>構成音が1音だけ違うキーです。ステップ4で、その1音が出てくるか確認してください。':
+      '<b>不正解です。</b>ステップ3のドローンテストで、長い音がトニックの1度・3度・5度に収まるキーを探してみてください。';
+    note+=` <span class="lbl">出題: ${state.source.name}</span>`;
+  } else if(rev&&!ans) note='自作メロディなので、アルゴリズムの推定と比べてみてください。';
+  else if(rev&&!me) note=`<span class="lbl">出題: ${state.source.name}</span>`;
+  const canReveal=state.melody.length&&judged&&!state.revealed;
+  v.innerHTML=`<div class="vgrid">
+    <div class="vcell ${rev?okMine:''}"><span class="lbl">あなたの判定</span><span class="big">${mine}</span></div>
+    ${ansCell}${algoCell}</div>
+    <div class="row spread"><p class="vnote">${note}</p>
+    <div class="row">${state.revealed?'':`<button class="primary" id="btn-reveal" ${canReveal?'':'disabled'}>答え合わせ</button>`}
+    ${state.revealed&&!state.melody.length?'':''}<button id="btn-giveup" ${state.revealed||!state.melody.length?'disabled':''}>判定せずに答えを見る</button></div></div>`;
+}
+
+/* ---------- steps ---------- */
+const STEPS=['ホームノート','最後の音','ドローンテスト','スケール特定','長調か短調か','間違えやすいキー'];
+function renderTabs(){
+  document.getElementById('tabs').innerHTML=STEPS.map((s,i)=>`<button class="tab${state.tab===i+1?' active':''}" role="tab" aria-selected="${state.tab===i+1}" data-tab="${i+1}"><span class="num">${i+1}</span>${s}</button>`).join('');
+}
+function tonicPicker(){
+  const pcs=A.used.length?A.used:[...Array(12).keys()];
+  return `<div class="row"><span class="lbl">トニック候補</span>${pcs.map(pc=>`<button data-act="tonic" data-pc="${pc}" class="${state.tonic===pc?'tonic-on':''}">${pcName(pc)}</button>`).join('')}</div>`;
+}
+function intervalClass(i){
+  if(i===0||i===7)return ['c-stable',i===0?'1度':'5度'];
+  if(i===3||i===4)return ['c-third',i===3?'短3度':'長3度'];
+  if(i===1||i===6)return ['c-clash',i===1?'短2度':'増4度'];
+  if(i===2||i===5||i===9)return ['',{2:'2度',5:'4度',9:'長6度'}[i]];
+  return ['c-tension',{8:'短6度',10:'短7度',11:'長7度'}[i]];
+}
+function renderPanel(){
+  const p=document.getElementById('panel'), mel=state.melody;
+  if(!mel.length){p.innerHTML='<p class="lbl">先にメロディを読み込むか入力してください。</p>';return}
+  let h='';
+  if(state.tab===1){
+    const ends=mel.filter((n,i)=>n.d>=2||i===mel.length-1).map(n=>n.m%12);
+    const freq=A.count.map((c,pc)=>({pc,c})).filter(x=>x.c>0).sort((a,b)=>b.c-a.c).slice(0,3);
+    h=`<h3>フレーズの終わりで「落ち着く」音を探す</h3>
+    <p>メロディを再生して、フレーズの切れ目で「ここで解決した」と感じた音を選んでください。選ぶとその音が単音で鳴ります。何度もメロディが戻ってくる音、休符や長い音の直前に置かれる音が有力です。</p>
+    <div class="row"><button class="primary" data-act="play">▶ メロディを再生</button></div>
+    ${tonicPicker()}
+    <details><summary class="lbl" style="cursor:pointer">ヒントを見る</summary>
+      <div class="stat" style="margin-top:10px">
+        <div><span class="lbl">長く伸ばす音・最後の音</span><b>${[...new Set(ends)].map(pcName).join(' ')}</b></div>
+        <div><span class="lbl">登場回数が多い音</span><b>${freq.map(x=>pcName(x.pc)+'×'+x.c).join(' ')}</b></div>
+      </div></details>
+    <p class="why">なぜ: トニックは調の重心です。メロディは緊張と解決を繰り返すので、解決する場所に置かれる音がトニックである確率が高くなります。</p>`;
+  }
+  if(state.tab===2){
+    const lastM=mel[mel.length-1].m, firstM=mel[0].m;
+    h=`<h3>最後の音を確かめる</h3>
+    <p>曲やフレーズの最後の音は、かなりの割合でトニックです。最初の音よりも最後の音のほうが信頼できます。ただし、最後がトニックの3度や5度で終わる曲もあります。</p>
+    <div class="stat"><div><span class="lbl">最初の音</span><b>${noteName(firstM)}</b></div><div><span class="lbl">最後の音</span><b>${noteName(lastM)}</b></div></div>
+    <div class="row"><button data-act="note" data-m="${lastM}">最後の音を鳴らす</button><button data-act="note" data-m="${firstM}">最初の音を鳴らす</button>
+    <button data-act="tonic" data-pc="${lastM%12}" class="${state.tonic===lastM%12?'tonic-on':''}">最後の音をトニック候補にする</button></div>
+    <p class="why">なぜ: 終止は「家に帰る」動きです。作曲者の多くは最後にトニックへ戻して曲を閉じます。ステップ1で選んだ音と一致するかを確認してください。一致しないときは、ステップ3で両方の候補を試します。</p>`;
+  }
+  if(state.tab===3){
+    const t=state.tonic;
+    let chips='',clash=0;
+    if(t!==null){chips=mel.map((n,i)=>{const iv=((n.m%12)-t+12)%12;const [c,l]=intervalClass(iv);if(c==='c-clash')clash+=n.d;return `<span class="chip ${c}${i===state.playIdx?' playing':''}" data-ni="${i}" title="${l}">${pcName(n.m%12)}<span class="lbl"> ${l}</span></span>`}).join('')}
+    const total=mel.reduce((s,n)=>s+n.d,0);
+    h=`<h3>トニックを鳴らしたままメロディを再生する</h3>
+    <p>候補の音を低音で持続させながらメロディを聴きます。全体が自然に響けば正解に近く、所々で濁るなら別のキーか転調の可能性があります。</p>
+    ${tonicPicker()}
+    ${t===null?'<p class="lbl">トニック候補を選ぶとドローンテストができます。</p>':`
+    <div class="row"><button class="primary" data-act="play-drone">▶ ドローン付きで再生</button><button data-act="drone">ドローンだけ鳴らす</button><button data-act="stop">■ 停止</button></div>
+    <div class="chips">${chips}</div>
+    <div class="legend"><span><i class="sw c-stable"></i>安定（1度・5度）</span><span><i class="sw c-third"></i>3度（長短を決める音）</span><span><i class="sw"></i>経過音</span><span><i class="sw c-tension" style="border-style:dashed"></i>緊張（6度・7度）</span><span><i class="sw c-clash"></i>ぶつかりやすい（短2度・増4度）</span></div>
+    <p class="lbl">ぶつかりやすい音の割合: <b class="${clash/total>0.15?'bad':''}">${Math.round(clash/total*100)}%</b>（長く伸ばす音で多いほど、別のトニックを疑います）</p>`}
+    <p class="why">なぜ: ドローンは「調の基準」を耳に固定します。トニックが正しければ、メロディの長い音はほとんど1度・3度・5度に収まります。</p>`;
+  }
+  if(state.tab===4){
+    const max=Math.max(...A.hist);
+    const pcsHtml=[...Array(12).keys()].map(pc=>`<div class="pc${A.hist[pc]>0?' u':''}"><span class="bar" style="height:${A.hist[pc]>0?Math.max(6,A.hist[pc]/max*70):3}px"></span>${pcName(pc)}</div>`).join('');
+    const sorted=A.ranking.slice().sort((a,b)=>(a.mode===b.mode?0:a.mode==='major'?-1:1)||((a.mode==='major'?a.t:(a.t+3)%12)-(b.mode==='major'?b.t:(b.t+3)%12)));
+    const strict=sorted.filter(r=>r.strict.length===0);
+    const minorOnly=sorted.filter(r=>r.mode==='minor'&&r.outside.length===0&&r.strict.length>0);
+    const btn=r=>`<button data-act="tonic-mode" data-pc="${r.t}" data-mode="${r.mode}" class="${state.tonic===r.t&&state.mode===r.mode?'tonic-on':''}">${keyName(r.t,r.mode)}<span class="lbl"> ${sigOf(r.t,r.mode)}</span></button>`;
+    h=`<h3>使われている音を集めてスケールを絞る</h3>
+    <p>メロディに出てくる音（音名）を集めて、それを全部含むメジャー／マイナースケールを探します。棒の高さは、その音が鳴っている長さの合計です。候補のボタンを押すと、その判定に設定されます。</p>
+    <div class="pcs">${pcsHtml}</div>
+    <div class="stat"><div><span class="lbl">使用音</span><b>${A.used.map(pcName).join(' ')}</b></div><div><span class="lbl">音の種類</span><b>${A.used.length} / 12</b></div></div>
+    <div><span class="lbl">全部の音を含むキー（長調／${term('自然短音階')}）</span><div class="keylist">${strict.length?strict.map(btn).join(''):'<span class="lbl">該当なし</span>'}</div></div>
+    ${minorOnly.length?`<div><span class="lbl">${term('和声的短音階')}・${term('旋律的短音階')}なら含むキー</span><div class="keylist">${minorOnly.map(btn).join('')}</div></div>`:''}
+    <p class="why">なぜ: 7音すべてが揃っていなくても候補はかなり絞れます。長調とその${term('平行調')}（短調）は同じ音を使うので、ここで2つ以上残るのが普通です。どれかはステップ1・2・5で決めます。短調で7番目の音が半音上がっていれば（Aマイナーなら G♯）、短調の強い手がかりです。</p>`;
+  }
+  if(state.tab===5){
+    const t=state.tonic;
+    let ev='';
+    if(t!==null){const rel=new Set(A.used.map(pc=>(pc-t+12)%12));
+      ev=`<div class="stat">
+      <div><span class="lbl">長3度（${pcName((t+4)%12)}）</span><b class="${rel.has(4)?'yes':'no'}">${rel.has(4)?'あり':'なし'}</b></div>
+      <div><span class="lbl">短3度（${pcName((t+3)%12)}）</span><b class="${rel.has(3)?'yes':'no'}">${rel.has(3)?'あり':'なし'}</b></div>
+      <div><span class="lbl">導音（${pcName((t+11)%12)}）</span><b class="${rel.has(11)?'yes':'no'}">${rel.has(11)?'あり':'なし'}</b></div></div>`}
+    h=`<h3>トニックから3度上を聴き比べる</h3>
+    <p>トニックの4半音上（長3度）なら長調、3半音上（短3度）なら短調です。両方を鳴らして、メロディの印象に近いほうを選んでください。</p>
+    ${tonicPicker()}
+    ${t===null?'<p class="lbl">トニック候補を選んでください。</p>':`
+    <div class="row"><button data-act="chord" data-q="4">長3度で鳴らす（${pcName(t)}・${pcName((t+4)%12)}・${pcName((t+7)%12)}）</button><button data-act="chord" data-q="3">短3度で鳴らす（${pcName(t)}・${pcName((t+3)%12)}・${pcName((t+7)%12)}）</button></div>
+    ${ev}
+    <div class="row"><span class="lbl">判定</span><button data-act="mode" data-mode="major" class="${state.mode==='major'?'on':''}">メジャー</button><button data-act="mode" data-mode="minor" class="${state.mode==='minor'?'on':''}">マイナー</button></div>`}
+    <p class="why">なぜ: 3度の音が調の明暗を決めます。「明るい曲だから長調」という印象は外れることがあるので、実際に3度の音を当てて確かめます。短調では${term('導音')}がよく使われ、${term('終止')}感を強めます。</p>`;
+  }
+  if(state.tab===6){
+    if(!state.revealed){
+      h=`<h3>間違えやすいキー</h3>
+      <div class="locked-box"><p>答え合わせのあとに、このメロディで間違えやすいキーと見分け方を表示します。</p>
+      <button class="primary" data-act="reveal" ${state.tonic!==null&&state.mode!==null?'':'disabled'}>答え合わせ</button></div>`;
+    }else{
+      h=renderConfusions();
+    }
+  }
+  p.innerHTML=h;
+}
+
+/* ---------- step 6: commonly confused keys ---------- */
+const GLOSSARY={
+  'トニック':'キーの中心音（主音）。メロディが最後に落ち着く音。',
+  '調号':'楽譜冒頭の♯・♭。そのキーで常に変化させる音を示す。',
+  '平行調':'構成音が同じ長調と短調の組（例: C メジャーと A マイナー）。',
+  '同主調':'トニックが同じ長調と短調の組（例: C メジャーと C マイナー）。',
+  '属調':'トニックが完全5度上のキー。構成音7つのうち6つが共通。',
+  '下属調':'トニックが完全5度下のキー。構成音7つのうち6つが共通。',
+  '近親調':'平行調・同主調・属調・下属調など、構成音の近いキーの総称。',
+  '長3度':'半音4つ分の音程。トニックとの間にあると長調の響きになる。',
+  '短3度':'半音3つ分の音程。トニックとの間にあると短調の響きになる。',
+  '自然短音階':'短調の基本形。平行調の長音階と同じ構成音。',
+  '和声的短音階':'自然短音階の第7音を半音上げた音階。',
+  '旋律的短音階':'自然短音階の第6・7音を半音上げた音階（上行形）。',
+  '導音':'トニックの半音下の音。トニックへ強く進もうとする。',
+  '終止':'フレーズや曲の終わりで、トニックに落ち着く和声の流れ（カデンツ）。',
+  'ドローン':'持続させる低音。基準音として調性感を固定する。',
+  'キープロファイル':'各キーの楽曲で各音がどの程度使われるかを数値化したデータ。'
+};
+function term(w,label){return `<abbr class="term" title="${GLOSSARY[w]}">${label||w}</abbr>`}
+function scalePcs(t,mode){return (mode==='major'?MAJ:NAT).map(i=>(i+t)%12)}
+function explainConfusion(ref,r){
+  const rel=relation(ref,r), rn=keyName(ref.t,ref.mode), on=keyName(r.t,r.mode);
+  const used=new Set(A.used), last=A.last;
+  if(rel==='relative'){
+    let check=`最後の音は <b>${pcName(last)}</b>。`;
+    if(last===ref.t) check+=`${rn}の${term('トニック')}で終わっています。`;
+    else if(last===r.t) check+=`${on}の${term('トニック')}と一致するため紛らわしいメロディです。長音とフレーズ末の音で判断します。`;
+    else check+=`どちらの${term('トニック')}でもないため、長音とフレーズ末の音で判断します。`;
+    if(ref.mode==='minor'&&used.has((ref.t+11)%12)) check+=` ${term('導音')} <b>${pcName((ref.t+11)%12)}</b> が出てくる点は短調の手がかりです。`;
+    return {tag:term('平行調'),why:`構成音がまったく同じで、違いはどの音に落ち着くかだけです。音の集計では区別できません。`,check};
+  }
+  if(rel==='parallel'){
+    const q3=ref.mode==='major'?4:3, o3=ref.mode==='major'?3:4;
+    const has=used.has((ref.t+q3)%12), hasO=used.has((ref.t+o3)%12);
+    return {tag:term('同主調'),why:`${term('トニック')}は同じ ${pcName(ref.t)}。違いは第3音が${term('長3度')}か${term('短3度')}かです。`,
+      check:`${pcName((ref.t+q3)%12)}: ${has?'<b>あり</b>':'なし'}／${pcName((ref.t+o3)%12)}: ${hasO?'<b>あり</b>':'なし'}。ステップ5で和音を鳴らし比べてください。`};
+  }
+  if(rel==='fifth'){
+    const a=new Set(scalePcs(ref.t,ref.mode)), b=new Set(scalePcs(r.t,r.mode));
+    const onlyRef=[...a].filter(x=>!b.has(x)), onlyOther=[...b].filter(x=>!a.has(x));
+    const hit=onlyRef.filter(x=>used.has(x)), hitO=onlyOther.filter(x=>used.has(x));
+    const tag=(r.t-ref.t+12)%12===7?term('属調'):term('下属調');
+    let check=`区別する音は ${onlyRef.map(pcName).join('')}（${rn}のみ）と ${onlyOther.map(pcName).join('')}（${on}のみ）。`;
+    check+=hit.length?` このメロディには <b>${hit.map(pcName).join('・')}</b> があり、${rn}を示しています。`:hitO.length?` このメロディには <b>${hitO.map(pcName).join('・')}</b> があり、${on}寄りに見えます。`:` どちらも出てこないため、最後の音とドローンテストで判断します。`;
+    return {tag,why:`構成音7つのうち6つが共通で、異なるのは1音だけです。`,check};
+  }
+  const a=new Set(scalePcs(ref.t,ref.mode)), b=new Set(scalePcs(r.t,r.mode));
+  const shared=A.used.filter(x=>a.has(x)&&b.has(x)).length;
+  return {tag:'構成音の一部が重なるキー',
+    why:`使用音 ${A.used.length} 種のうち ${shared} 種が${on}にも含まれます。使用音が少ないほど候補は増えます。`,
+    check:`${on}の${term('トニック')} ${pcName(r.t)} を${term('ドローン')}にすると、ぶつかる音が増えるはずです。`};
+}
+function renderConfusions(){
+  const ans=state.source.answer, top=A.ranking[0];
+  const ref=ans||{t:top.t,mode:top.mode};
+  const algoRight=ans?(top.t===ans.t&&top.mode===ans.mode):null;
+  const others=A.ranking.filter(r=>!(r.t===ref.t&&r.mode===ref.mode)).slice(0,3);
+  const best=Math.max(...A.ranking.slice(0,5).map(r=>r.score)), worst=Math.min(...A.ranking.slice(0,5).map(r=>r.score));
+  const fit=s=>best===worst?100:Math.round(30+70*(s-worst)/(best-worst));
+  const cards=others.map(r=>{const e=explainConfusion(ref,r);
+    return `<div class="cf">
+      <div class="row spread"><div><span class="cf-tag">${e.tag}</span><div class="cf-key">${keyName(r.t,r.mode)}</div></div>
+      <div class="row"><button data-act="tonic-mode" data-pc="${ref.t}" data-mode="${ref.mode}">${keyName(ref.t,ref.mode)}</button><button data-act="tonic-mode" data-pc="${r.t}" data-mode="${r.mode}">${keyName(r.t,r.mode)}</button></div></div>
+      <p><span class="cf-h">紛らわしい理由</span>${e.why}</p>
+      <p><span class="cf-h">見分け方</span>${e.check}</p></div>`}).join('');
+  const rows=A.ranking.slice(0,5).map((r,i)=>`<tr class="${i===0?'top':''}"><td class="num">${i+1}</td>
+    <td><b>${keyName(r.t,r.mode)}</b>${ans&&ans.t===r.t&&ans.mode===r.mode?' <span class="yes">正解</span>':''}</td>
+    <td><div class="meter"><i style="width:${fit(r.score)}%"></i></div></td>
+    <td class="${A.last===r.t?'yes':'no'}">${A.last===r.t?'はい':'いいえ'}</td>
+    <td class="${r.outside.length?'bad':'no'}">${r.outside.length?r.outside.map(iv=>pcName((iv+r.t)%12)).join(' '):'なし'}</td></tr>`).join('');
+  const verdictLine=ans==null?`自作メロディのため、推定1位の <b>${keyName(top.t,top.mode)}</b> を基準に表示しています。`
+    :algoRight?`推定も <b>${keyName(ans.t,ans.mode)}</b> で正解。2位以下が、このメロディで間違えやすいキーです。`
+    :`推定は <b>${keyName(top.t,top.mode)}</b> で不正解（正解は <b>${keyName(ans.t,ans.mode)}</b>）。音の集計だけでは判別しにくいメロディです。`;
+  return `<h3>間違えやすいキー</h3>
+  <p>${verdictLine}ボタンで各キーの主和音を鳴らせます。</p>
+  <div class="cf-list">${cards}</div>
+  <details class="cf-algo"><summary>推定アルゴリズムの仕組みと順位</summary>
+    <ol class="cf-steps">
+      <li>各音の鳴っている長さを集計する。</li>
+      <li>キーごとの${term('キープロファイル')}と比較し、相関の高い順に並べる。</li>
+      <li>最後の音がそのキーの${term('トニック')}なら加点。</li>
+      <li>キーの構成音にない音があれば減点。</li>
+    </ol>
+    <div class="tbl-box"><table><thead><tr><th>順位</th><th>キー</th><th>適合度</th><th>最後の音がトニック</th><th>構成音外の音</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="lbl">音の出現比率で判断するため、${term('平行調')}の区別や使用音の少ないメロディは苦手です。</p>
+  </details>`;
+}
+function renderGlossary(){
+  document.getElementById('glossary').innerHTML=Object.entries(GLOSSARY).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('');
+}
+
+function update(){analyze();renderSource();renderRoll();renderKeyboard();renderVerdict();renderTabs();renderPanel()}
+function renderSource(){document.getElementById('source').innerHTML=state.melody.length?'出題: '+state.source.label:''}
+function reveal(){if(!state.melody.length)return;state.revealed=true;update()}
+
+/* ---------- events ---------- */
+const sel=document.getElementById('sample');
+sel.innerHTML='<option value="" disabled>サンプルを選ぶ</option>'+SAMPLES.map((s,i)=>`<option value="${i}">サンプル ${String(i+1).padStart(2,'0')}</option>`).join('')+'<option value="custom">自作メロディ（空から入力）</option>';
+sel.addEventListener('change',()=>{
+  if(sel.value==='custom'){stopAll();state.melody=[];state.source={type:'empty',label:'',name:'',answer:null};resetJudgement();toCustom();update();return}
+  if(sel.value!=='')loadSample(+sel.value);
+});
+const gDiff=document.getElementById('g-diff'), gMode=document.getElementById('g-mode'), gBars=document.getElementById('g-bars'), gMsg=document.getElementById('g-msg');
+document.getElementById('g-new').addEventListener('click',()=>{gMsg.textContent='';loadGenerated(gDiff.value,gMode.value,+gBars.value,newSeed())});
+function loadCode(){
+  const v=document.getElementById('g-code').value.trim().toUpperCase();
+  const m=v.match(/^([ENH])([MNB])(4|8)-(\d{1,7})$/);
+  if(!m){gMsg.textContent='「NB8-48213」の形で入力してください';return}
+  gMsg.textContent='';gDiff.value=m[1];gMode.value=m[2];gBars.value=m[3];
+  loadGenerated(m[1],m[2],+m[3],+m[4]);
+}
+document.getElementById('g-load').addEventListener('click',loadCode);
+document.getElementById('g-code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loadCode()}});
+document.getElementById('btn-play').addEventListener('click',()=>playMelody(false));
+document.getElementById('btn-stop').addEventListener('click',stopAll);
+
+/* spacebar = play / stop (same as the transport button) */
+const spaceSkip=t=>t.isContentEditable||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||(t.tagName==='INPUT'&&!['range','checkbox','radio','button','file'].includes(t.type));
+document.addEventListener('keydown',e=>{
+  if(e.code!=='Space'||e.defaultPrevented||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(spaceSkip(e.target))return;
+  e.preventDefault();
+  if(e.repeat)return;
+  if(state.playIdx>=0)stopAll();else playMelody(false);
+});
+document.addEventListener('keyup',e=>{if(e.code==='Space'&&!spaceSkip(e.target))e.preventDefault()});
+document.getElementById('btn-undo').addEventListener('click',()=>{if(!state.melody.length)return;toCustom();state.melody.pop();update()});
+document.getElementById('btn-clear').addEventListener('click',()=>{stopAll();state.melody=[];state.source={type:'empty',label:'',name:'',answer:null};resetJudgement();toCustom();update()});
+const bpm=document.getElementById('bpm');
+bpm.addEventListener('input',()=>{state.bpm=+bpm.value;document.getElementById('bpm-val').textContent=bpm.value});
+document.querySelectorAll('.dur').forEach(b=>b.addEventListener('click',()=>{state.dur=+b.dataset.dur;document.querySelectorAll('.dur').forEach(x=>x.classList.toggle('on',x===b))}));
+document.getElementById('kb').addEventListener('pointerdown',e=>{const k=e.target.closest('[data-key]');if(!k)return;e.preventDefault();k.classList.add('down');setTimeout(()=>k.classList.remove('down'),160);addNote(+k.dataset.key)});
+document.getElementById('roll').addEventListener('click',e=>{const r=e.target.closest('[data-m]');if(r)playNote(+r.dataset.m,0.5)});
+document.getElementById('tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;state.tab=+b.dataset.tab;renderTabs();renderPanel()});
+document.getElementById('verdict').addEventListener('click',e=>{
+  if(e.target.closest('#btn-reveal'))reveal();
+  if(e.target.closest('#btn-giveup'))reveal();
+});
+document.getElementById('panel').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b||b.disabled)return; const act=b.dataset.act;
+  if(act==='play')playMelody(false);
+  if(act==='play-drone')playMelody(true);
+  if(act==='stop')stopAll();
+  if(act==='drone'&&state.tonic!==null){stopAll();startDrone(state.tonic)}
+  if(act==='note')playNote(+b.dataset.m,1);
+  if(act==='reveal')reveal();
+  if(act==='tonic'){state.tonic=+b.dataset.pc;playNote(60+state.tonic,0.8);update()}
+  if(act==='tonic-mode'){
+    const t=+b.dataset.pc,mode=b.dataset.mode,q=mode==='major'?4:3;
+    playChord([48+t,60+t,60+t+q,60+t+7]);
+    if(!state.revealed){state.tonic=t;state.mode=mode;update()}
+  }
+  if(act==='chord'&&state.tonic!==null){const t=state.tonic,q=+b.dataset.q;playChord([48+t,60+t,60+t+q,60+t+7])}
+  if(act==='mode'){state.mode=b.dataset.mode;update()}
+});
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,select,textarea')||e.metaKey||e.ctrlKey||e.altKey||e.repeat)return;
+  const m=PCKEYS[e.key.toLowerCase()]; if(m!==undefined){e.preventDefault();addNote(m)}
+});
+
+/* open on a generated question so the first view is a real exercise */
+renderGlossary();
+loadGenerated('N','B',8,48213);
+})();
+</script>
+
+</body></html>
