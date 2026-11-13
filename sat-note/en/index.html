@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Saturator Study Note — Saturator Anatomy Lab</title>
+<meta name="description" content="A free learning app: play six kinds of distortion — tape, tube, transformer, transistor, diode and hard clip — through real DSP in your browser, and understand them through harmonic spectra, transfer curves and aliasing.">
+<meta name="theme-color" content="#0d6575">
+
+
+
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Saturator Anatomy Lab">
+<meta property="og:title" content="Saturator Study Note — Saturator Anatomy Lab">
+<meta property="og:description" content="A free learning app: play six kinds of distortion — tape, tube, transformer, transistor, diode and hard clip — through real DSP in your browser, and understand them through harmonic spectra, transfer curves and aliasing.">
+<meta property="og:url" content="https://kazufumi01.github.io/sat-note/en/">
+<meta property="og:image" content="https://kazufumi01.github.io/sat-note/en/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Saturator Anatomy Lab">
+<meta name="twitter:description" content="A free learning app: play six kinds of distortion — tape, tube, transformer, transistor, diode and hard clip — through real DSP in your browser, and understand them through harmonic spectra, transfer curves and aliasing.">
+<meta name="twitter:image" content="https://kazufumi01.github.io/sat-lab/en/ogp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: sibling of Compressor Anatomy Lab — studio rack. Harmonic bars are the hero (left top), transfer curve + scope + full spectrum + signal flow below; control surface + explanation right; DSP code at the bottom */
+:root{
+  --bg:#e6e9ed; --panel:#f6f7f9; --ink:#16202b; --muted:#566271; --line:#c8cfd7; --grid:#dde2e8;
+  --accent:#0d6575; --on-accent:#ffffff; --sig:#9ca7b3; --sel:#e3eef0;
+  --even:#0d6575; --odd:#c47410; --alias:#b83f36;
+  --font-ui:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d; --grid:#212932;
+  --accent:#55b7c5; --on-accent:#0a1a1d; --sig:#56616e; --sel:#1d2d33;
+  --even:#55b7c5; --odd:#eda33c; --alias:#ef7a6e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151a; --panel:#192027; --ink:#e2e6ea; --muted:#8c97a4; --line:#2a333d; --grid:#212932;
+  --accent:#55b7c5; --on-accent:#0a1a1d; --sig:#56616e; --sel:#1d2d33;
+  --even:#55b7c5; --odd:#eda33c; --alias:#ef7a6e; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:14px;line-height:1.7}
+.wrap{max-width:1260px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0}
+a{color:var(--accent)}
+
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.brand h1{font-size:26px;font-weight:700;letter-spacing:.02em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px;max-width:62ch}
+.transport{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn,.sel{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:7px 12px;cursor:pointer;min-height:36px}
+.btn:hover,.sel:hover{border-color:var(--muted)}
+.btn:focus-visible,.sel:focus-visible,input:focus-visible,.blk:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700;min-width:96px}
+.btn[aria-pressed="true"]{background:var(--odd);border-color:var(--odd);color:var(--on-accent)}
+.file{position:relative;overflow:hidden}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.status{font-size:12px;color:var(--muted);min-height:1.2em}
+
+.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.ph h2{font-size:15px;font-weight:700}
+.badge{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:transparent;cursor:default}
+button.badge{cursor:pointer;font-family:var(--font-ui);font-size:12px}
+button.badge:hover{border-color:var(--muted);color:var(--ink)}
+.badge.live{border-color:var(--odd);color:var(--odd)}
+canvas{display:block;width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:620px){.row2{grid-template-columns:minmax(0,1fr)}}
+.note{font-size:12px;color:var(--muted);margin:10px 0 0}
+
+.tonebar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-bottom:10px;padding:8px 10px;background:var(--bg);border-radius:4px}
+.tonebar .lab{font-size:12px;color:var(--muted);white-space:nowrap}
+.tonebar .lvl{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:180px}
+.tonebar output{font-family:var(--font-mono);font-size:12px;min-width:8ch;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.ro{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 12px;margin-top:12px}
+@media (max-width:520px){.ro{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ro div{display:flex;flex-direction:column;min-width:0}
+.ro dt{font-size:11px;color:var(--muted)}
+.ro dd{margin:0;font-family:var(--font-mono);font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ro .ev{color:var(--even)} .ro .od{color:var(--odd)}
+
+.flow-scroll{overflow-x:auto}
+.flow{min-width:560px;width:100%;height:auto;display:block}
+.flow .box{fill:var(--bg);stroke:var(--line);stroke-width:1.2}
+.flow .blk{cursor:pointer}
+.flow .blk:hover .box{stroke:var(--muted)}
+.flow .blk.on .box{stroke:var(--accent);stroke-width:2;fill:var(--sel)}
+.flow text{fill:var(--ink);font-family:var(--font-ui);font-size:12px;text-anchor:middle}
+.flow text.sub{fill:var(--muted);font-family:var(--font-mono);font-size:10px}
+.flow text.lab{fill:var(--muted);font-family:var(--font-mono);font-size:10px;text-anchor:start}
+.flow .wire{fill:none;stroke:var(--muted);stroke-width:1.4}
+.flow .wire.dry{stroke-dasharray:4 3}
+.flow .zone{fill:none;stroke:var(--accent);stroke-dasharray:5 4;stroke-width:1}
+.flow .ah{fill:var(--muted)}
+.flow[data-os="1"] .osonly{opacity:.3}
+
+.groups{display:flex;flex-direction:column;gap:14px}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;min-width:0}
+legend{padding:0;margin-bottom:4px;font-size:13px;font-weight:700}
+.ctl{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:8px;padding:6px 8px;border-radius:4px;cursor:pointer}
+.ctl:hover{background:var(--bg)}
+.ctl.on{background:var(--sel)}
+.ctl label{cursor:pointer;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ctl .jp{font-weight:500}
+.ctl.on .jp{color:var(--accent)}
+.ctl .en{font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.ctl output{font-family:var(--font-mono);font-size:13px;font-variant-numeric:tabular-nums;text-align:right}
+.ctl input[type=range]{grid-column:1/-1}
+.ctl.dim{opacity:.45}
+.seg{display:flex;flex-wrap:wrap;gap:4px;grid-column:1/-1;margin-top:4px}
+.seg button{font:inherit;font-size:12px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:4px 10px;cursor:pointer;min-height:30px}
+.seg button:hover{border-color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tonebar .seg{margin:0;grid-column:auto}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent);margin-top:-5.5px;border:2px solid var(--panel)}
+input[type=range]::-moz-range-track{height:4px;background:var(--line);border-radius:2px}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);border:2px solid var(--panel)}
+
+.ex h3{font-size:20px;font-weight:700;margin-top:2px}
+.ex .what{font-size:15px;font-weight:500;margin:6px 0 10px}
+.ex p{margin:0 0 10px;max-width:64ch}
+.ex h4{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;margin:14px 0 6px}
+.ex ul{margin:0;padding-left:1.2em}
+.ex li{margin:2px 0}
+.ex .ref{font-size:12px;color:var(--muted)}
+.formula{font-family:var(--font-mono);font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px;white-space:pre-wrap;line-height:1.8;overflow-x:auto}
+.tries{display:flex;flex-wrap:wrap;gap:6px}
+.tries .btn{font-size:12px;min-height:32px;padding:5px 10px}
+
+.foot{border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+.foot p{margin:0;max-width:80ch}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+/* standalone page additions */
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+img{max-width:100%}
+.blog{display:inline-block;margin-top:6px;font-size:13px;font-weight:700;text-decoration:none}
+.blog:hover{text-decoration:underline}
+.lang{display:inline-block;margin:6px 0 0 14px;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:12px;font-weight:700;text-decoration:none;color:var(--ink)}.lang:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700&display=swap">
+<link rel="stylesheet" href="/note-kit/kit.css">
+<style>html.nk{--bg:var(--nk-paper);--panel:var(--nk-page);--ink:var(--nk-ink);--muted:var(--nk-muted);--line:var(--nk-line);--grid:var(--nk-rule);--accent:var(--nk-blue);--on-accent:var(--nk-on);--sig:var(--nk-pencil);--sel:var(--nk-hl);--even:var(--nk-blue);--odd:#b0741c;--alias:var(--nk-red);--font-ui:var(--nk-ui)}.nk .ro{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 10px;margin-top:4px}.nk .ro dd{font-size:14px}.nk .tonebar{margin-bottom:4px}</style>
+<link rel="canonical" href="https://kazufumi01.github.io/sat-note/en/">
+<link rel="alternate" hreflang="ja" href="https://kazufumi01.github.io/sat-note/">
+<link rel="alternate" hreflang="en" href="https://kazufumi01.github.io/sat-note/en/">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <p class="eyebrow">Nonlinear Processor / Harmonics · Aliasing</p>
+      <h1>Saturator Anatomy Lab</h1>
+      <p>What does “warm” or “thick” actually mean? This app shows it as harmonics. Watch six distortion circuits running in your browser through their harmonic spectrum, transfer curve and waveform. Headphones recommended.</p>
+      <a class="blog" href="https://jpk.seesaa.net/article/521891267.html" target="_blank" rel="noopener">Article: saturator learning map (Japanese) →</a>
+      <a class="lang" href="../" hreflang="ja" lang="ja">日本語</a><a class="lang" href="https://kazufumi01.github.io/" target="_blank" rel="noopener">All labs ↗</a>
+    </div>
+    <div class="transport">
+      <button class="btn primary" id="play" type="button">▶ Play</button>
+      <select class="sel" id="src" aria-label="Source">
+        <option value="mix">Drums + bass + chords (90 BPM)</option>
+        <option value="bass">Bass only (sine)</option>
+        <option value="chord">Chords only (hear intermodulation)</option>
+        <option value="drums">Drums only</option>
+        <option value="tone">Test tone (harmonics panel settings)</option>
+      </select>
+      <label class="btn file">Load an audio file<input type="file" id="file" accept="audio/*"></label>
+      <select class="sel" id="preset" aria-label="Preset"></select>
+      <button class="btn" id="delta" type="button" aria-pressed="false">Delta listen</button>
+      <button class="btn" id="bypass" type="button" aria-pressed="false">Bypass</button>
+    </div>
+  </header>
+  <div class="status" id="status" role="status"></div>
+
+  <main class="grid">
+    <div class="col">
+      <section class="panel">
+        <div class="ph"><h2>Harmonic spectrum (measured with a test tone)</h2><button class="badge" id="howto" type="button">How to read this</button></div>
+        <div class="tonebar">
+          <span class="lab">Test tone</span>
+          <div class="seg" id="tf" role="group" aria-label="Test tone frequency"></div>
+          <div class="lvl"><span class="lab">Level</span><input type="range" id="tl" min="-36" max="0" step="1" value="-12" aria-label="Test tone level"><output id="tlv">−12 dBFS</output></div>
+        </div>
+        <canvas id="hc" aria-label="Bar chart of the fundamental and harmonics 2 to 12"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--sig)"></i>Fundamental (H1)</span>
+          <span><i style="background:var(--even)"></i>Even (2nd, 4th, 6th…)</span>
+          <span><i style="background:var(--odd)"></i>Odd (3rd, 5th, 7th…)</span>
+          <span><i style="background:var(--alias)"></i>Aliasing (fold-back)</span>
+        </div>
+        <dl class="ro">
+          <div><dt>THD (total harmonic distortion)</dt><dd id="r-thd">—</dd></div>
+          <div><dt>2nd (re fundamental)</dt><dd class="ev" id="r-h2">—</dd></div>
+          <div><dt>3rd (re fundamental)</dt><dd class="od" id="r-h3">—</dd></div>
+          <div><dt>Even − odd</dt><dd id="r-eo">—</dd></div>
+        </dl>
+        <p class="note">A single sine wave processed with the current settings, then analysed with a 16,384-point FFT at 48 kHz. A pure sine has only its fundamental, so every other bar here was added by the circuit.</p>
+      </section>
+
+      <div class="row2">
+        <section class="panel">
+          <div class="ph"><h2>Transfer curve</h2></div>
+          <canvas id="cc" aria-label="Transfer curve showing output against input"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--accent)"></i>Curve</span>
+            <span><i style="background:transparent;border-top:2px dashed var(--odd);height:0;border-radius:0"></i>Mirrored through the origin</span>
+          </div>
+          <p class="note">The shaded band is the range the test tone covers. The more the solid and dashed lines differ, the more asymmetric the curve — and the more even harmonics you get.</p>
+        </section>
+        <section class="panel">
+          <div class="ph"><h2>Waveform</h2><span class="badge" id="wcy">2 cycles</span></div>
+          <canvas id="wc" aria-label="Input and output waveforms compared"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--sig)"></i>Input</span>
+            <span><i style="background:var(--accent)"></i>Output</span>
+          </div>
+          <p class="note">Both are normalised to a peak of 1 so the shapes can be compared.</p>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div class="ph"><h2>Full-range spectrum</h2><span class="badge" id="smode">Test tone analysis</span></div>
+        <canvas id="sc" aria-label="Frequency spectrum from 20 Hz to 24 kHz"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--muted)"></i>Test tone after processing</span>
+          <span><i style="background:var(--ink)"></i>Playing output (relative)</span>
+          <span><i style="background:var(--alias)"></i>Components at non-harmonic positions</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="ph"><h2>Signal flow</h2><span class="eyebrow">Click a block for details</span></div>
+        <div class="flow-scroll">
+        <svg class="flow" id="flow" viewBox="0 0 640 226" data-os="4" role="img" aria-label="Saturator signal flow diagram">
+          <defs>
+            <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0 L8 4 L0 8 z"/></marker>
+          </defs>
+          <rect class="zone" x="150" y="14" width="436" height="78" rx="6"/>
+          <text class="lab" x="160" y="86" id="zl">×4 oversampled section</text>
+          <text class="lab" x="4" y="52">IN</text>
+          <path class="wire" d="M22 48 H40" marker-end="url(#ah)"/>
+          <g class="blk" data-k="drive" tabindex="0" role="button" aria-label="Drive"><rect class="box" x="40" y="30" width="86" height="36" rx="4"/><text x="83" y="52">Drive</text></g>
+          <path class="wire" d="M126 48 H160" marker-end="url(#ah)"/>
+          <g class="blk osonly" data-k="os" tabindex="0" role="button" aria-label="Upsample"><rect class="box" x="160" y="30" width="90" height="36" rx="4"/><text x="205" y="46">Up</text><text class="sub" x="205" y="60" id="upl">×4</text></g>
+          <path class="wire" d="M250 48 H274" marker-end="url(#ah)"/>
+          <g class="blk" data-k="bias" tabindex="0" role="button" aria-label="Bias"><circle class="box" cx="292" cy="48" r="17"/><text x="292" y="53" style="font-size:15px">+</text></g>
+          <text class="sub" x="292" y="27">bias</text>
+          <path class="wire" d="M309 48 H330" marker-end="url(#ah)"/>
+          <g class="blk" data-k="shaper" tabindex="0" role="button" aria-label="Waveshaper"><rect class="box" x="330" y="30" width="118" height="36" rx="4"/><text x="389" y="46">Shaper</text><text class="sub" x="389" y="60" id="shl">Tube</text></g>
+          <path class="wire" d="M448 48 H470" marker-end="url(#ah)"/>
+          <g class="blk osonly" data-k="os" tabindex="0" role="button" aria-label="Downsample"><rect class="box" x="470" y="30" width="100" height="36" rx="4"/><text x="520" y="46">Down</text><text class="sub" x="520" y="60">AA filter</text></g>
+          <path class="wire" d="M570 48 H612 V148 H578" marker-end="url(#ah)"/>
+          <g class="blk" data-k="dc" tabindex="0" role="button" aria-label="DC block"><rect class="box" x="478" y="130" width="100" height="36" rx="4"/><text x="528" y="146">DC block</text><text class="sub" x="528" y="160">10 Hz HPF</text></g>
+          <path class="wire" d="M478 148 H452" marker-end="url(#ah)"/>
+          <g class="blk" data-k="tone" tabindex="0" role="button" aria-label="Tone"><rect class="box" x="352" y="130" width="100" height="36" rx="4"/><text x="402" y="146">Tone</text><text class="sub" x="402" y="160" id="tnl">OFF</text></g>
+          <path class="wire" d="M352 148 H326" marker-end="url(#ah)"/>
+          <g class="blk" data-k="out" tabindex="0" role="button" aria-label="Output"><rect class="box" x="214" y="130" width="112" height="36" rx="4"/><text x="270" y="146">Output level</text><text class="sub" x="270" y="160">auto + trim</text></g>
+          <path class="wire" d="M214 148 H172" marker-end="url(#ah)"/>
+          <g class="blk" data-k="mix" tabindex="0" role="button" aria-label="Mix"><rect class="box" x="96" y="130" width="76" height="36" rx="4"/><text x="134" y="152">Mix</text></g>
+          <path class="wire" d="M96 148 H44" marker-end="url(#ah)"/>
+          <text class="lab" x="10" y="152">OUT</text>
+          <path class="wire dry" d="M30 48 V108 H134 V128" marker-end="url(#ah)"/>
+          <text class="lab" x="40" y="104">Dry (delay-compensated)</text>
+          <text class="lab" x="10" y="200">Only inside the dashed box is the sample rate raised; high harmonics created by the distortion</text>
+          <text class="lab" x="10" y="216">are removed before returning to the original rate.</text>
+        </svg>
+        </div>
+      </section>
+    </div>
+
+    <aside class="col">
+      <section class="panel">
+        <div class="ph"><h2>Parameters</h2><span class="eyebrow">Click a row for details</span></div>
+        <div class="groups" id="groups"></div>
+      </section>
+      <section class="panel ex" id="ex" aria-live="polite"></section>
+    </aside>
+  </main>
+
+
+  <footer class="foot">
+    <p>Related article (Japanese):<a href="https://jpk.seesaa.net/article/521891267.html" target="_blank" rel="noopener">Saturator learning map</a></p>
+    <p>Sister app:<a href="https://kazufumi01.github.io/comp-lab/en/" target="_blank" rel="noopener">Compressor Anatomy Lab</a></p>
+    <p>Each circuit is a simplified model for grasping its character. Tape hysteresis, wow and flutter, tube power-supply sag and similar effects are left out. Product names are mentioned for explanation only and are trademarks of their respective owners.</p>
+    <p>No sound on iPhone? Turn off silent mode.</p>
+  </footer>
+</div>
+
+<script id="core-src">
+const SAT_TYPES=['tape','tube','transformer','transistor','diode','hardclip'];
+class SatCore{
+  constructor(fs){
+    this.fs=fs;
+    this.p={type:'tube',drive:12,bias:0,hard:3,tone:20000,os:4,auto:1,autoGain:1,trim:0,mix:100,delta:0,bypass:0};
+    this.ch=[SatCore.state(),SatCore.state()];
+    this.R=1-2*Math.PI*10/fs;
+    this.sa=1-Math.exp(-1/(0.012*fs));
+    this.L=0;
+    this.set({os:4});
+  }
+  static state(){return{xh:new Float64Array(256),xp:0,oh:new Float64Array(1024),op:0,lo:0,tp1:0,tp2:0,phi:0,dcx:0,dcy:0,x1:0,x2:0,y1:0,y2:0,dly:new Float64Array(128),dp:0,g:-1,o:1,m:1};}
+  static i0(x){let s=1,t=1;for(let k=1;k<50;k++){t*=(x/(2*k))*(x/(2*k));s+=t;if(t<1e-12*s)break;}return s;}
+  static design(L){
+    const T=64*L+1,M=(T-1)/2,fc=0.455/L,beta=9,ib=SatCore.i0(beta),h=new Float64Array(T);let sum=0;
+    for(let n=0;n<T;n++){const m=n-M;const s=m===0?2*fc:Math.sin(2*Math.PI*fc*m)/(Math.PI*m);const r=m/M;
+      h[n]=s*SatCore.i0(beta*Math.sqrt(Math.max(0,1-r*r)))/ib;sum+=h[n];}
+    for(let n=0;n<T;n++)h[n]/=sum;return h;
+  }
+  setOS(L){
+    L=[1,2,4].indexOf(+L)>=0?+L:4;if(L===this.L)return;this.L=L;this.fos=this.fs*L;
+    if(L>1){const h=SatCore.design(L);this.h=h;this.poly=[];
+      for(let p=0;p<L;p++){const a=[];for(let k=0;k*L+p<h.length;k++)a.push(h[k*L+p]*L);this.poly.push(Float64Array.from(a));}
+      this.lat=(h.length-1)/L;}else{this.h=null;this.poly=null;this.lat=0;}
+    this.tapeA=1-Math.exp(-2*Math.PI*3000/this.fos);
+    this.tfA=1-Math.exp(-2*Math.PI*150/this.fos);
+    for(const s of this.ch){s.xh.fill(0);s.oh.fill(0);s.xp=0;s.op=0;s.dly.fill(0);s.dp=0;s.tp1=s.tp2=s.phi=0;}
+  }
+  static tube(x){return Math.tanh(x+0.7)*1.5770;}  /* operating point 0.7, 1/sech²(0.7) keeps small-signal gain at 1 */
+  static knee(x,p){return x/Math.pow(1+Math.pow(Math.abs(x),p),1/p);}
+  static diode(x,p){const t=x>=0?1:0.6;return t*SatCore.knee(x/t,p);}
+  static clip(x){return x>1?1:x<-1?-1:x;}
+  set(d){
+    Object.assign(this.p,d);const P=this.p;
+    if(d.os!==undefined)this.setOS(d.os);
+    this.tid=Math.max(0,SAT_TYPES.indexOf(P.type));
+    this.tG=Math.pow(10,P.drive/20);
+    this.tO=(P.auto?P.autoGain:1)*Math.pow(10,P.trim/20);
+    this.tM=P.delta?1:P.mix/100;
+    const b=P.bias;
+    this.fb=[Math.tanh(b+0.05),SatCore.tube(b),b-Math.tanh(b),SatCore.knee(b,P.hard),SatCore.diode(b,P.hard),SatCore.clip(b)][this.tid];
+    this.toneOn=P.tone<19900;
+    if(this.toneOn){const w=2*Math.PI*Math.min(P.tone,this.fs*0.45)/this.fs,c=Math.cos(w),al=Math.sin(w)/(2*0.7071),a0=1+al;
+      this.b0=(1-c)/2/a0;this.b1=(1-c)/a0;this.b2=this.b0;this.a1=-2*c/a0;this.a2=(1-al)/a0;}
+  }
+  /* static (memoryless) curve for display; transformer shown at its low-frequency limit */
+  curve(v){
+    const P=this.p,b=P.bias;
+    switch(this.tid){
+      case 0:return Math.tanh(v+b+0.05)-this.fb;
+      case 1:return SatCore.tube(v+b)-this.fb;
+      case 2:{const ph=1.6*v+b;return (v-0.5*((ph-Math.tanh(ph))-this.fb))/this.tG;}
+      case 3:return SatCore.knee(v+b,P.hard)-this.fb;
+      case 4:return SatCore.diode(v+b,P.hard)-this.fb;
+      default:return SatCore.clip(v+b)-this.fb;
+    }
+  }
+  shape(st,v){
+    const P=this.p,b=P.bias;let y;
+    switch(this.tid){
+      case 0:{st.tp1+=this.tapeA*(v-st.tp1);const e=2*v-st.tp1;const s=Math.tanh(e+b+0.05)-this.fb;st.tp2+=this.tapeA*(s-st.tp2);y=0.5*(s+st.tp2);break;}
+      case 1:y=SatCore.tube(v+b)-this.fb;break;
+      case 2:{st.phi+=this.tfA*(v-st.phi);const ph=1.6*st.phi+b;y=(v-0.5*((ph-Math.tanh(ph))-this.fb))/this.tG;if(P.delta)return y-v/this.tG;return y;}
+      case 3:y=SatCore.knee(v+b,P.hard)-this.fb;break;
+      case 4:y=SatCore.diode(v+b,P.hard)-this.fb;break;
+      default:y=SatCore.clip(v+b)-this.fb;
+    }
+    return P.delta?y-v:y;
+  }
+  processChannel(c,inp,out,n){
+    const st=this.ch[c],P=this.p,L=this.L,sa=this.sa;
+    if(st.g<0){st.g=this.tG;st.o=this.tO;st.m=this.tM;}
+    for(let i=0;i<n;i++){
+      const x=inp[i];
+      st.g+=(this.tG-st.g)*sa;st.o+=(this.tO-st.o)*sa;st.m+=(this.tM-st.m)*sa;
+      let dry=x;
+      if(this.lat){st.dly[st.dp]=x;dry=st.dly[(st.dp-this.lat)&127];st.dp=(st.dp+1)&127;}
+      const u=x*st.g;let s;
+      if(L===1){s=this.shape(st,u);}
+      else{
+        st.xh[st.xp]=u;st.xh[st.xp+128]=u;const base=st.xp+128;st.xp=(st.xp+1)&127;
+        for(let p=0;p<L;p++){
+          const hp=this.poly[p];let v=0;
+          for(let k=0;k<hp.length;k++)v+=hp[k]*st.xh[base-k];
+          const y=this.shape(st,v);
+          st.oh[st.op]=y;st.oh[st.op+512]=y;st.lo=st.op+512;st.op=(st.op+1)&511;
+        }
+        const h=this.h,ob=st.lo;let acc=0;
+        for(let j=0;j<h.length;j++)acc+=h[j]*st.oh[ob-j];
+        s=acc;
+      }
+      const d=s-st.dcx+this.R*st.dcy;st.dcx=s;st.dcy=d;
+      let t=d;
+      if(this.toneOn){const y=this.b0*t+this.b1*st.x1+this.b2*st.x2-this.a1*st.y1-this.a2*st.y2;st.x2=st.x1;st.x1=t;st.y2=st.y1;st.y1=y;t=y;}
+      const o=dry*(1-st.m)+t*st.o*st.m;
+      out[i]=P.bypass?x:o;
+    }
+  }
+}
+</script>
+<script type="text/plain" id="worklet-wrapper">
+class SatProc extends AudioWorkletProcessor{
+  constructor(){super();this.core=new SatCore(sampleRate);this.port.onmessage=e=>this.core.set(e.data);}
+  process(ins,outs){
+    const i=ins[0],o=outs[0];
+    if(!i||!i.length){for(const ch of o)ch.fill(0);return true;}
+    const L=i[0],R=i[1]||i[0];
+    this.core.processChannel(0,L,o[0],L.length);
+    if(o[1])this.core.processChannel(1,R,o[1],R.length);
+    return true;
+  }
+}
+registerProcessor('sat-proc',SatProc);
+</script>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const FS=48000, NFFT=16384, WARM=8192;
+const TYPE_JP={tape:'Tape',tube:'Tube',transformer:'Transformer',transistor:'Transistor',diode:'Diode',hardclip:'Hard clip'};
+const state={type:'tube',drive:12,bias:0,hard:3,tone:20000,os:4,auto:1,autoGain:1,trim:0,mix:100,delta:0,bypass:0};
+const test={f:220,lvl:-12};
+let sel='harm', analysis=null;
+
+/* ---------- explanations ---------- */
+const EX={
+harm:{en:'How to read',title:'Reading the harmonic spectrum',what:'Each bar shows, in dB, how far below the fundamental that harmonic sits.',
+ body:['A sine wave is the plainest sound there is — no harmonics at all. Pass it through a saturator and new components appear at whole-number multiples of the fundamental. Any bar that rises is sound the circuit added.',
+  'The colours matter. Even harmonics (teal) are octave-related to the fundamental and blend in, heard as thickness and sweetness. Odd harmonics (orange) include fifths and thirds, heard as core and forwardness — and as hardness when strong. When harmonics above the 7th stand out, you hear a buzzy roughness.',
+  'Red bars are harmonics that went above the Nyquist frequency (half the sample rate) and folded back to frequencies unrelated to the harmonic series.'],
+ guide:['2nd (one octave up): blends with the fundamental — thickness, sweetness','3rd (octave + fifth): core, forwardness','4th, 6th: consonant, like the 2nd','5th (two octaves + major third): brightness, sparkle','7th (two octaves + a minor seventh, about 31 cents flat): where dissonance begins','9th and up: edge, grit — harsh if too strong'],
+ formula:'THD = √(H2² + H3² + … + H15²) / H1\nbar value = 20·log10(Hn / H1)  [dB]',
+ tries:[{l:'Tube: 2nd dominates',p:{type:'tube',drive:12,bias:0,os:4,mix:100},t:{f:220,lvl:-12}},{l:'Transistor: odd only',p:{type:'transistor',drive:12,bias:0,hard:3,os:4,mix:100},t:{f:220,lvl:-12}},{l:'Hard clip: reaches high orders',p:{type:'hardclip',drive:18,bias:0,os:4,mix:100},t:{f:220,lvl:-12}}]},
+drive:{en:'Drive',title:'Drive',what:'How much the signal is boosted before it hits the curve.',
+ body:['The transfer curve is nearly straight near the centre and bends toward the edges. Drive decides how much of that curve you use. A small input only passes through the straight part, so it barely distorts.',
+  'At small signal levels, each extra 1 dB of drive raises the 2nd harmonic by about 1 dB relative to the fundamental, the 3rd by about 2 dB, and the nth by about (n−1) dB. That is why high orders suddenly appear with only a little more drive. Move the test tone level in 1 dB steps and compare how the 2nd and 3rd grow.',
+  'The same drive setting distorts differently depending on the source level. It helps to think of any gain before the saturator (clip gain, trim) as part of the drive.'],
+ guide:['Vocal texture: 3–8 dB (tape / tube)','Bass definition: 6–12 dB','Drum bus: 4–10 dB','Dirtying up synths: 15 dB and up'],
+ formula:'u = x · 10^(Drive / 20)',
+ tries:[{l:'3 dB (nearly transparent)',p:{drive:3}},{l:'12 dB',p:{drive:12}},{l:'30 dB (saturated)',p:{drive:30}}]},
+bias:{en:'Bias / Asymmetry',title:'Bias (asymmetry)',what:'Shifts where the signal enters the curve so the top and bottom distort differently.',
+ body:['A curve that is symmetric about the origin (f(−x) = −f(x)) can mathematically produce only odd harmonics, because the upper and lower halves of the wave are squashed equally.',
+  'Shift the entry point with bias and the top and bottom bend differently, creating even harmonics (especially the 2nd). A tube’s operating point, an offset in tape DC bias and residual magnetisation in a transformer are why real gear produces even harmonics.',
+  'Asymmetric distortion also creates a DC offset (the waveform’s centre shifts), which the DC block after it removes.'],
+ guide:['0: odd harmonics only (symmetric circuit)','0.05–0.15: a clear 2nd harmonic','0.3 and up: strong 2nd, one side squashes first'],
+ formula:'y = f(u + b) − f(b)\n(−f(b) brings the output back to 0 in silence)',
+ tries:[{l:'Symmetric (b = 0)',p:{type:'transistor',bias:0,drive:12,hard:3}},{l:'Asymmetric (b = 0.2)',p:{type:'transistor',bias:0.2,drive:12,hard:3}}]},
+hard:{en:'Hardness / Knee',title:'Hardness',what:'How sharp the curve’s shoulder is. Active for the transistor and diode types.',
+ body:['With a gentle shoulder, harmonics fall away quickly after the low orders; the sharper the shoulder, the higher they reach. Around 2.0 is soft saturation; 8 and above is close to clipping.',
+  'At the same THD, a spectrum that reaches higher orders sounds harder and rougher. Use the shape of the bars to see that the THD number alone does not define the tone.'],
+ guide:['2–3: soft, analog-style saturation','4–6: the hardness of op-amps and FETs','8 and up: close to a clipper'],
+ formula:'y = u / (1 + |u|^p)^(1/p)    p = Hardness',
+ tries:[{l:'p = 2',p:{type:'transistor',hard:2,drive:14}},{l:'p = 8',p:{type:'transistor',hard:8,drive:14}}]},
+tone:{en:'Tone (post LPF)',title:'Tone',what:'A low-pass filter that gently rolls off the highs after the distortion.',
+ body:['Distortion adds harmonics up top, so everything above 5 kHz easily turns gritty. Taming that band a little after the distortion is a standard move — a guitar amp’s speaker cabinet does the same job.',
+  'It can also approximate the natural roll-off of a tape playback head or a transformer’s high end.'],
+ guide:['Vocals: 12–16 kHz','Bass: 4–8 kHz','Drum bus: OFF–14 kHz','Dirty synths: 5–8 kHz'],
+ formula:'2nd-order Butterworth LPF (Q = 0.707)\nOFF at 20 kHz',
+ tries:[{l:'OFF',p:{tone:20000}},{l:'6 kHz',p:{tone:6000}}]},
+os:{en:'Oversampling',title:'Oversampling',what:'Raises the sample rate L times, only while the distortion is processed.',
+ body:['Digital audio cannot represent frequencies above half the sample rate (the Nyquist frequency — 24 kHz at 48 kHz). When harmonics created by distortion go above it, they do not disappear; they fold back like a mirror image and land on frequencies unrelated to the harmonic series. That is aliasing.',
+  'Harmonics are consonant with the fundamental; aliased components are not. Higher notes alias more easily, making hi-hats and vocal top end sound gritty or muddy.',
+  'Upsample L times, distort, filter out everything above 24 kHz, then come back down, and aliasing drops dramatically. The price is CPU load and, on this page, 64 samples of latency (about 1.3 ms at 48 kHz).'],
+ guide:['2×: enough for most soft saturation','4× and up: hard clipping or heavy drive','Low while mixing, higher when bouncing (a plugin’s HQ / render setting)'],
+ formula:'alias fa = | n·f0 − m·fs |  (integer m that lands in 0–fs/2)\ne.g. 5th harmonic of 5 kHz = 25 kHz → 48 − 25 = 23 kHz',
+ tries:[{l:'5 kHz, hard clip, 1×',p:{type:'hardclip',drive:18,os:1,bias:0,tone:20000},t:{f:5000,lvl:-12}},{l:'Same, at 4×',p:{type:'hardclip',drive:18,os:4,bias:0,tone:20000},t:{f:5000,lvl:-12}}]},
+out:{en:'Output / Auto gain',title:'Output level (auto gain)',what:'Matches the level changed by the distortion so comparisons are fair.',
+ body:['We hear even slightly louder as “better” (loudness bias). A/B with the level still raised by the drive and you will overrate the effect.',
+  'Auto gain on this page compensates so that a 220 Hz, −12 dBFS sine comes out at the same RMS as it went in. Real material may drift, so finish by matching with trim and your ears.'],
+ guide:['Turn auto gain ON when comparing','Fine-tune trim in 1 dB steps'],
+ formula:'g_auto = RMS_in / RMS_out   (220 Hz, −12 dBFS)\nout = y · g_auto · 10^(Trim/20)'},
+mix:{en:'Mix (parallel)',title:'Mix',what:'The blend between the original and the distorted signal — parallel saturation.',
+ body:['You can add harmonics while keeping the original’s transients and clarity. Blending in 20–40% of a heavily driven signal gives a solid thickness that is different from lightly driving the whole thing.',
+  'The dry path is delayed by the same amount as the oversampling latency before mixing, so there is no comb filtering. Plugin Mix knobs take the same care.'],
+ guide:['Drum bus: 20–40%','Vocals: 30–60%','Bass: 50–100% (check the low end stays in phase)'],
+ formula:'out = dry·(1 − m) + wet·m\ndry is delayed 64 samples (at OS 2× / 4×)'},
+delta:{en:'Delta monitor',title:'Delta listen',what:'Subtracts the linear part of the input from the output so you hear only what the distortion added.',
+ body:['Lets you hear where and how much harmonic content is being added. On vocals, check whether breaths and sibilance stand out in the delta; on drums, the kick attack and cymbal grit.',
+  'If the delta is too loud, or the gritty content piles up only in the highs, that is your cue to lower the drive or the tone.'],
+ formula:'d = f(u + b) − f(b) − u'},
+dc:{en:'DC blocker',title:'DC block',what:'A 10 Hz high-pass filter that removes the shift of the waveform’s centre (DC offset).',
+ body:['Asymmetric distortion creates a DC offset along with even harmonics. You cannot hear DC, but it wastes headroom and throws off the compressor or limiter that follows.',
+  'Plugins with asymmetric distortion almost always do this internally.'],
+ formula:'y[n] = x[n] − x[n−1] + R·y[n−1]\nR = 1 − 2π·10 / fs'},
+shaper:{en:'Waveshaper',title:'Waveshaper',what:'The part that maps each input value to an output value along a fixed curve. This is where harmonics are born.',
+ body:['A circuit whose output is proportional to its input (a straight line) never creates new frequencies, however hard you drive it. A non-proportional relationship is called “nonlinear”, and harmonics appear only when a signal passes through a nonlinear curve.',
+  'The curve’s shape decides the harmonic pattern: symmetric gives odd harmonics, asymmetric adds even ones, and a sharper shoulder reaches higher orders. Switch circuits with “Circuit” at the top right and compare the transfer curve with the harmonics.']},
+tape:{en:'Tape',title:'Tape',what:'Highs are boosted on record and cut on playback — so the highs saturate first.',
+ body:['Magnetic tape records highs poorly, so they are boosted when recording (pre-emphasis) and cut by the same amount on playback (de-emphasis). The boosted highs reach tape saturation first, so hitting tape hard rounds off hi-hats and transients — one of the things behind so-called “tape compression”.',
+  'The saturation itself is nearly symmetric, so the harmonics centre on the 3rd with very little even content. Switch the test tone between 220 Hz and 5 kHz and you will see the higher tone distorts more at the same drive.'],
+ ref:'See also: emulations of the Studer A800, Ampex ATR-102 and others. This model leaves out hysteresis, head bump, and wow and flutter.',
+ guide:['Use: gluing buses and masters, rounding drum peaks','Drive 6–12 dB, tone 14–18 kHz'],
+ formula:'e = u + HP3k(u)      (+6 dB pre-emphasis)\ns = tanh(e + b + 0.05) − tanh(b + 0.05)\ny = s − 0.5·HP3k(s)   (de-emphasis)',
+ tries:[{l:'220 Hz',p:{type:'tape',drive:10,bias:0,tone:20000},t:{f:220,lvl:-12}},{l:'5 kHz (highs saturate first)',p:{type:'tape',drive:10,bias:0,tone:20000},t:{f:5000,lvl:-12}}]},
+tube:{en:'Tube (triode)',title:'Tube (triode)',what:'Asymmetric saturation that bends differently top and bottom. The 2nd harmonic leads.',
+ body:['A single-ended triode runs at an operating point off the centre of its curve, so the positive and negative sides saturate differently. Lightly driven, the 2nd harmonic is the largest and the spectrum leans even. Drive it hard and both sides start to squash, and the 3rd overtakes the 2nd — compare 6 dB and 24 dB of drive. Since the 2nd is an octave up, it adds thickness and sweetness without blurring the pitch.',
+  'Note that in a push-pull circuit with a matched pair of tubes, even harmonics cancel and the result leans odd. “Tube” does not automatically mean “even harmonics”.'],
+ ref:'See also: tube preamps, the Fairchild 660/670, the tube stage of the Pultec EQP-1A, and others.',
+ guide:['Use: vocal presence, warmth on piano and pads','Drive 6–12 dB, mix 40–70%'],
+ formula:'y = [ tanh(u + b + 0.7) − tanh(b + 0.7) ] / sech²(0.7)\n(0.7 = the tube’s operating point, off the centre of the curve)',
+ tries:[{l:'Light (6 dB)',p:{type:'tube',drive:6,bias:0}},{l:'Heavy (24 dB)',p:{type:'tube',drive:24,bias:0}}]},
+transformer:{en:'Transformer',title:'Transformer',what:'Frequency-dependent distortion: the lower the frequency, the sooner it saturates.',
+ body:['The magnetic flux in a transformer core is proportional to the voltage integrated over time. Lower frequencies have longer cycles and build up more flux, so the lows saturate first while the highs barely distort.',
+  'Harmonics are added around the fundamentals of the kick and bass, so the low end comes across even on small speakers. The slight drop in low-end level (compression) as you add drive is also typical transformer behaviour. Switch the test tone between 60 Hz and 1 kHz and compare the THD.'],
+ ref:'See also: input/output transformers in the Neve 1073, API 512, Pultec and others.',
+ guide:['Use: weight on kick and bass, density across the mix','Drive 10–20 dB'],
+ formula:'φ = LPF150Hz(u)          (flux approximation)\ny = { u − 0.5·[ g(1.6φ + b) − g(b) ] } / G\ng(v) = v − tanh(v),  G = drive amount\n(dividing by G keeps the undistorted highs at the same level)',
+ tries:[{l:'60 Hz',p:{type:'transformer',drive:18,bias:0},t:{f:60,lvl:-12}},{l:'1 kHz',p:{type:'transformer',drive:18,bias:0},t:{f:1000,lvl:-12}}]},
+transistor:{en:'Transistor / Op-amp',title:'Transistor (symmetric)',what:'Symmetric saturation with a slightly hard shoulder. Only odd harmonics appear.',
+ body:['The distortion of a push-pull stage or op-amp hitting its supply rails. Being symmetric, it makes no even harmonics — only the 3rd, 5th, 7th and so on.',
+  'More hardness extends the harmonics higher, heard as drum energy and edge. Adding bias brings in even harmonics and changes the character.'],
+ ref:'See also: drive stages in FET, VCA and op-amp compressors and consoles.',
+ guide:['Use: drum energy, edge on bass and guitar','Drive 8–16 dB, hardness 3–5'],
+ formula:'y = w / (1 + |w|^p)^(1/p) − (the same with b plugged in)\nw = u + b',
+ tries:[{l:'Hardness 2',p:{type:'transistor',hard:2,drive:14,bias:0}},{l:'Hardness 6',p:{type:'transistor',hard:6,drive:14,bias:0}}]},
+diode:{en:'Diode clipper',title:'Diode (asymmetric clipper)',what:'Hard, asymmetric clipping with different clip voltages top and bottom.',
+ body:['The distortion of circuits that clip at different voltages on each side — for example, two diodes in series on one side only. Both even and odd harmonics reach high orders, giving a dense, rough sound.',
+  'This model clips at 1.0 on the positive side and 0.6 on the negative. Pull the top end down a little with tone and it gets closer to a pedal.'],
+ ref:'See also: clipping circuits in guitar overdrive and fuzz pedals.',
+ guide:['Use: deliberately dirtying synths and guitars, lo-fi texture','Drive 18 dB and up, tone 5–8 kHz'],
+ formula:'f(v) = t · k(v / t)   t = 1.0 (v ≥ 0), 0.6 (v < 0)\nk(v) = v / (1 + |v|^p)^(1/p)',
+ tries:[{l:'Tone OFF',p:{type:'diode',drive:22,hard:5,tone:20000}},{l:'Tone 6 kHz',p:{type:'diode',drive:22,hard:5,tone:6000}}]},
+hardclip:{en:'Hard clip',title:'Hard clip',what:'Digital clipping that simply cuts off anything beyond ±1.',
+ body:['The curve has no shoulder at all, so harmonics fall off only slowly into high orders. Clip all the way to a square wave and the nth harmonic is 1/n of the fundamental (−9.5 dB for the 3rd, −14 dB for the 5th).',
+  'This is the distortion most prone to aliasing. Switch oversampling between 1× and 4× and watch the red bars. A “clipper” that shaves a few dB off drum peaks for loudness only dips into this region for an instant.'],
+ ref:'See also: mastering clippers, an overloaded DAW channel.',
+ guide:['Use: drum peak control (1–3 dB), deliberate digital grit','Oversampling 4× recommended'],
+ formula:'y = clamp(u + b, −1, 1) − clamp(b, −1, 1)',
+ tries:[{l:'1× (with aliasing)',p:{type:'hardclip',drive:18,os:1,bias:0},t:{f:3000,lvl:-12}},{l:'4×',p:{type:'hardclip',drive:18,os:4,bias:0},t:{f:3000,lvl:-12}}]}
+};
+
+const PRESETS=[
+ ['Tape: bus glue',{type:'tape',drive:9,bias:0,hard:3,tone:16000,os:2,mix:100,trim:0}],
+ ['Tube: 2nd harmonic on vocals',{type:'tube',drive:10,bias:0.05,hard:3,tone:14000,os:2,mix:60,trim:0}],
+ ['Transformer: low-end weight',{type:'transformer',drive:16,bias:0.03,hard:3,tone:20000,os:2,mix:100,trim:0}],
+ ['Transistor: drum energy',{type:'transistor',drive:14,bias:0,hard:4,tone:15000,os:4,mix:40,trim:0}],
+ ['Diode: dirty synth',{type:'diode',drive:22,bias:0.1,hard:5,tone:7000,os:4,mix:100,trim:0}],
+ ['Hard clip: aliasing experiment',{type:'hardclip',drive:18,bias:0,hard:3,tone:20000,os:1,mix:100,trim:0},{f:5000,lvl:-12}]
+];
+
+/* ---------- controls ---------- */
+const toneToPos=f=>Math.round(Math.log(f/1000)/Math.log(20)*1000);
+const posToTone=p=>Math.round(1000*Math.pow(20,p/1000)/10)*10;
+const sgn=v=>(v<0?'−':'+');
+const fdb=v=>sgn(v)+Math.abs(v).toFixed(1)+' dB';
+const CTLS=[
+ {g:'Distortion circuit',items:[{k:'type',jp:'Circuit',en:'Circuit',seg:Object.entries(TYPE_JP)}]},
+ {g:'How it distorts',items:[
+  {k:'drive',jp:'Drive',en:'Drive',min:0,max:36,step:0.5,fmt:fdb},
+  {k:'bias',jp:'Bias',en:'Bias',min:-0.5,max:0.5,step:0.01,fmt:v=>(v===0?'±':sgn(v))+Math.abs(v).toFixed(2)},
+  {k:'hard',jp:'Hardness',en:'Hardness',min:1.5,max:10,step:0.1,fmt:v=>v.toFixed(1)}]},
+ {g:'Tone and quality',items:[
+  {k:'tone',jp:'Tone',en:'Tone',min:0,max:1000,step:1,map:[toneToPos,posToTone],fmt:v=>v>=19900?'OFF':(v/1000).toFixed(1)+' kHz'},
+  {k:'os',jp:'Oversampling',en:'Oversampling',seg:[[1,'1×'],[2,'2×'],[4,'4×']]}]},
+ {g:'Output',items:[
+  {k:'auto',jp:'Auto gain',en:'Auto gain',seg:[[1,'ON'],[0,'OFF']],ex:'out',fmt:()=>state.auto?fdb(20*Math.log10(state.autoGain)):''},
+  {k:'trim',jp:'Trim',en:'Trim',min:-12,max:12,step:0.5,fmt:fdb,ex:'out'},
+  {k:'mix',jp:'Mix',en:'Mix',min:0,max:100,step:1,fmt:v=>v+'%'}]}
+];
+const groupsEl=$('#groups'), refs={};
+for(const g of CTLS){
+  const fs=document.createElement('fieldset');fs.innerHTML=`<legend>${g.g}</legend>`;
+  for(const it of g.items){
+    const row=document.createElement('div');row.className='ctl';row.dataset.k=it.k;
+    const exk=it.ex||it.k;row.dataset.ex=exk;
+    const id='c-'+it.k;
+    if(it.seg){
+      row.innerHTML=`<label><span class="jp">${it.jp}</span></label><output id="${id}-o"></output><div class="seg" role="group" aria-label="${it.jp}">${it.seg.map(([v,l])=>`<button type="button" data-v="${v}">${l}</button>`).join('')}</div>`;
+      row.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',e=>{
+        e.stopPropagation();const v=it.k==='type'?b.dataset.v:+b.dataset.v;state[it.k]=v;
+        if(it.k==='type')select(v);else select(exk);update();}));
+    }else{
+      row.innerHTML=`<label for="${id}"><span class="jp">${it.jp}</span></label><output id="${id}-o"></output><input type="range" id="${id}" min="${it.min}" max="${it.max}" step="${it.step}">`;
+      const inp=row.querySelector('input');
+      inp.addEventListener('input',()=>{const raw=+inp.value;state[it.k]=it.map?it.map[1](raw):raw;select(exk);update();});
+      inp.addEventListener('focus',()=>select(exk));
+    }
+    row.addEventListener('click',()=>select(it.k==='type'?state.type:exk));
+    refs[it.k]={row,it};fs.appendChild(row);
+  }
+  groupsEl.appendChild(fs);
+}
+function syncControls(){
+  for(const k in refs){
+    const {row,it}=refs[k];const o=row.querySelector('output');
+    if(it.seg){row.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(String(state[k])===b.dataset.v)));
+      o.textContent=it.fmt?it.fmt():(k==='type'?'':'');}
+    else{const inp=row.querySelector('input');const pos=it.map?it.map[0](state[k]):state[k];if(+inp.value!==pos)inp.value=pos;o.textContent=it.fmt(state[k]);}
+    const exk=k==='type'?state.type:row.dataset.ex;
+    row.classList.toggle('on',sel===exk||(k==='type'&&(sel==='shaper'||SAT_TYPES.includes(sel))));
+  }
+  refs.hard.row.classList.toggle('dim',!(state.type==='transistor'||state.type==='diode'));
+  refs.trim.row.classList.toggle('on',sel==='out');
+  refs.mix.row.classList.toggle('dim',!!state.delta);
+  $('#delta').setAttribute('aria-pressed',String(!!state.delta));
+  $('#bypass').setAttribute('aria-pressed',String(!!state.bypass));
+  const flow=$('#flow');flow.dataset.os=String(state.os);
+  $('#zl').textContent=state.os>1?`×${state.os} oversampled section`:'No oversampling (1×)';
+  $('#upl').textContent='×'+state.os;$('#shl').textContent=TYPE_JP[state.type];
+  $('#tnl').textContent=state.tone>=19900?'OFF':(state.tone/1000).toFixed(1)+' kHz';
+  const fk=SAT_TYPES.includes(sel)?'shaper':sel;
+  flow.querySelectorAll('.blk').forEach(b=>b.classList.toggle('on',b.dataset.k===fk));
+  document.querySelectorAll('#tf button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.f===test.f)));
+  $('#tl').value=test.lvl;$('#tlv').textContent=(test.lvl<0?'−':'')+Math.abs(test.lvl)+' dBFS';
+}
+
+/* test tone controls */
+const TF=[60,220,1000,3000,5000];
+$('#tf').innerHTML=TF.map(f=>`<button type="button" data-f="${f}">${f>=1000?f/1000+'k':f} Hz</button>`).join('');
+$('#tf').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{test.f=+b.dataset.f;update();}));
+$('#tl').addEventListener('input',e=>{test.lvl=+e.target.value;update();});
+$('#howto').addEventListener('click',()=>{select('harm');syncControls();});
+
+/* flow */
+$('#flow').querySelectorAll('.blk').forEach(b=>{
+  const go=()=>{select(b.dataset.k);syncControls();};
+  b.addEventListener('click',go);
+  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
+});
+
+/* presets */
+const pre=$('#preset');
+pre.innerHTML='<option value="">Choose a preset…</option>'+PRESETS.map((p,i)=>`<option value="${i}">${p[0]}</option>`).join('');
+pre.addEventListener('change',()=>{const p=PRESETS[+pre.value];if(!p)return;Object.assign(state,p[1],{delta:0});if(p[2])Object.assign(test,p[2]);select(state.type);update();pre.value='';});
+$('#delta').addEventListener('click',()=>{state.delta=state.delta?0:1;if(state.delta)state.bypass=0;select('delta');update();});
+$('#bypass').addEventListener('click',()=>{state.bypass=state.bypass?0:1;if(state.bypass)state.delta=0;update();});
+
+/* explanation */
+const exEl=$('#ex');
+function select(k){sel=k;renderEx();}
+function renderEx(){
+  const e=EX[sel]||EX.harm;
+  let h=`<h3>${e.title}</h3><p class="what">${e.what}</p>`;
+  h+=e.body.map(p=>`<p>${p}</p>`).join('');
+  if(e.ref)h+=`<p class="ref">${e.ref}</p>`;
+  if(e.guide)h+=`<h4>${sel==='harm'?'Harmonics and pitch':'Typical settings'}</h4><ul>${e.guide.map(g=>`<li>${g}</li>`).join('')}</ul>`;
+  if(e.formula)h+=`<h4>In DSP</h4><div class="formula">${e.formula}</div>`;
+  if(e.tries)h+=`<h4>Listen and compare</h4><div class="tries">${e.tries.map((t,i)=>`<button class="btn" type="button" data-i="${i}">${t.l}</button>`).join('')}</div>`;
+  exEl.innerHTML=h;
+  exEl.querySelectorAll('.tries .btn').forEach(b=>b.addEventListener('click',()=>{
+    const t=e.tries[+b.dataset.i];Object.assign(state,t.p,{delta:0,bypass:0});if(t.t)Object.assign(test,t.t);update();}));
+}
+
+/* ---------- analysis ---------- */
+function renderSine(p,f0,amp,n,warm){
+  const c=new SatCore(FS);c.set(p);const tot=n+warm,inp=new Float32Array(tot),out=new Float32Array(tot),w=2*Math.PI*f0/FS;
+  for(let i=0;i<tot;i++)inp[i]=amp*Math.sin(w*i);c.processChannel(0,inp,out,tot);return{inp,out,lat:c.lat};
+}
+function computeAutoGain(){
+  const p=Object.assign({},state,{auto:0,trim:0,mix:100,delta:0,bypass:0});
+  const r=renderSine(p,220,0.25,6000,4000);let s=0;for(let i=4000;i<10000;i++)s+=r.out[i]*r.out[i];
+  const ro=Math.sqrt(s/6000),ri=0.25/Math.SQRT2;let db=20*Math.log10(ri/Math.max(ro,1e-9));
+  db=Math.max(-30,Math.min(12,db));return Math.pow(10,db/20);
+}
+function fft(re,im){
+  const n=re.length;
+  for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}}
+  for(let len=2;len<=n;len<<=1){const ang=-2*Math.PI/len,wr=Math.cos(ang),wi=Math.sin(ang);
+    for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<len/2;j++){const a=i+j,b=a+len/2;const xr=re[b]*cr-im[b]*ci,xi=re[b]*ci+im[b]*cr;
+      re[b]=re[a]-xr;im[b]=im[a]-xi;re[a]+=xr;im[a]+=xi;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}
+}
+function analyze(){
+  state.autoGain=computeAutoGain();
+  const k0=Math.max(1,Math.round(test.f*NFFT/FS)),f0=k0*FS/NFFT,amp=Math.pow(10,test.lvl/20);
+  const r=renderSine(Object.assign({},state,{delta:0,bypass:0}),f0,amp,NFFT,WARM);
+  const re=new Float64Array(NFFT),im=new Float64Array(NFFT);
+  for(let i=0;i<NFFT;i++){const w=0.5-0.5*Math.cos(2*Math.PI*i/NFFT);re[i]=r.out[WARM+i]*w;}
+  fft(re,im);
+  const db=new Float32Array(NFFT/2);
+  for(let k=0;k<NFFT/2;k++)db[k]=20*Math.log10(Math.hypot(re[k],im[k])*4/NFFT+1e-14);
+  const lv=b=>{let m=-300;for(let j=Math.max(0,b-1);j<=Math.min(NFFT/2-1,b+1);j++)m=Math.max(m,db[j]);return m;};
+  const H=[],used=new Set();let ev=0,od=0,tot=0;const h1=lv(k0);
+  for(let n=1;n<=15;n++){
+    const f=n*f0;let fa=f%FS;if(fa>FS/2)fa=FS-fa;const bin=Math.round(fa*NFFT/FS);const al=f>FS/2;
+    const l=lv(bin),rel=l-h1;H.push({n,f,fa,al,rel,bin});
+    if(n>1&&!used.has(bin)){used.add(bin);const a=Math.pow(10,rel/20);tot+=a*a;if(n%2)od+=a*a;else ev+=a*a;}
+  }
+  analysis={f0,amp,H,db,thd:Math.sqrt(tot),ev,od,inp:r.inp,out:r.out,lat:r.lat};
+}
+
+/* ---------- drawing ---------- */
+let COL={};
+function readCol(){const cs=getComputedStyle(document.documentElement);for(const k of['ink','muted','line','grid','accent','sig','sel','even','odd','alias','panel','bg'])COL[k]=cs.getPropertyValue('--'+k).trim();
+  COL.mono=cs.getPropertyValue('--font-mono').trim();COL.ui=cs.getPropertyValue('--font-ui').trim();}
+function prep(cv,h){h=window.NK_H?NK_H(cv,h):h;const dpr=Math.min(window.devicePixelRatio||1,2),w=cv.clientWidth||300;cv.style.height=h+'px';
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);return{x,w,h};}
+const fmtF=f=>f>=1000?(f/1000).toFixed(f>=10000?1:2).replace(/\.?0+$/,'')+'k':Math.round(f)+'';
+
+function drawHarm(){
+  const {x,w,h}=prep($('#hc'),270);const A=analysis;if(!A)return;
+  const L=38,R=8,T=14,B=44,pw=w-L-R,ph=h-T-B,yv=d=>T+ph*Math.min(1,Math.max(0,-d/100));
+  x.font=`11px ${COL.mono}`;x.textBaseline='middle';x.textAlign='right';
+  for(let d=0;d>=-100;d-=20){const y=yv(d);x.strokeStyle=COL.grid;x.lineWidth=1;x.beginPath();x.moveTo(L,y+.5);x.lineTo(w-R,y+.5);x.stroke();x.fillStyle=COL.muted;x.fillText(d===0?'0':'−'+(-d),L-6,y);}
+  const N=12,slot=pw/N,bw=Math.min(34,slot*0.62);
+  x.textAlign='center';
+  for(let i=0;i<N;i++){
+    const hm=A.H[i],cx=L+slot*(i+.5);
+    const col=hm.n===1?COL.sig:hm.al?COL.alias:(hm.n%2?COL.odd:COL.even);
+    const y=yv(hm.rel),floor=hm.rel<=-100;
+    x.fillStyle=col;x.fillRect(cx-bw/2,floor?T+ph-2:y,bw,floor?2:T+ph-y);
+    x.fillStyle=COL.ink;x.font=`10px ${COL.mono}`;x.textBaseline='bottom';
+    const lab=hm.n===1?'0':floor?'<−100':(hm.rel<0?'−':'')+Math.abs(hm.rel).toFixed(0);
+    if(slot>26||hm.n<=6)x.fillText(lab,cx,(floor?T+ph-2:y)-3);
+    x.textBaseline='top';x.font=`600 11px ${COL.ui}`;x.fillStyle=hm.al?COL.alias:COL.ink;x.fillText('H'+hm.n,cx,T+ph+6);
+    x.font=`10px ${COL.mono}`;x.fillStyle=hm.al?COL.alias:COL.muted;
+    if(slot>30||i%2===0)x.fillText(hm.al?'→'+fmtF(hm.fa):fmtF(hm.f),cx,T+ph+22);
+  }
+  const thd=A.thd,thdDb=20*Math.log10(thd+1e-12);
+  $('#r-thd').textContent=thd<1e-5?'≈ 0 %':(thd*100<0.1?(thd*100).toFixed(3):(thd*100).toFixed(thd*100<10?2:1))+' %';
+  const fr=v=>v<=-100?'< −100 dB':(v<0?'−':'+')+Math.abs(v).toFixed(1)+' dB';
+  $('#r-h2').textContent=fr(A.H[1].rel);$('#r-h3').textContent=fr(A.H[2].rel);
+  const e=10*Math.log10(A.ev+1e-20),o=10*Math.log10(A.od+1e-20);
+  $('#r-eo').textContent=(A.ev<1e-10&&A.od<1e-10)?'—':(A.ev<1e-10?'Odd only':(A.od<1e-10?'Even only':fdb(e-o)));
+  $('#hc').setAttribute('aria-label',`Harmonic levels. THD ${$('#r-thd').textContent}, 2nd ${$('#r-h2').textContent}, 3rd ${$('#r-h3').textContent}`);
+}
+
+function drawCurve(){
+  const {x,w,h}=prep($('#cc'),230);
+  const c=new SatCore(FS);c.set(Object.assign({},state,{delta:0}));const G=Math.pow(10,state.drive/20);
+  const P=12,sz=Math.min(w,h)-2*P,ox=(w-sz)/2,oy=P,X=v=>ox+(v+1)/2*sz,Y=v=>oy+(1.2-v)/2.4*sz;
+  x.strokeStyle=COL.grid;x.lineWidth=1;
+  for(const v of[-1,-.5,0,.5,1]){x.beginPath();x.moveTo(X(v),Y(1.2));x.lineTo(X(v),Y(-1.2));x.stroke();x.beginPath();x.moveTo(X(-1),Y(v));x.lineTo(X(1),Y(v));x.stroke();}
+  const a=Math.pow(10,test.lvl/20);x.fillStyle=COL.sel;x.fillRect(X(-a),Y(1.2),X(a)-X(-a),Y(-1.2)-Y(1.2));
+  x.strokeStyle=COL.line;x.setLineDash([3,3]);x.beginPath();x.moveTo(X(-1),Y(-1));x.lineTo(X(1),Y(1));x.stroke();
+  const pts=[];for(let i=0;i<=240;i++){const v=-1+2*i/240;pts.push([v,c.curve(v*G)]);}
+  x.strokeStyle=COL.odd;x.setLineDash([5,4]);x.lineWidth=1.4;x.beginPath();
+  pts.forEach(([v,y],i)=>{const yy=-c.curve(-v*G);i?x.lineTo(X(v),Y(Math.max(-1.2,Math.min(1.2,yy)))):x.moveTo(X(v),Y(Math.max(-1.2,Math.min(1.2,yy))));});x.stroke();
+  x.setLineDash([]);x.strokeStyle=COL.accent;x.lineWidth=2;x.beginPath();
+  pts.forEach(([v,y],i)=>{const yy=Math.max(-1.2,Math.min(1.2,y));i?x.lineTo(X(v),Y(yy)):x.moveTo(X(v),Y(yy));});x.stroke();
+  x.fillStyle=COL.muted;x.font=`10px ${COL.mono}`;x.textAlign='left';x.textBaseline='top';x.fillText('Output',X(-1)+4,Y(1.2)+2);
+  x.textAlign='right';x.textBaseline='bottom';x.fillText('Input (before drive)',X(1)-2,Y(-1.2)-2);
+}
+
+function drawWave(){
+  const {x,w,h}=prep($('#wc'),230);const A=analysis;if(!A)return;
+  const per=FS/A.f0;let cyc=2;while(per*cyc<96)cyc++;const n=Math.max(8,Math.round(per*cyc));
+  $('#wcy').textContent=cyc+' cycles';
+  const st=WARM+2048;const inp=A.inp.subarray(st,st+n),out=A.out.subarray(st+A.lat,st+A.lat+n);
+  const pk=a=>{let m=1e-9;for(const v of a)m=Math.max(m,Math.abs(v));return m;};const pi=pk(inp),po=pk(out);
+  const P=10,X=i=>P+(w-2*P)*i/(n-1),Y=v=>h/2-v*(h/2-P);
+  x.strokeStyle=COL.grid;x.lineWidth=1;for(const v of[-1,0,1]){x.beginPath();x.moveTo(P,Y(v)+.5);x.lineTo(w-P,Y(v)+.5);x.stroke();}
+  const line=(a,p,col,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.beginPath();for(let i=0;i<n;i++){const y=Y(a[i]/p);i?x.lineTo(X(i),y):x.moveTo(X(i),y);}x.stroke();};
+  line(inp,pi,COL.sig,1.6);line(out,po,COL.accent,2);
+}
+
+let live=null;
+function drawSpec(){
+  const {x,w,h}=prep($('#sc'),220);const A=analysis;if(!A)return;
+  const L=38,R=8,T=10,B=24,pw=w-L-R,ph=h-T-B,fmin=20,fmax=24000;
+  const X=f=>L+pw*Math.log(f/fmin)/Math.log(fmax/fmin),Y=d=>T+ph*Math.min(1,Math.max(0,-d/140));
+  x.font=`10px ${COL.mono}`;x.textBaseline='middle';x.textAlign='right';x.lineWidth=1;
+  for(let d=0;d>=-140;d-=20){x.strokeStyle=COL.grid;x.beginPath();x.moveTo(L,Y(d)+.5);x.lineTo(w-R,Y(d)+.5);x.stroke();x.fillStyle=COL.muted;x.fillText(d===0?'0':'−'+(-d),L-6,Y(d));}
+  x.textAlign='center';x.textBaseline='top';
+  for(const f of[50,100,200,500,1000,2000,5000,10000,20000]){x.strokeStyle=COL.grid;x.beginPath();x.moveTo(X(f)+.5,T);x.lineTo(X(f)+.5,T+ph);x.stroke();x.fillStyle=COL.muted;x.fillText(fmtF(f),X(f),T+ph+6);}
+  const db=A.db,binHz=FS/NFFT;
+  x.beginPath();let started=false;
+  for(let px=0;px<=pw;px++){const f1=fmin*Math.pow(fmax/fmin,px/pw),f2=fmin*Math.pow(fmax/fmin,(px+1)/pw);
+    let b1=Math.max(1,Math.floor(f1/binHz)),b2=Math.min(NFFT/2-1,Math.max(b1,Math.ceil(f2/binHz)));let m=-300;for(let b=b1;b<=b2;b++)m=Math.max(m,db[b]);
+    const y=Y(m);if(!started){x.moveTo(L+px,y);started=true;}else x.lineTo(L+px,y);}
+  x.lineTo(L+pw,T+ph);x.lineTo(L,T+ph);x.closePath();x.fillStyle=COL.sel;x.fill();
+  x.strokeStyle=COL.muted;x.lineWidth=1.2;x.beginPath();started=false;
+  for(let px=0;px<=pw;px++){const f1=fmin*Math.pow(fmax/fmin,px/pw),f2=fmin*Math.pow(fmax/fmin,(px+1)/pw);
+    let b1=Math.max(1,Math.floor(f1/binHz)),b2=Math.min(NFFT/2-1,Math.max(b1,Math.ceil(f2/binHz)));let m=-300;for(let b=b1;b<=b2;b++)m=Math.max(m,db[b]);
+    const y=Y(m);if(!started){x.moveTo(L+px,y);started=true;}else x.lineTo(L+px,y);}
+  x.stroke();
+  for(const hm of A.H){const d=A.db[hm.bin];if(d<-140||hm.fa<fmin)continue;
+    x.fillStyle=hm.n===1?COL.ink:hm.al?COL.alias:(hm.n%2?COL.odd:COL.even);x.beginPath();x.arc(X(hm.fa),Y(d),3.2,0,Math.PI*2);x.fill();}
+  if(live&&live.on){
+    const an=live.an,buf=live.buf;an.getFloatFrequencyData(buf);const lhz=live.ctx.sampleRate/an.fftSize;
+    x.strokeStyle=COL.ink;x.globalAlpha=.85;x.lineWidth=1.2;x.beginPath();started=false;
+    for(let px=0;px<=pw;px+=1){const f1=fmin*Math.pow(fmax/fmin,px/pw),f2=fmin*Math.pow(fmax/fmin,(px+1)/pw);
+      let b1=Math.max(1,Math.floor(f1/lhz)),b2=Math.min(buf.length-1,Math.max(b1,Math.ceil(f2/lhz)));let m=-300;for(let b=b1;b<=b2;b++)m=Math.max(m,buf[b]);
+      if(!isFinite(m))m=-300;const y=Y(m+6);if(!started){x.moveTo(L+px,y);started=true;}else x.lineTo(L+px,y);}
+    x.stroke();x.globalAlpha=1;
+  }
+}
+function drawAll(){readCol();drawHarm();drawCurve();drawWave();drawSpec();}
+
+/* ---------- audio ---------- */
+let ctx=null,node=null,spCore=null,an=null,srcNode=null,toneGain=null,playing=false,bufs={},fileBuf=null,raf=0;
+const status=t=>$('#status').textContent=t||'';
+function engineSet(){const d=Object.assign({},state);if(node&&node.port)node.port.postMessage(d);else if(spCore)spCore.set(d);}
+async function ensureCtx(){
+  if(ctx)return;
+  ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const src=$('#core-src').textContent+'\n'+$('#worklet-wrapper').textContent;
+  let ok=false;
+  if(ctx.audioWorklet){
+    try{const url=URL.createObjectURL(new Blob([src],{type:'application/javascript'}));await ctx.audioWorklet.addModule(url);ok=true;}catch(e){}
+    if(!ok){try{await ctx.audioWorklet.addModule('../sat-worklet.js');ok=true;}catch(e){}}
+  }
+  if(ok){node=new AudioWorkletNode(ctx,'sat-proc',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[2],channelCount:2,channelCountMode:'explicit'});}
+  else{
+    spCore=new SatCore(ctx.sampleRate);node=ctx.createScriptProcessor(1024,2,2);
+    node.onaudioprocess=e=>{const i=e.inputBuffer,o=e.outputBuffer;spCore.processChannel(0,i.getChannelData(0),o.getChannelData(0),i.length);spCore.processChannel(1,i.getChannelData(1),o.getChannelData(1),i.length);};
+    status('AudioWorklet is not available here, so processing runs in compatibility mode.');
+  }
+  an=ctx.createAnalyser();an.fftSize=8192;an.smoothingTimeConstant=0.6;
+  node.connect(an);an.connect(ctx.destination);
+  live={ctx,an,buf:new Float32Array(an.frequencyBinCount),on:false};
+  engineSet();
+}
+function makeLoop(kind){
+  if(bufs[kind])return bufs[kind];
+  const sr=ctx.sampleRate,bpm=90,beat=60/bpm,len=Math.round(sr*beat*8),b=ctx.createBuffer(2,len,sr),L=b.getChannelData(0),R=b.getChannelData(1);
+  const add=(t0,fn,dur,gl=1,gr=1)=>{const s=Math.round(t0*sr),n=Math.round(dur*sr);for(let i=0;i<n&&s+i<len;i++){const v=fn(i/sr);L[s+i]+=v*gl;R[s+i]+=v*gr;}};
+  let seed=1;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647*2-1;};
+  const drums=kind==='mix'||kind==='drums',bass=kind==='mix'||kind==='bass',chord=kind==='mix'||kind==='chord';
+  const s16=beat/4;
+  if(drums){
+    for(const st of[0,6,8,11,16,22,24,27]){let ph=0;add(st*s16,t=>{const f=48+80*Math.exp(-t*28);ph+=2*Math.PI*f/sr;return Math.sin(ph)*Math.exp(-t*7)*0.75;},0.5);}
+    for(const st of[4,12,20,28]){add(st*s16,t=>(rnd()*0.55*Math.exp(-t*22)+Math.sin(2*Math.PI*190*t)*0.35*Math.exp(-t*30)),0.3);}
+    for(let st=0;st<32;st+=2){let lp=0;add(st*s16+(st%4===2?0.012:0),t=>{const n=rnd();lp+=0.6*(n-lp);return (n-lp)*0.22*Math.exp(-t*(st%4===2?40:60));},0.12,0.8,1);}
+  }
+  if(bass){
+    const notes=[[0,55],[3,55],[6,65.41],[8,55],[11,49],[14,49],[16,43.65],[19,43.65],[22,49],[24,43.65],[27,49],[30,51.91]];
+    for(const [st,f] of notes){add(st*s16,t=>Math.sin(2*Math.PI*f*t)*0.42*Math.min(1,t*200)*Math.exp(-t*1.6)*Math.min(1,(s16*2.6-t)*60),s16*2.6);}
+  }
+  if(chord){
+    const ch=[[220,261.63,329.63,392],[174.61,220,261.63,329.63]];
+    ch.forEach((c,bi)=>{c.forEach((f,j)=>{add(bi*beat*4,t=>{const e=Math.min(1,t*12)*Math.exp(-t*0.35)*Math.min(1,(beat*4-t)*20);return (Math.sin(2*Math.PI*f*t)+0.2*Math.sin(4*Math.PI*f*t))*0.085*e;},beat*4,j%2?0.8:1.1,j%2?1.1:0.8);});});
+  }
+  let pk=1e-9;for(let i=0;i<len;i++)pk=Math.max(pk,Math.abs(L[i]),Math.abs(R[i]));const g=0.5/pk;for(let i=0;i<len;i++){L[i]*=g;R[i]*=g;}
+  bufs[kind]=b;return b;
+}
+function startSource(){
+  stopSource();const k=$('#src').value;
+  if(k==='tone'){
+    const o=ctx.createOscillator();o.type='sine';o.frequency.value=test.f;toneGain=ctx.createGain();toneGain.gain.value=Math.pow(10,test.lvl/20);
+    o.connect(toneGain);toneGain.connect(node);o.start();srcNode=o;
+  }else{
+    const s=ctx.createBufferSource();s.buffer=k==='file'&&fileBuf?fileBuf:makeLoop(k);s.loop=true;s.connect(node);s.start();srcNode=s;
+  }
+}
+function stopSource(){if(srcNode){try{srcNode.stop();}catch(e){}srcNode.disconnect();srcNode=null;}if(toneGain){toneGain.disconnect();toneGain=null;}}
+function loop(){drawSpec();raf=requestAnimationFrame(loop);}
+async function play(){
+  await ensureCtx();if(ctx.state!=='running')await ctx.resume();
+  startSource();playing=true;live.on=true;$('#play').textContent='■ Stop';$('#smode').textContent='Playing';$('#smode').classList.add('live');
+  cancelAnimationFrame(raf);loop();
+}
+function stop(){stopSource();playing=false;if(live)live.on=false;$('#play').textContent='▶ Play';$('#smode').textContent='Test tone analysis';$('#smode').classList.remove('live');cancelAnimationFrame(raf);drawSpec();}
+$('#play').addEventListener('click',()=>{playing?stop():play().catch(e=>status('Could not start audio: '+e.message));});
+$('#src').addEventListener('change',()=>{if($('#src').value==='tone')select('harm');if(playing)startSource();renderEx();syncControls();});
+$('#file').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{await ensureCtx();fileBuf=await ctx.decodeAudioData(await f.arrayBuffer());
+    let opt=$('#src').querySelector('option[value="file"]');if(!opt){opt=document.createElement('option');opt.value='file';$('#src').appendChild(opt);}
+    opt.textContent='Loaded file: '+f.name;$('#src').value='file';status('');if(playing)startSource();
+  }catch(err){status('This file could not be loaded. Please choose an audio file such as WAV, MP3 or AAC.');}
+});
+
+/* ---------- update loop ---------- */
+let pend=false;
+function update(){
+  syncControls();
+  if(toneGain&&srcNode){srcNode.frequency.setTargetAtTime(test.f,ctx.currentTime,0.02);toneGain.gain.setTargetAtTime(Math.pow(10,test.lvl/20),ctx.currentTime,0.02);}
+  if(pend)return;pend=true;
+  requestAnimationFrame(()=>{pend=false;analyze();engineSet();syncControls();drawAll();});
+}
+const mo=new MutationObserver(drawAll);mo.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',drawAll);
+let rt=0;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(drawAll,80);});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawAll);
+
+
+/* init */
+renderEx();analyze();engineSet();syncControls();drawAll();
+})();
+</script>
+
+<script>
+window.JPKFP_CONF_OFF={"key": "sat-lab", "btnCls": "btn", "vars": {"bg": "var(--panel)", "bg2": "var(--bg)", "line": "var(--line)", "fg": "var(--ink)", "muted": "var(--muted)"}, "targets": [{"el": "#ex", "ja": "解説", "en": "Notes"}], "buttons": [{"host": ".transport"}]};
+/* ---------- floating explanation panel (shared across JPK labs) ---------- */
+(function(){
+var C=window.JPKFP_CONF;if(!C||window.JPKFP_READY)return;window.JPKFP_READY=1;
+function $(s){return typeof s==='string'?document.querySelector(s):s}
+function lang(){return C.lang?C.lang():(document.documentElement.lang||'ja').slice(0,2)}
+var T={ja:{open:'解説をパネルで表示',close:'パネルを閉じる',ph:'パネルで表示中',back:'ここに戻す',prev:'前へ',next:'次へ',x:'閉じる',drag:'ドラッグで移動'},
+       en:{open:'Show notes in a panel',close:'Close panel',ph:'Shown in the floating panel',back:'Put it back here',prev:'Previous',next:'Next',x:'Close',drag:'Drag to move'}};
+function t(k){return (T[lang()]||T.ja)[k]}
+function i18n(el,k,attr){/* keeps EQ-lab style [data-en] toggles in sync */
+  if(attr){el.setAttribute(attr,t(k));return}
+  el.textContent=t(k);el.setAttribute('data-ja',T.ja[k]);el.setAttribute('data-en',T.en[k]);}
+var V=C.vars||{};
+var css='.jpkfp{position:fixed;z-index:60;width:420px;height:540px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);min-width:300px;min-height:220px;display:flex;flex-direction:column;'+
+ 'background:'+(V.bg||'#161922')+';color:'+(V.fg||'inherit')+';border:1px solid '+(V.line||'#2a2f3d')+';border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.38);resize:both;overflow:hidden;text-align:left;box-sizing:border-box}'+
+ '.jpkfp[hidden]{display:none!important}.jpkfp *{box-sizing:border-box}'+
+ '.jpkfp .jpkfp-head{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid '+(V.line||'#2a2f3d')+';background:'+(V.bg2||'transparent')+';cursor:move;touch-action:none;user-select:none;-webkit-user-select:none}'+
+ '.jpkfp .jpkfp-grip{color:'+(V.muted||'#8e94a4')+';font-size:16px;padding:0 4px 0 2px;line-height:1}'+
+ '.jpkfp .jpkfp-title{flex:1;min-width:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+ '.jpkfp select.jpkfp-sel{flex:1;min-width:0;font:inherit;font-size:13px;color:inherit;background:'+(V.bg||'#161922')+';border:1px solid '+(V.line||'#2a2f3d')+';border-radius:6px;padding:4px 6px;height:30px;margin:0}'+
+ '.jpkfp button.jpkfp-ib{flex:none;width:30px;height:30px;padding:0!important;margin:0;display:grid;place-items:center;font:inherit;font-size:13px;line-height:1;color:inherit;background:'+(V.bg||'#161922')+'!important;border:1px solid '+(V.line||'#2a2f3d')+'!important;border-radius:6px;cursor:pointer;box-shadow:none!important;min-width:0;min-height:0}'+
+ '.jpkfp button.jpkfp-ib:hover{border-color:'+(V.muted||'#8e94a4')+'!important}'+
+ '.jpkfp .jpkfp-body{overflow:auto;flex:1;padding:14px 16px 18px;-webkit-overflow-scrolling:touch}'+
+ '.jpkfp .jpkfp-body>.jpkfp-moved{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;max-width:none!important;width:auto!important;position:static!important}'+
+ '.jpkfp-ph{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border:1px dashed '+(V.line||'#2a2f3d')+';border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:13px;color:'+(V.muted||'#8e94a4')+'}'+
+ '@media (max-width:700px){.jpkfp{left:0!important;right:0;top:auto!important;bottom:0;width:auto!important;height:46vh!important;max-width:none;border-radius:12px 12px 0 0;resize:none;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}.jpkfp .jpkfp-head{cursor:default}}'+
+ (C.css||'');
+var st=document.createElement('style');st.textContent=css;(C.mount?$(C.mount):document.head).appendChild(st);
+
+var targets=[];C.targets.forEach(function(d){var el=$(d.el);if(el)targets.push({el:el,ja:d.ja,en:d.en})});
+if(!targets.length)return;
+function label(d){return lang()==='en'?d.en:d.ja}
+
+var fp=document.createElement('div');fp.className='jpkfp'+(C.cls?' '+C.cls:'');fp.hidden=true;fp.setAttribute('role','dialog');
+var multi=targets.length>1;
+fp.innerHTML='<div class="jpkfp-head"><span class="jpkfp-grip">⠿</span>'+
+  (multi?'<button type="button" class="jpkfp-ib" data-a="prev">◀</button><select class="jpkfp-sel"></select><button type="button" class="jpkfp-ib" data-a="next">▶</button>':'<span class="jpkfp-title"></span>')+
+  '<button type="button" class="jpkfp-ib" data-a="close">✕</button></div><div class="jpkfp-body"></div>';
+(C.mount?$(C.mount):document.body).appendChild(fp);
+var head=fp.querySelector('.jpkfp-head'),body=fp.querySelector('.jpkfp-body'),sel=fp.querySelector('.jpkfp-sel'),ttl=fp.querySelector('.jpkfp-title');
+var KEY='jpkfp-'+(C.key||location.pathname);
+var cur=0,live=-1,ph=null;
+
+function labels(){
+  fp.setAttribute('aria-label',label(targets[cur]));
+  i18n(head.querySelector('.jpkfp-grip'),'drag','title');
+  i18n(fp.querySelector('[data-a=close]'),'x','aria-label');
+  if(multi){i18n(fp.querySelector('[data-a=prev]'),'prev','aria-label');i18n(fp.querySelector('[data-a=next]'),'next','aria-label');
+    sel.innerHTML=targets.map(function(d,i){return '<option value="'+i+'">'+label(d)+'</option>'}).join('');sel.value=String(cur);}
+  else ttl.textContent=label(targets[0]);
+  btns.forEach(function(b){i18n(b,fp.hidden?'open':'close')});
+  if(ph){i18n(ph.querySelector('span'),'ph');i18n(ph.querySelector('button'),'back');}
+}
+function putBack(){
+  if(live<0)return;var el=targets[live].el;el.classList.remove('jpkfp-moved');
+  if(ph&&ph.parentNode){ph.parentNode.insertBefore(el,ph);ph.parentNode.removeChild(ph);}
+  live=-1;ph=null;
+}
+function show(i){
+  putBack();cur=(i+targets.length)%targets.length;var el=targets[cur].el;
+  ph=document.createElement('div');ph.className='jpkfp-ph';
+  ph.innerHTML='<span></span><button type="button" class="'+(C.btnCls||'')+'"></button>';
+  ph.querySelector('button').addEventListener('click',function(){setOpen(false)});
+  el.parentNode.insertBefore(ph,el);el.classList.add('jpkfp-moved');body.appendChild(el);body.scrollTop=0;live=cur;labels();
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.i=cur;localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+}
+function clamp(v,a,b){return Math.min(b,Math.max(a,v))}
+function place(x,y){
+  var w=fp.offsetWidth,h=fp.offsetHeight;
+  x=clamp(x,8,Math.max(8,innerWidth-w-8));y=clamp(y,8,Math.max(8,innerHeight-h-8));
+  fp.style.left=x+'px';fp.style.top=y+'px';
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.x=x;s.y=y;localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+}
+function setOpen(on){
+  if(on===!fp.hidden)return;
+  if(!on){putBack();fp.hidden=true;labels();return;}
+  var s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  fp.hidden=false;
+  if(s&&s.w){fp.style.width=s.w;fp.style.height=s.h;}
+  place(s&&s.x!=null?s.x:innerWidth-fp.offsetWidth-24,s&&s.y!=null?s.y:innerHeight-fp.offsetHeight-24);
+  show(s&&s.i<targets.length?s.i:0);
+}
+var btns=[];
+(C.buttons||[]).forEach(function(b){
+  var host=$(b.host);if(!host)return;
+  var el=document.createElement('button');el.type='button';el.className=b.cls||C.btnCls||'';
+  el.addEventListener('click',function(){setOpen(fp.hidden)});
+  if(b.pos==='before')host.parentNode.insertBefore(el,host);else if(b.pos==='after')host.parentNode.insertBefore(el,host.nextSibling);else host.appendChild(el);btns.push(el);
+});
+fp.querySelector('[data-a=close]').addEventListener('click',function(){setOpen(false)});
+if(multi){
+  fp.querySelector('[data-a=prev]').addEventListener('click',function(){show(cur-1)});
+  fp.querySelector('[data-a=next]').addEventListener('click',function(){show(cur+1)});
+  sel.addEventListener('change',function(){show(+sel.value)});
+}
+var drag=null;
+head.addEventListener('pointerdown',function(e){
+  if(e.target.closest('button,select')||innerWidth<=700)return;
+  drag={dx:e.clientX-fp.offsetLeft,dy:e.clientY-fp.offsetTop};try{head.setPointerCapture(e.pointerId)}catch(_){}
+});
+head.addEventListener('pointermove',function(e){if(drag)place(e.clientX-drag.dx,e.clientY-drag.dy)});
+head.addEventListener('pointerup',function(){drag=null});
+head.addEventListener('pointercancel',function(){drag=null});
+if(window.ResizeObserver)new ResizeObserver(function(){if(!fp.hidden&&innerWidth>700){try{var s=JSON.parse(localStorage.getItem(KEY)||'{}');s.w=fp.offsetWidth+'px';s.h=fp.offsetHeight+'px';localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}}).observe(fp);
+addEventListener('resize',function(){if(!fp.hidden&&innerWidth>700)place(fp.offsetLeft,fp.offsetTop)});
+if(C.langBtn){var lb=$(C.langBtn);if(lb)lb.addEventListener('click',function(){setTimeout(labels,0)})}
+labels();
+})();
+</script>
+<script>window.NK={"lang": "en", "title": "Saturator Study Note", "sub": "Saturator Anatomy Lab", "links": [["← All labs", "https://kazufumi01.github.io/"], ["Previous version", "https://kazufumi01.github.io/sat-lab/en/"], ["Article (Japanese)", "https://jpk.seesaa.net/article/521891267.html", "target=\"_blank\" rel=\"noopener\" hreflang=\"ja\""], ["日本語", "../", "hreflang=\"ja\" lang=\"ja\""]], "transport": [".transport", "#status"], "graphs": [{"sel": "section.panel:has(#hc)", "area": "hc", "fill": ["#hc"]}, {"sel": "section.panel:has(#cc)", "area": "cc", "fill": ["#cc"]}, {"sel": "section.panel:has(#wc)", "area": "wc", "fill": ["#wc"]}, {"sel": "section.panel:has(#sc)", "area": "sc", "fill": ["#sc"]}], "areas": "\"hc cc\" \"hc wc\" \"sc sc\"", "cols": "minmax(0,1.45fr) minmax(0,1fr)", "rows": "minmax(0,1fr) minmax(0,1fr) minmax(0,.85fr)", "ctrls": "aside.col > section.panel:not(#ex)", "notes": [{"sel": "#ex", "label": "Notes"}, {"sel": "section.panel:has(#flow)", "label": "Signal flow"}], "about": ".top .brand > p:not(.eyebrow), .foot", "hide": ".wrap", "toEx": ".flow .blk"};</script>
+<script src="/note-kit/kit.js"></script>
+</body>
+</html>
