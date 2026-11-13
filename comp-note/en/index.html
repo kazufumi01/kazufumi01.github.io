@@ -1,0 +1,1441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A free study note for compressors: threshold, ratio, attack, release, knee, detection, feedback and the difference between VCA, FET, opto and vari-mu, heard and seen with real DSP in your browser.">
+<meta name="theme-color" content="#efe8d8">
+<title>Compressor Study Note — Compressor Anatomy Lab</title>
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Audio Anatomy Labs">
+<meta property="og:title" content="Compressor Study Note — see and hear how a compressor works">
+<meta property="og:description" content="Threshold, ratio, attack, release, detection, FF/FB and VCA vs FET vs opto vs vari-mu, learned through graphs and sound. Even with the sound off, the graphs show what changes.">
+<meta property="og:url" content="https://kazufumi01.github.io/comp-note/en/">
+<meta property="og:image" content="https://kazufumi01.github.io/comp-note/en/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://kazufumi01.github.io/comp-note/en/">
+<link rel="alternate" hreflang="ja" href="https://kazufumi01.github.io/comp-note/">
+<link rel="alternate" hreflang="en" href="https://kazufumi01.github.io/comp-note/en/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@500;700&display=swap">
+<style>
+/* ===== Comp Study Note — 古いノート／書籍の質感：平面・少色（紙・墨・藍インク・朱鉛筆） ===== */
+:root{
+  --paper:#efe8d8; --page:#f8f3e8; --ink:#2b2722; --muted:#776d60; --line:#d2c6af; --rule:#e5dbc8;
+  --blue:#2c4a6e; --red:#a5472a; --pencil:#aea493; --hl:#efe3bd; --on:#f8f3e8;
+  --serif:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --ui:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--ui);font-size:13px;line-height:1.65}
+[hidden]{display:none!important}
+a{color:var(--blue)}
+h1,h2,h3,h4{margin:0;font-weight:700}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* ---------- header ---------- */
+.top{display:flex;align-items:center;gap:10px 20px;flex-wrap:wrap;padding:10px max(18px,env(safe-area-inset-right)) 10px max(18px,env(safe-area-inset-left));border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;min-width:0}
+.brand h1{font-family:var(--serif);font-size:22px;letter-spacing:.04em;line-height:1.2}
+.brand h1 small{font-family:var(--ui);font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.02em;margin-left:8px}
+.links{display:flex;gap:4px 14px;flex-wrap:wrap;font-size:12px}
+.links a{text-decoration:none;border-bottom:1px solid var(--line)}
+.links a:hover{border-color:var(--blue)}
+.transport{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.btn,.sel{background:var(--page);border:1px solid var(--line);border-radius:2px;padding:5px 10px;min-height:32px;font-size:12.5px;cursor:pointer}
+.btn:hover,.sel:hover{border-color:var(--muted)}
+.btn.play{background:var(--ink);border-color:var(--ink);color:var(--on);font-weight:700;min-width:84px}
+.btn[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:var(--on)}
+.file{position:relative;overflow:hidden}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;padding:0 4px}
+.chk input{accent-color:var(--blue);width:15px;height:15px;margin:0}
+.status{font-size:12px;color:var(--red);padding:0 18px}
+.status:empty{display:none}
+
+/* ---------- cards ---------- */
+.card{background:var(--page);border:1px solid var(--line);border-radius:2px;padding:8px 10px 8px;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
+.ch{display:flex;align-items:baseline;gap:8px;padding-bottom:5px;margin-bottom:6px;border-bottom:1px dotted var(--line);min-width:0}
+.ch .no{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:.06em}
+.ch h2{font-family:var(--serif);font-size:14px;letter-spacing:.03em;white-space:nowrap;flex:none}
+.ch .sp{min-width:0}
+.ch .sp{flex:1}
+.badge{font-family:var(--mono);font-size:10px;padding:0 6px;border:1px solid var(--line);border-radius:2px;color:var(--muted);white-space:nowrap}
+.badge.live{border-color:var(--red);color:var(--red)}
+.how{background:transparent;border:1px solid var(--line);border-radius:2px;font-size:11px;padding:0 7px;min-height:22px;cursor:pointer;color:var(--blue);white-space:nowrap}
+.how:hover,.how[aria-expanded="true"]{background:var(--blue);border-color:var(--blue);color:var(--on)}
+.wtag{display:none;position:absolute;top:-8px;left:10px;font-size:10px;line-height:15px;font-weight:700;color:var(--on);background:var(--red);padding:0 6px;border-radius:2px;white-space:nowrap}
+.card.watch{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.card.watch .wtag{display:inline-block}
+.cv{position:relative;flex:1;min-height:0}
+.cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.leg{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:11px;color:var(--muted);margin-top:5px}
+.leg i{display:inline-block;width:12px;height:7px;margin-right:5px;vertical-align:middle}
+.leg i.dash{height:0;border-top:2px dashed var(--ink);width:14px}
+.leg i.dot{height:0;border-top:2px dotted var(--ink);width:14px}
+.cmpsel{max-width:118px;min-width:0;flex:0 1 auto;font-size:11px;padding:0 4px;min-height:22px;border-radius:2px;border:1px solid var(--line);background:var(--page)}
+
+/* readouts */
+.ro{display:grid;grid-template-columns:1fr 1fr;gap:1px 10px;margin-top:4px}
+.ro div{display:flex;justify-content:space-between;align-items:baseline;gap:6px;border-bottom:1px dotted var(--rule)}
+.ro dt{font-size:10.5px;color:var(--muted)}
+.ro dd{margin:0;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.ro .grv{color:var(--red)}
+
+/* signal flow */
+.flow{width:100%;height:100%;display:block}
+.flow .box{fill:var(--page);stroke:var(--ink);stroke-width:1}
+.flow .blk{cursor:pointer}
+.flow .blk:hover .box{fill:var(--hl)}
+.flow .blk.on .box{stroke:var(--red);stroke-width:2;fill:var(--hl)}
+.flow text{fill:var(--ink);font-family:var(--ui);font-size:12.5px;text-anchor:middle}
+.flow text.sub{fill:var(--muted);font-family:var(--mono);font-size:10px}
+.flow text.lab{fill:var(--muted);font-family:var(--mono);font-size:10px;text-anchor:start}
+.flow .wire{fill:none;stroke:var(--ink);stroke-width:1.1}
+.flow .wire.sc{stroke:var(--red)}
+.flow .dot{fill:var(--ink)}
+.flow .ah{fill:var(--ink)} .flow .ah2{fill:var(--red)}
+.flow[data-topo="ff"] .fb{display:none}
+.flow[data-topo="fb"] .ff{display:none}
+
+/* ---------- controls ---------- */
+.ctrls{background:var(--page);border:1px solid var(--line);border-radius:2px;padding:8px 8px;min-height:0;overflow:auto}
+.ctrls>.ch{margin:0 2px 4px}
+fieldset{border:0;margin:0 0 4px;padding:0;min-width:0}
+legend{padding:0 4px;margin:4px 0 0;display:flex;gap:6px;align-items:baseline;width:100%}
+legend b{font-family:var(--serif);font-size:12.5px}
+legend .eyebrow{font-size:9px}
+.ctl{display:grid;grid-template-columns:1fr auto;align-items:baseline;column-gap:6px;padding:2px 6px 0;border-radius:2px;cursor:pointer;border-left:2px solid transparent}
+.ctl:hover{background:var(--paper)}
+.ctl.on{background:var(--hl);border-left-color:var(--red)}
+.ctl label{cursor:pointer;display:flex;gap:6px;align-items:baseline;min-width:0}
+.ctl .jp{font-weight:500;font-size:12.5px;white-space:nowrap}
+.ctl .en{font-family:var(--mono);font-size:9px;letter-spacing:.05em;color:var(--muted);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctl output{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.ctl input[type=range]{grid-column:1/-1}
+.ctl.dim{opacity:.4}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--ink);border-radius:2px;overflow:hidden;grid-column:1/-1;margin:2px 0 5px;width:max-content;max-width:100%}
+.seg button{background:transparent;border:0;padding:2px 9px;cursor:pointer;min-height:25px;font-size:12px}
+.seg button+button{border-left:1px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--on)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--page);border:2px solid var(--ink);margin-top:-5px}
+.ctl.on input[type=range]::-webkit-slider-thumb{border-color:var(--red);background:var(--red)}
+input[type=range]::-moz-range-track{height:2px;background:var(--ink)}
+input[type=range]::-moz-range-thumb{width:9px;height:9px;border-radius:50%;background:var(--page);border:2px solid var(--ink)}
+input[type=range]:disabled{cursor:not-allowed}
+
+/* ---------- notes (right column) ---------- */
+.notes{display:flex;flex-direction:column;min-height:0;gap:8px}
+.obs{background:var(--page);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:2px;padding:8px 12px}
+.obs h3{font-family:var(--serif);font-size:13px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.obs ul{margin:4px 0 0;padding:0;list-style:none}
+.obs li{padding:2px 0 2px 12px;position:relative;font-size:12px;line-height:1.55}
+.obs li::before{content:"";position:absolute;left:0;top:.75em;width:5px;height:1px;background:var(--ink)}
+.obs b{font-weight:700;margin-right:4px}
+.obs .d{font-family:var(--mono);font-size:11.5px}
+.obs .ghost{color:var(--blue)}
+.nb{background:var(--page);border:1px solid var(--line);border-radius:2px;display:flex;flex-direction:column;min-height:0;flex:1}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;background:transparent;border:0;border-right:1px solid var(--line);padding:6px 4px;font-size:12px;cursor:pointer;color:var(--muted)}
+.tabs button:last-child{border-right:0}
+.tabs button[aria-selected="true"]{color:var(--ink);font-weight:700;background:var(--hl)}
+.nbody{flex:1;min-height:0;overflow:auto;padding:12px 14px 16px 24px;
+  background-image:linear-gradient(to right,transparent 13px,rgba(165,71,42,.28) 13px,rgba(165,71,42,.28) 14px,transparent 14px)}
+.pane h3{font-family:var(--serif);font-size:18px;letter-spacing:.03em;line-height:1.35}
+.pane .what{font-size:13px;font-weight:500;margin:4px 0 8px}
+.pane p{margin:0 0 8px}
+.pane h4{font-family:var(--serif);font-size:12.5px;margin:12px 0 4px;padding-bottom:2px;border-bottom:1px solid var(--rule);display:flex;gap:6px;align-items:baseline}
+.pane h4 .eyebrow{font-size:9px}
+.pane ul{margin:0;padding-left:1.1em}
+.pane li{margin:2px 0}
+.snd{background:var(--hl);padding:6px 9px;border-radius:2px;margin:6px 0}
+.see{list-style:none;padding:0!important}
+.see li{display:flex;gap:8px;align-items:baseline;padding:3px 0;border-bottom:1px dotted var(--rule)}
+.see button{flex:none;background:transparent;border:1px solid var(--red);color:var(--red);border-radius:2px;font-size:11px;padding:0 6px;cursor:pointer;min-height:22px}
+.formula{font-family:var(--mono);font-size:11.5px;background:var(--paper);border:1px solid var(--rule);padding:8px 10px;white-space:pre-wrap;line-height:1.75;overflow-x:auto}
+details.dsp summary{cursor:pointer;font-family:var(--serif);font-size:12.5px;margin-top:12px;color:var(--muted)}
+.calc{font-family:var(--mono);font-size:11.5px;color:var(--blue);margin-top:6px}
+.off{color:var(--red);font-size:12px}
+.tries{display:flex;flex-wrap:wrap;gap:5px}
+.tries .btn{font-size:11.5px;min-height:28px;padding:3px 9px}
+.mt{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin:6px 0 10px}
+.mt .r{display:grid;grid-template-columns:72px 1fr;gap:2px 10px;padding:6px 0;border-bottom:1px dotted var(--line)}
+.mt .r:last-child{border-bottom:0}
+.mt .r b{font-family:var(--serif);font-size:13px}
+.mt dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:0 8px;font-size:12px}
+.mt dt{color:var(--muted);font-size:11px;white-space:nowrap}
+.mt dd{margin:0}
+.mt .btn{grid-column:2;justify-self:start;font-size:11px;min-height:24px;padding:1px 8px;margin-top:3px}
+.fine{font-size:11.5px;color:var(--muted)}
+.inline-pane{border:1px solid var(--line);border-left:3px solid var(--red);background:var(--page);padding:10px 12px;margin:4px 0 8px}
+
+/* ---------- mobile sticky monitor ---------- */
+.mon{display:none}
+
+/* ===== PC：一画面（スクロールなし） ===== */
+@media (min-width:1100px) and (min-height:660px){
+  html,body{height:100%;overflow:hidden}
+  .app{height:100dvh;display:grid;grid-template-rows:auto auto 1fr}
+  .main{display:grid;grid-template-columns:minmax(0,1fr) 262px 350px;gap:10px;padding:10px 14px 12px;min-height:0}
+  .graphs{display:grid;gap:10px;min-height:0;
+    grid-template-columns:minmax(0,.95fr) minmax(0,1.35fr) minmax(0,.8fr);
+    grid-template-rows:minmax(0,1fr) minmax(0,1fr) 168px;
+    grid-template-areas:"tl tl tl" "tc hit dyn" "flow flow gm"}
+  .m-only{display:none!important}
+}
+@media (min-width:1100px) and (max-width:1379px) and (min-height:660px){ .main{grid-template-columns:minmax(0,1fr) 248px 312px;gap:8px;padding:8px 10px 10px} .graphs{gap:8px} .card{padding:7px 8px} }
+@media (min-width:1500px) and (min-height:660px){ .main{grid-template-columns:minmax(0,1fr) 280px 400px} body{font-size:13.5px} }
+@media (min-width:1100px) and (max-height:780px) and (min-height:660px){ .graphs{grid-template-rows:minmax(0,1fr) minmax(0,1.1fr) 150px} .top{padding-block:6px} .brand h1{font-size:19px} }
+
+/* ===== スマホ・タブレット：縦スクロールのノート ===== */
+@media not all and (min-width:1100px) and (min-height:660px){
+  body{font-size:14px;padding-bottom:env(safe-area-inset-bottom)}
+  .pc-only{display:none!important}
+  .top{padding-top:max(10px,env(safe-area-inset-top))}
+  .transport{margin-left:0;width:100%}
+  .btn,.sel{min-height:44px;font-size:14px}
+  .transport .sel{flex:1 1 160px}
+  .mon{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--ink);padding:6px max(12px,env(safe-area-inset-right)) 6px max(12px,env(safe-area-inset-left))}
+  .mon .cvm{position:relative;height:58px}
+  .mon .cvm canvas{position:absolute;inset:0;width:100%;height:100%}
+  .mon .btn{min-height:44px;min-width:56px;padding:4px 10px}
+  .mon .gr{font-family:var(--mono);font-size:11px;color:var(--red);text-align:right;line-height:1.3}
+  .main{display:flex;flex-direction:column;gap:14px;padding:12px max(12px,env(safe-area-inset-right)) 40px max(12px,env(safe-area-inset-left))}
+  .notes,.nb,.nbody{display:contents}
+  .tabs{display:none}
+  .obs{order:1}
+  .graphs{order:2;display:flex;flex-direction:column;gap:14px}
+  .ctrls{order:3;overflow:visible;padding:10px}
+  #methods{order:4;display:block!important;background:var(--page);border:1px solid var(--line);padding:12px 14px}
+  #about{order:5;display:block!important;padding:4px 2px}
+  #ex[data-home],#guide[data-home]{display:none!important}
+  .sec-h{order:0;font-family:var(--serif);font-size:16px;margin:8px 2px -4px;display:flex;gap:8px;align-items:baseline}
+  .sec-h .no{font-family:var(--mono);font-size:11px;color:var(--red)}
+  .s1{order:1}.s2{order:2}.s3{order:3}.s4{order:4}
+  .card{padding:10px 12px}
+  .cv{flex:none}
+  .ch{flex-wrap:wrap;row-gap:4px}
+  .ch h2{white-space:normal;flex:1 1 auto;min-width:0}
+  .top .play{display:none}
+  .wtag{top:-9px}
+  .card[data-g="tl"] .cv{height:250px}
+  .card[data-g="tc"] .cv{height:min(88vw,360px)}
+  .card[data-g="hit"] .cv{height:250px}
+  .card[data-g="dyn"] .cv{height:230px}
+  .card[data-g="flow"] .cv{height:auto}
+  .card[data-g="flow"] .flow{height:auto;min-width:560px}
+  .card[data-g="flow"] .cv{overflow-x:auto}
+  .card[data-g="gm"] .cv{height:52px}
+  .how{min-height:32px;padding:0 10px;font-size:12px}
+  .cmpsel{min-height:32px}
+  .ctl{padding:6px 8px 2px}
+  .ctl .jp{font-size:14px}
+  .ctl output{font-size:14px}
+  input[type=range]{height:36px}
+  input[type=range]::-webkit-slider-thumb{width:22px;height:22px;margin-top:-10px}
+  input[type=range]::-moz-range-thumb{width:18px;height:18px}
+  .seg button{min-height:40px;padding:4px 14px;font-size:13.5px}
+  .pane h3{font-size:17px}
+  .tries .btn,.mt .btn{min-height:40px}
+  .see button{min-height:32px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="eyebrow">Comp Study Note</span>
+      <h1>Compressor Study Note<small>Compressor Anatomy Lab</small></h1>
+    </div>
+    <nav class="links m-only"><a href="https://kazufumi01.github.io/">← All labs</a><a href="../" hreflang="ja" lang="ja">日本語</a></nav>
+    <nav class="links pc-only">
+      <a href="https://kazufumi01.github.io/">← All labs</a>
+      <a href="https://kazufumi01.github.io/comp-lab/en/">Previous version</a>
+      <a href="https://jpk.seesaa.net/article/521933998.html" target="_blank" rel="noopener" hreflang="ja">Article (Japanese)</a>
+      <a href="../" hreflang="ja" lang="ja">日本語</a>
+    </nav>
+    <div class="transport">
+      <button class="btn play" id="play" type="button" title="Play / stop (Space)" aria-keyshortcuts="Space">▶ Play</button>
+      <select class="sel" id="src" aria-label="Source">
+        <option value="loop">Drums + bass + pad (92 BPM)</option>
+        <option value="snare">Single snare hits (80 BPM, for watching attack)</option>
+      </select>
+      <label class="btn file">Load audio<input type="file" id="file" accept="audio/*"></label>
+      <select class="sel" id="preset" aria-label="Preset"></select>
+      <button class="btn" id="bypass" type="button" aria-pressed="false">Bypass</button>
+      <label class="chk" title="Keeps the state from just before you move a control as dashed lines on the graphs"><input type="checkbox" id="ghost" checked>Show “before”</label>
+    </div>
+  </header>
+  <div class="status" id="status" role="status"></div>
+
+  <div class="mon" id="mon" aria-label="Monitor">
+    <button class="btn play" id="play2" type="button">▶</button>
+    <div class="cvm"><canvas id="mini" aria-label="Mini display of output level and GR"></canvas></div>
+    <div><button class="btn" id="bypass2" type="button" aria-pressed="false">BYP</button></div>
+  </div>
+
+  <main class="main">
+    <h2 class="sec-h s2 m-only"><span class="no">01</span>See it on the graphs</h2>
+    <section class="graphs" aria-label="Graphs">
+      <div class="card" data-g="tl" style="grid-area:tl">
+        <div class="ch"><span class="no">01</span><h2>Level and gain reduction over time</h2><span class="wtag">Watch</span><span class="sp"></span><span class="badge" id="mode">Preview</span><button class="how" type="button" data-g="tl" aria-expanded="false">Guide</button></div>
+        <div class="cv"><canvas id="tl" aria-label="Timeline of input and output level and gain reduction"></canvas></div>
+        <div class="leg"><span><i style="background:var(--pencil)"></i>Input peak</span><span><i style="background:var(--blue)"></i>Output peak</span><span><i style="background:var(--red)"></i>Gain reduction (GR)</span><span><i class="dash"></i>Threshold</span><span id="lg-mem" hidden><i class="dot"></i>Opto cell memory (0–1)</span></div>
+      </div>
+      <div class="card" data-g="tc" style="grid-area:tc">
+        <div class="ch"><span class="no">02</span><h2>Transfer curve</h2><span class="wtag">Watch</span><span class="sp"></span><button class="how" type="button" data-g="tc" aria-expanded="false">Guide</button></div>
+        <div class="cv"><canvas id="tc" aria-label="Transfer curve of input level against output level"></canvas></div>
+      </div>
+      <div class="card" data-g="hit" style="grid-area:hit">
+        <div class="ch"><span class="no">03</span><h2>One hit</h2><span class="wtag">Watch</span><span class="sp"></span>
+          <select class="cmpsel" id="cmp" aria-label="Compare designs"><option value="">Compare…</option><option value="el">All 4 elements</option><option value="topo">FF / FB</option><option value="det">Peak / RMS</option></select>
+          <button class="how" type="button" data-g="hit" aria-expanded="false">Guide</button></div>
+        <div class="cv"><canvas id="hit" aria-label="Input and output waveform and GR of the loudest hit"></canvas></div>
+      </div>
+      <div class="card" data-g="dyn" style="grid-area:dyn">
+        <div class="ch"><span class="no">04</span><h2>Peak / RMS</h2><span class="wtag">Watch</span><span class="sp"></span><button class="how" type="button" data-g="dyn" aria-expanded="false">Guide</button></div>
+        <div class="cv"><canvas id="dyn" aria-label="Peak and RMS of input and output"></canvas></div>
+      </div>
+      <div class="card" data-g="flow" style="grid-area:flow">
+        <div class="ch"><span class="no">05</span><h2>Signal flow</h2><span class="wtag">Watch</span><span class="sp"></span><span class="eyebrow pc-only">Click a block</span><button class="how" type="button" data-g="flow" aria-expanded="false">Guide</button></div>
+        <div class="cv">
+        <svg class="flow" id="flow" viewBox="0 0 640 146" preserveAspectRatio="xMidYMid meet" data-topo="ff" role="img" aria-label="Compressor signal flow diagram">
+          <defs>
+            <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0 0 L8 4 L0 8 z"/></marker>
+            <marker id="ah2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path class="ah2" d="M0 0 L8 4 L0 8 z"/></marker>
+          </defs>
+          <text class="lab" x="2" y="46">IN</text>
+          <path class="wire" d="M20 42 H40" marker-end="url(#ah)"/>
+          <g class="blk" data-k="input" tabindex="0" role="button" aria-label="Input gain"><rect class="box" x="40" y="26" width="84" height="32"/><text x="82" y="46">Input</text></g>
+          <path class="wire" d="M124 42 H160" marker-end="url(#ah)"/>
+          <circle class="dot ff" cx="140" cy="42" r="2.6"/>
+          <g class="blk" data-k="lookahead" tabindex="0" role="button" aria-label="Lookahead"><rect class="box" x="160" y="26" width="92" height="32"/><text x="206" y="46">Lookahead</text></g>
+          <path class="wire" d="M252 42 H284" marker-end="url(#ah)"/>
+          <circle class="dot" cx="266" cy="42" r="2.6"/>
+          <path class="wire" d="M266 42 V12 H495 V26" marker-end="url(#ah)"/>
+          <text class="lab" x="372" y="23">dry (original)</text>
+          <g class="blk" data-k="element" tabindex="0" role="button" aria-label="Gain element"><circle class="box" cx="300" cy="42" r="16"/><text x="300" y="47" style="font-size:15px">×</text><text class="sub" id="el-label" x="292" y="76" style="text-anchor:end">VCA</text></g>
+          <path class="wire" d="M316 42 H344" marker-end="url(#ah)"/>
+          <circle class="dot fb" cx="330" cy="42" r="2.6"/>
+          <g class="blk" data-k="makeup" tabindex="0" role="button" aria-label="Makeup"><rect class="box" x="344" y="26" width="88" height="32"/><text x="388" y="46">Makeup</text></g>
+          <path class="wire" d="M432 42 H462" marker-end="url(#ah)"/>
+          <g class="blk" data-k="mix" tabindex="0" role="button" aria-label="Mix"><rect class="box" x="462" y="26" width="66" height="32"/><text x="495" y="46">Mix</text></g>
+          <path class="wire" d="M528 42 H582" marker-end="url(#ah)"/>
+          <text class="lab" x="586" y="46">OUT</text>
+          <path class="wire sc ff" d="M140 42 V104" marker-end="url(#ah2)"/>
+          <path class="wire sc fb" d="M330 42 V90 H60 V120 H90" marker-end="url(#ah2)"/>
+          <text class="lab ff" x="146" y="80">FF: detects input</text>
+          <text class="lab fb" x="66" y="104">FB: detects output</text>
+          <g class="blk" data-k="detector" tabindex="0" role="button" aria-label="Detector"><rect class="box" x="90" y="104" width="110" height="34"/><text x="145" y="118">Detector</text><text class="sub" x="145" y="131">Peak / RMS</text></g>
+          <path class="wire sc" d="M200 121 H222" marker-end="url(#ah2)"/>
+          <g class="blk" data-k="threshold" tabindex="0" role="button" aria-label="Gain computer"><rect class="box" x="222" y="104" width="124" height="34"/><text x="284" y="118">Gain computer</text><text class="sub" x="284" y="131">T · R · Knee</text></g>
+          <path class="wire sc" d="M346 121 H370" marker-end="url(#ah2)"/>
+          <g class="blk" data-k="attack" tabindex="0" role="button" aria-label="Ballistics"><rect class="box" x="370" y="104" width="110" height="34"/><text x="425" y="118">Ballistics</text><text class="sub" x="425" y="131">Attack · Release</text></g>
+          <path class="wire sc" d="M425 104 V80 H300 V58" marker-end="url(#ah2)"/>
+          <text class="lab" x="432" y="92">g (dB → gain)</text>
+          <text class="lab" x="490" y="125">sidechain: works out</text>
+          <text class="lab" x="490" y="137">only how much to cut</text>
+        </svg>
+        </div>
+      </div>
+      <div class="card" data-g="gm" style="grid-area:gm">
+        <div class="ch"><span class="no">06</span><h2>GR meter</h2><span class="wtag">Watch</span><span class="sp"></span><button class="how" type="button" data-g="gm" aria-expanded="false">Guide</button></div>
+        <div class="cv"><canvas id="gm" aria-label="Gain reduction meter"></canvas></div>
+        <dl class="ro">
+          <div><dt id="gr-label">Max GR</dt><dd class="grv" id="ro-max">0.0</dd></div>
+          <div><dt>Avg GR</dt><dd id="ro-avg">0.0</dd></div>
+          <div><dt>In peak</dt><dd id="ro-in">−∞</dd></div>
+          <div><dt>Out peak</dt><dd id="ro-out">−∞</dd></div>
+          <div><dt>Delay</dt><dd id="lat">0.0 ms</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <h2 class="sec-h s3 m-only"><span class="no">02</span>Move the controls<span class="eyebrow">tap a row to explain</span></h2>
+    <section class="ctrls" aria-label="Parameters">
+      <div class="ch pc-only"><span class="no">07</span><h2>Parameters</h2><span class="sp"></span><span class="eyebrow">click a row to explain</span></div>
+      <div id="groups"></div>
+    </section>
+
+    <aside class="notes">
+      <section class="obs" id="obs" aria-live="polite"></section>
+      <div class="nb">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" data-tab="ex" aria-selected="true">Notes</button>
+          <button type="button" role="tab" data-tab="guide" aria-selected="false">Graphs</button>
+          <button type="button" role="tab" data-tab="methods" aria-selected="false">Designs</button>
+          <button type="button" role="tab" data-tab="about" aria-selected="false">About</button>
+        </div>
+        <div class="nbody" id="nbody">
+          <div class="pane" id="ex" data-home role="tabpanel"></div>
+          <div class="pane" id="guide" data-home role="tabpanel" hidden></div>
+          <div class="pane" id="methods" role="tabpanel" hidden></div>
+          <div class="pane" id="about" role="tabpanel" hidden>
+            <h3>About this page</h3>
+            <p>A study note that takes apart a real compressor DSP running in your browser, one parameter at a time. Headphones recommended. Even without sound, the graphs and “What the sound is doing” show the effect.</p>
+            <p class="fine">No sound? On iPhone / iPad, turn off silent mode, raise the volume, then press Play. Space toggles play / stop.</p>
+            <p class="links m-only"><a href="https://kazufumi01.github.io/">← All labs</a> <a href="https://kazufumi01.github.io/comp-lab/en/">Previous version</a> <a href="../" hreflang="ja" lang="ja">日本語</a></p>
+            <p class="fine">The DSP on this page is an educational implementation. The VCA, FET, opto and vari-mu modes are simplified models of each element’s behaviour and do not reproduce any specific hardware or plugin. Models of classic units are covered separately (as in the Compressor Anatomy Lab 2 plug-in).</p>
+            <p class="fine">Product names on this page (1176, LA-2A, Fairchild, Manley, SSL, dbx, API, FabFilter Pro-C and others) are trademarks or registered trademarks of their respective owners, used for reference only, with no affiliation.</p>
+            <p class="fine">Reference: D. Giannoulis, M. Massberg, J. D. Reiss, "Digital Dynamic Range Compressor Design — A Tutorial and Analysis," J. Audio Eng. Soc., vol. 60, no. 6, 2012.</p>
+            <p class="fine">Made by Kazufumi Nishida, JPK with Claude, Perplexity and Others</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script type="text/plain" id="worklet-wrapper">
+class CompLabProcessor extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this.c = new CompCore(sampleRate);
+    this.m = new Float32Array(5);
+    this.out = new Float32Array(20);
+    this.k = 0;
+    this.scratch = new Float32Array(128);
+    this.port.onmessage = (e) => this.c.set(e.data);
+  }
+  process(inputs, outputs) {
+    const i = inputs[0], o = outputs[0];
+    if (!i || i.length === 0 || !o || o.length === 0) return true;
+    const n = o[0].length;
+    if (this.scratch.length < n) this.scratch = new Float32Array(n);
+    this.c.run(i[0], i[1] || i[0], o[0], o[1] || this.scratch, n, this.m);
+    this.out.set(this.m, this.k * 5);
+    if (++this.k === 4) { this.port.postMessage(this.out.slice(0)); this.k = 0; }
+    return true;
+  }
+}
+registerProcessor('comp-lab', CompLabProcessor);
+</script>
+
+<script id="comp-core">
+/* ===== DSP core (identical to the current Compressor Anatomy Lab, unchanged) ===== */
+class CompCore {
+  constructor(fs) {
+    this.fs = fs;
+    this.p = { input: 0, threshold: -18, ratio: 4, knee: 6, attack: 10, release: 120, makeup: 4,
+               detector: 'peak', rms: 10, topology: 'ff', lookahead: 0, mix: 1, bypass: false, element: 'vca' };
+    this.ms = 0; this.gs = 0; this.fbL = 0; this.fbR = 0;
+    this.gF = 0; this.gS = 0; this.mem = 0;
+    this.dxL = 0; this.dyL = 0; this.dxR = 0; this.dyR = 0;
+    this.size = Math.ceil(fs * 0.012) + 2;
+    this.dL = new Float32Array(this.size); this.dR = new Float32Array(this.size); this.w = 0;
+    this.set({});
+  }
+  set(o) {
+    Object.assign(this.p, o);
+    const p = this.p, fs = this.fs;
+    const tc = (ms) => Math.exp(-1 / (Math.max(ms, 0.001) * 0.001 * fs));
+    this.aA = tc(p.attack); this.aR = tc(p.release); this.aM = tc(p.rms);
+    this.oFA = tc(10); this.oFR = tc(60); this.oSA = tc(30); this.oMU = tc(1500); this.oMD = tc(4000);
+    this.dcR = Math.exp(-2 * Math.PI * 8 / fs);
+    this.la = Math.min(this.size - 1, Math.round(p.lookahead * 0.001 * fs));
+    this.gIn = Math.pow(10, p.input / 20); this.gMk = Math.pow(10, p.makeup / 20);
+  }
+  static curve(x, T, R, W, el) {
+    if (el === 'varimu') {
+      const over = x - T + 6;
+      return over <= 0 ? x : x - (1 - 1 / R) * over * over / (over + 12);
+    }
+    const d = x - T;
+    if (2 * d < -W) return x;
+    if (W > 0 && 2 * Math.abs(d) <= W) return x + (1 / R - 1) * (d + W / 2) * (d + W / 2) / (2 * W);
+    return T + d / R;
+  }
+  run(iL, iR, oL, oR, n, m) {
+    const p = this.p, T = p.threshold, R = p.ratio, W = p.knee, el = p.element, fs = this.fs;
+    const rms = p.detector === 'rms', fb = p.topology === 'fb', mix = p.mix, byp = p.bypass;
+    const opto = el === 'opto', colour = el === 'fet' || el === 'varimu';
+    let inPk = 0, outPk = 0, grMax = 0, lvlMax = -150;
+    for (let i = 0; i < n; i++) {
+      const xl = iL[i] * this.gIn, xr = iR[i] * this.gIn;
+      const sl = fb ? this.fbL : xl, sr = fb ? this.fbR : xr;
+      let lvl;
+      if (rms) { const e = Math.max(sl * sl, sr * sr); this.ms = this.aM * this.ms + (1 - this.aM) * e; lvl = Math.sqrt(this.ms); }
+      else lvl = Math.max(Math.abs(sl), Math.abs(sr));
+      const xdB = lvl > 1e-7 ? 20 * Math.log10(lvl) : -140;
+      const gc = xdB - CompCore.curve(xdB, T, R, W, el);
+      if (opto) {
+        const aF = gc > this.gF ? this.oFA : this.oFR;
+        this.gF = aF * this.gF + (1 - aF) * gc;
+        const aS = gc > this.gS ? this.oSA : Math.exp(-1 / ((0.5 + 4.5 * this.mem) * fs));
+        this.gS = aS * this.gS + (1 - aS) * gc;
+        const tgt = Math.min(1, gc / 12), aMm = tgt > this.mem ? this.oMU : this.oMD;
+        this.mem = aMm * this.mem + (1 - aMm) * tgt;
+        this.gs = 0.5 * this.gF + 0.5 * this.gS;
+      } else {
+        const a = gc > this.gs ? this.aA : this.aR;
+        this.gs = a * this.gs + (1 - a) * gc;
+      }
+      this.dL[this.w] = xl; this.dR[this.w] = xr;
+      let r = this.w - this.la; if (r < 0) r += this.size;
+      const dl = this.dL[r], dr = this.dR[r];
+      if (++this.w >= this.size) this.w = 0;
+      const g = Math.pow(10, -this.gs / 20);
+      let wl = dl * g, wr = dr * g;
+      if (colour) {
+        const gn = Math.min(this.gs, 20) / 20;
+        const dv = el === 'fet' ? 0.5 + 1.5 * gn : 0.8 + 0.4 * gn;
+        const a2 = el === 'fet' ? 0.05 + 0.2 * gn : 0.15 + 0.1 * gn;
+        const ul = Math.tanh(dv * (wl + a2 * wl * wl)) / dv, ur = Math.tanh(dv * (wr + a2 * wr * wr)) / dv;
+        const yl = ul - this.dxL + this.dcR * this.dyL, yr = ur - this.dxR + this.dcR * this.dyR;
+        this.dxL = ul; this.dyL = yl; this.dxR = ur; this.dyR = yr;
+        wl = yl; wr = yr;
+      }
+      this.fbL = wl; this.fbR = wr;
+      let yl, yr;
+      if (byp) { yl = dl; yr = dr; }
+      else { const k = mix * this.gMk; yl = wl * k + dl * (1 - mix); yr = wr * k + dr * (1 - mix); }
+      oL[i] = yl; oR[i] = yr;
+      const ai = Math.max(Math.abs(xl), Math.abs(xr)); if (ai > inPk) inPk = ai;
+      const ao = Math.max(Math.abs(yl), Math.abs(yr)); if (ao > outPk) outPk = ao;
+      if (this.gs > grMax) grMax = this.gs;
+      if (xdB > lvlMax) lvlMax = xdB;
+    }
+    m[0] = inPk; m[1] = outPk; m[2] = grMax; m[3] = lvlMax; m[4] = this.mem;
+  }
+}
+</script>
+
+<script>
+(() => {
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const SRC_SR = 48000, SIM_SEC = 3, BLOCK = 128, FINE = 32;
+const neg = (v, d = 1) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(d);
+const sgn = (v, d = 1) => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v).toFixed(d);
+const toDb = (v) => (v > 1e-6 ? 20 * Math.log10(v) : -120);
+const mq = matchMedia('(min-width:1100px) and (min-height:660px)');
+const isPC = () => mq.matches;
+
+/* ---------- parameters（現行版と同じ） ---------- */
+const DEFAULTS = { input: 0, threshold: -18, ratio: 4, knee: 6, attack: 10, release: 120, makeup: 4,
+  detector: 'peak', rms: 10, topology: 'ff', lookahead: 0, mix: 100, element: 'vca' };
+const P = { ...DEFAULTS, bypass: false };
+const fmtMs = (v) => v < 1 ? Math.round(v * 1000) + ' µs' : v < 10 ? v.toFixed(1) + ' ms' : Math.round(v) + ' ms';
+const CTRL = {
+  input:     { jp: 'Input gain', en: 'Input', min: -12, max: 12, step: 0.5, fmt: (v) => sgn(v) + ' dB' },
+  threshold: { jp: 'Threshold', en: 'Threshold', min: -60, max: 0, step: 0.5, fmt: (v) => neg(v) + ' dB' },
+  ratio:     { jp: 'Ratio', en: 'Ratio', min: 1, max: 20, log: true, fmt: (v) => (v < 10 ? v.toFixed(1) : Math.round(v)) + ' : 1' },
+  knee:      { jp: 'Knee', en: 'Knee', min: 0, max: 24, step: 0.5, fmt: (v) => v.toFixed(1) + ' dB' },
+  attack:    { jp: 'Attack', en: 'Attack', min: 0.05, max: 200, log: true, fmt: fmtMs },
+  release:   { jp: 'Release', en: 'Release', min: 10, max: 2000, log: true, fmt: fmtMs },
+  rms:       { jp: 'RMS window', en: 'RMS window', min: 1, max: 300, log: true, fmt: fmtMs },
+  lookahead: { jp: 'Lookahead', en: 'Lookahead', min: 0, max: 10, step: 0.1, fmt: (v) => v.toFixed(1) + ' ms' },
+  makeup:    { jp: 'Makeup', en: 'Makeup', min: 0, max: 24, step: 0.5, fmt: (v) => sgn(v) + ' dB' },
+  mix:       { jp: 'Mix', en: 'Dry / Wet', min: 0, max: 100, step: 1, fmt: (v) => Math.round(v) + ' %' },
+};
+const SEGS = {
+  element: { jp: 'Gain element', en: 'Element', opts: [['vca', 'VCA'], ['fet', 'FET'], ['opto', 'Opto'], ['varimu', 'Vari-Mu']] },
+  detector: { jp: 'Detector', en: 'Detector', opts: [['peak', 'Peak'], ['rms', 'RMS']] },
+  topology: { jp: 'Topology', en: 'Topology', opts: [['ff', 'Feed-forward'], ['fb', 'Feedback']] },
+};
+const GROUPS = [
+  { en: 'Gain element', jp: 'What turns it down', keys: ['element'] },
+  { en: 'Input', jp: 'Gain staging', keys: ['input'] },
+  { en: 'Gain computer', jp: 'How much', keys: ['threshold', 'ratio', 'knee'] },
+  { en: 'Ballistics', jp: 'How fast', keys: ['attack', 'release'] },
+  { en: 'Sidechain', jp: 'What it listens to', keys: ['detector', 'rms', 'topology', 'lookahead'] },
+  { en: 'Output', jp: 'Output', keys: ['makeup', 'mix'] },
+];
+const PRESETS = [
+  ['default', 'Default (VCA)', {}],
+  ['la2a', 'LA-2A style (opto, FB)', { element: 'opto', threshold: -26, ratio: 3, knee: 12, makeup: 5, detector: 'rms', rms: 10, topology: 'fb' }],
+  ['1176', '1176 style (FET, fast attack)', { element: 'fet', threshold: -24, ratio: 4, knee: 2, attack: 0.4, release: 150, makeup: 6 }],
+  ['fairchild', 'Fairchild style (vari-mu, bus)', { element: 'varimu', threshold: -18, ratio: 6, attack: 1, release: 400, makeup: 3, detector: 'rms', rms: 10 }],
+  ['drumbus', 'Drum bus (let the attack through)', { threshold: -20, ratio: 4, knee: 3, attack: 30, release: 80, makeup: 4 }],
+  ['fast', 'Fast attack (squash the peaks)', { threshold: -22, ratio: 8, knee: 0, attack: 0.2, release: 60, makeup: 7 }],
+  ['glue', 'Mix bus (glue)', { threshold: -14, ratio: 2, knee: 6, attack: 30, release: 326, makeup: 1.5, detector: 'rms', rms: 10 }],
+  ['limit', 'Limiter (lookahead)', { threshold: -8, ratio: 20, knee: 0, attack: 0.5, release: 50, makeup: 6, lookahead: 5 }],
+  ['ny', 'NY parallel', { threshold: -36, ratio: 10, knee: 0, attack: 1, release: 60, makeup: 10, mix: 35 }],
+];
+const PR = (k) => ({ ...DEFAULTS, ...PRESETS.find((x) => x[0] === k)[2] });
+
+/* ---------- test signals（現行版と同じ） ---------- */
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 * 2 - 1; }; }
+function makeKick(sr, rnd) {
+  const n = Math.round(0.45 * sr), b = new Float32Array(n); let ph = 0;
+  for (let i = 0; i < n; i++) { const t = i / sr; const f = 48 + 120 * Math.exp(-t * 28); ph += 2 * Math.PI * f / sr;
+    let v = Math.sin(ph) * Math.exp(-t * 6.5); if (t < 0.004) v += rnd() * 0.35 * (1 - t / 0.004); b[i] = v; }
+  return b;
+}
+function makeSnare(sr, rnd) {
+  const n = Math.round(0.3 * sr), b = new Float32Array(n); let hp = 0, xp = 0;
+  for (let i = 0; i < n; i++) { const t = i / sr, x = rnd(); hp = 0.82 * (hp + x - xp); xp = x;
+    b[i] = hp * Math.exp(-t * 15) * 0.55 + Math.sin(2 * Math.PI * 185 * t) * Math.exp(-t * 24) * 0.5 + Math.sin(2 * Math.PI * 330 * t) * Math.exp(-t * 32) * 0.2; }
+  return b;
+}
+function makeHat(sr, rnd) {
+  const n = Math.round(0.07 * sr), b = new Float32Array(n); let xp = 0;
+  for (let i = 0; i < n; i++) { const t = i / sr, x = rnd(); b[i] = (x - xp) * Math.exp(-t * 65) * 0.18; xp = x; }
+  return b;
+}
+function normalize(L, R, peak) {
+  let pk = 0; for (let i = 0; i < L.length; i++) pk = Math.max(pk, Math.abs(L[i]), Math.abs(R[i]));
+  const g = peak / (pk || 1); for (let i = 0; i < L.length; i++) { L[i] *= g; R[i] *= g; }
+}
+function genLoop(sr) {
+  const bpm = 92, step = 60 / bpm / 4, len = Math.round(32 * step * sr);
+  const L = new Float32Array(len), R = new Float32Array(len), rnd = rng(7);
+  const at = (s) => Math.round(s * step * sr);
+  const put = (b, start, gl, gr) => { for (let i = 0; i < b.length; i++) { const j = (start + i) % len; L[j] += b[i] * gl; R[j] += b[i] * gr; } };
+  const kick = makeKick(sr, rnd), snare = makeSnare(sr, rnd), hat = makeHat(sr, rnd);
+  const kicks = [0, 7, 10, 16, 23, 26];
+  kicks.forEach((s) => put(kick, at(s), 0.85, 0.85));
+  [4, 12, 20, 28].forEach((s) => put(snare, at(s), 0.6, 0.66));
+  for (let s = 0; s < 32; s += 2) { const v = s % 4 === 0 ? 1 : 0.6; put(hat, at(s), v * 0.7, v); }
+  [15, 31].forEach((s) => put(hat, at(s), 0.3, 0.4));
+  const roots = [55, 43.65];
+  kicks.forEach((s, idx) => {
+    const next = idx + 1 < kicks.length ? kicks[idx + 1] : 32;
+    const dur = Math.min((next - s) * step, 0.9) - 0.02, n = Math.round(dur * sr), f = roots[s < 16 ? 0 : 1];
+    const b = new Float32Array(n); let ph = 0;
+    for (let i = 0; i < n; i++) { const t = i / sr; ph += 2 * Math.PI * f / sr;
+      const env = Math.min(1, t / 0.005) * (0.75 + 0.25 * Math.exp(-t * 8)) * Math.min(1, (n - i) / (0.02 * sr));
+      b[i] = (Math.sin(ph) + 0.35 * Math.sin(2 * ph) + 0.12 * Math.sin(3 * ph)) * env; }
+    put(b, at(s), 0.32, 0.32);
+  });
+  const chords = [[220, 261.63, 329.63], [174.61, 220, 261.63]];
+  const a = 1 - Math.exp(-2 * Math.PI * 900 / sr);
+  chords.forEach((ch, bar) => {
+    const start = at(bar * 16), n = at(16);
+    ch.forEach((f, vi) => [-1, 1].forEach((det) => {
+      const fr = f * Math.pow(2, det * 4 / 1200); let ph = vi * 0.31 + (det > 0 ? 0.5 : 0), lp = 0;
+      const gl = det < 0 ? 0.8 : 0.45, gr = det < 0 ? 0.45 : 0.8;
+      for (let i = 0; i < n; i++) { ph += fr / sr; if (ph >= 1) ph -= 1; lp += a * ((2 * ph - 1) - lp);
+        const t = i / sr, env = Math.min(1, t / 0.08) * Math.min(1, (n - i) / (0.015 * sr)), v = lp * env * 0.05;
+        const j = (start + i) % len; L[j] += v * gl; R[j] += v * gr; }
+    }));
+  });
+  normalize(L, R, 0.79);
+  return { L, R, sr, bpm, name: 'Drums + bass + pad' };
+}
+function genSnare(sr) {
+  const bpm = 80, beat = 60 / bpm, len = Math.round(4 * beat * sr);
+  const L = new Float32Array(len), R = new Float32Array(len), rnd = rng(11);
+  const sn = makeSnare(sr, rnd);
+  for (let k = 0; k < 4; k++) { const st = Math.round(k * beat * sr); for (let i = 0; i < sn.length && st + i < len; i++) { L[st + i] += sn[i]; R[st + i] += sn[i]; } }
+  normalize(L, R, 0.79);
+  return { L, R, sr, bpm, name: 'Single snare hits' };
+}
+const sources = {};
+let curKey = 'loop';
+function getSource(k) {
+  if (!sources[k]) { if (k === 'loop') sources[k] = genLoop(SRC_SR); else if (k === 'snare') sources[k] = genSnare(SRC_SR); }
+  return sources[k];
+}
+
+/* ---------- offline analysis（同じDSPを先頭3秒に通す） ---------- */
+function makeRing(sr) { const n = Math.floor(SIM_SEC * sr / BLOCK); return { n, inp: new Float32Array(n), out: new Float32Array(n), gr: new Float32Array(n), mem: new Float32Array(n), w: 0 }; }
+function push(r, a, b, c, d) { r.inp[r.w] = a; r.out[r.w] = b; r.gr[r.w] = c; r.mem[r.w] = d || 0; r.w = (r.w + 1) % r.n; }
+const coreParams = (o) => { const q = { ...P, ...(o || {}) }; q.mix = q.mix / 100; return q; };
+
+function runSim(par, key, hitAt) {
+  const s = getSource(key), sr = s.sr, core = new CompCore(sr); core.set(par);
+  const ring = makeRing(sr), N = ring.n * BLOCK, nf = N / FINE, len = s.L.length, per = BLOCK / FINE;
+  const inW = new Float32Array(N), outW = new Float32Array(N), grF = new Float32Array(nf);
+  const bl = new Float32Array(FINE), br = new Float32Array(FINE), oL = new Float32Array(FINE), oR = new Float32Array(FINE), m = new Float32Array(5);
+  const gIn = Math.pow(10, par.input / 20);
+  let ip = 0, op = 0, is = 0, os = 0, bIn = 0, bOut = 0, bGr = 0;
+  for (let b = 0; b < nf; b++) {
+    const o = b * FINE;
+    for (let i = 0; i < FINE; i++) { const j = (o + i) % len; bl[i] = s.L[j]; br[i] = s.R[j]; }
+    core.run(bl, br, oL, oR, FINE, m);
+    for (let i = 0; i < FINE; i++) {
+      const xl = bl[i] * gIn, xr = br[i] * gIn, yl = oL[i], yr = oR[i];
+      inW[o + i] = xl; outW[o + i] = yl;
+      const ai = Math.max(Math.abs(xl), Math.abs(xr)), ao = Math.max(Math.abs(yl), Math.abs(yr));
+      if (ai > ip) ip = ai; if (ao > op) op = ao;
+      is += xl * xl + xr * xr; os += yl * yl + yr * yr;
+    }
+    grF[b] = m[2];
+    if (m[0] > bIn) bIn = m[0]; if (m[1] > bOut) bOut = m[1]; if (m[2] > bGr) bGr = m[2];
+    if ((b + 1) % per === 0) { push(ring, bIn, bOut, bGr, m[4]); bIn = bOut = bGr = 0; }
+  }
+  ring.w = 0;
+  let gmax = 0, gsum = 0, gmin = 1e9, memMax = 0;
+  for (let k = 0; k < ring.n; k++) { const g = ring.gr[k]; if (g > gmax) gmax = g; gsum += g; if (k > ring.n / 6 && g < gmin) gmin = g; if (ring.mem[k] > memMax) memMax = ring.mem[k]; }
+  const st = { inPk: toDb(ip), outPk: toDb(op), inRms: 10 * Math.log10(is / (2 * N) + 1e-12), outRms: 10 * Math.log10(os / (2 * N) + 1e-12),
+    grMax: gmax, grAvg: gsum / ring.n, grMin: gmin, memMax };
+  const hit = hitAt || findHit(inW, sr);
+  /* 立ち上がりの通過：オンセット直後2 msのGRと、ヒット内の最大GRの比 */
+  const f0 = Math.floor(hit.onset / FINE), f2 = Math.floor((hit.onset + 0.002 * sr) / FINE), f1 = Math.min(nf - 1, Math.floor((hit.onset + 0.25 * sr) / FINE));
+  let hMax = 0; for (let k = f0; k <= f1; k++) hMax = Math.max(hMax, grF[k]);
+  st.hitGr = hMax; st.earlyRatio = hMax > 0.3 ? grF[f2] / hMax : 0;
+  return { P: { ...par }, key, sr, ring, inW, outW, grF, st, hit, N };
+}
+function findHit(x, sr) {
+  const a = Math.floor(0.5 * sr), b = x.length - Math.floor(0.42 * sr);
+  let mi = a, pk = 0;
+  for (let i = a; i < b; i++) { const v = Math.abs(x[i]); if (v > pk) { pk = v; mi = i; } }
+  let onset = mi; const w = Math.round(0.001 * sr), lim = Math.max(w, mi - Math.round(0.04 * sr));
+  for (let j = mi; j > lim; j -= 8) { let m = 0; for (let k = j - w; k < j; k++) m = Math.max(m, Math.abs(x[k])); if (m < 0.08 * pk) { onset = j; break; } onset = j; }
+  return { onset, sr };
+}
+
+let sim = null, needSim = true, ghost = null, lastChange = 0, cmpData = null, needCmp = true;
+const CMP = {
+  el: { label: 'Element', key: 'element', v: [['vca', 'VCA'], ['fet', 'FET'], ['opto', 'Opto'], ['varimu', 'Vari-mu']] },
+  topo: { label: 'Topology', key: 'topology', v: [['ff', 'FF'], ['fb', 'FB']] },
+  det: { label: 'Detector', key: 'detector', v: [['peak', 'Peak'], ['rms', 'RMS']] },
+};
+function simulate() {
+  sim = runSim(coreParams(), curKey);
+  needCmp = true;
+}
+function computeCmp() {
+  const m = $('#cmp').value; cmpData = null; needCmp = false;
+  if (!m || !sim) return;
+  const c = CMP[m];
+  cmpData = { mode: m, list: c.v.map(([v, t]) => ({ v, t, cur: P[c.key] === v, d: runSim(coreParams({ [c.key]: v }), curKey, sim.hit) })) };
+}
+
+/* ---------- audio ---------- */
+let ctx = null, procIn = null, post = null, srcNode = null, playing = false, liveRing = null;
+const live = { gr: 0, hold: 0, holdT: 0 }; let trail = [];
+const status = (t) => { $('#status').textContent = t || ''; };
+async function ensureCtx() {
+  if (ctx) return;
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination);
+  try {
+    const code = CompCore.toString() + '\n' + $('#worklet-wrapper').textContent;
+    const url = URL.createObjectURL(new Blob([code], { type: 'application/javascript' }));
+    await ctx.audioWorklet.addModule(url);
+    const node = new AudioWorkletNode(ctx, 'comp-lab', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
+    node.port.onmessage = onMeter; node.connect(out);
+    procIn = node; post = (d) => node.port.postMessage(d);
+  } catch (e) {
+    /* AudioWorkletが使えない環境向け：同じCompCoreをメインスレッドで実行 */
+    const sp = ctx.createScriptProcessor(1024, 2, 2), core = new CompCore(ctx.sampleRate), m = new Float32Array(5), buf = new Float32Array(20); let k = 0;
+    sp.onaudioprocess = (ev) => {
+      const ib = ev.inputBuffer, ob = ev.outputBuffer, iL = ib.getChannelData(0), iR = ib.numberOfChannels > 1 ? ib.getChannelData(1) : iL;
+      const oL = ob.getChannelData(0), oR = ob.getChannelData(1);
+      for (let o = 0; o < oL.length; o += 128) {
+        core.run(iL.subarray(o, o + 128), iR.subarray(o, o + 128), oL.subarray(o, o + 128), oR.subarray(o, o + 128), 128, m);
+        buf.set(m, k * 5); if (++k === 4) { onMeter({ data: buf.slice(0) }); k = 0; }
+      }
+    };
+    sp.connect(out); procIn = sp; post = (d) => core.set(d);
+  }
+  liveRing = makeRing(ctx.sampleRate);
+  sendParams();
+}
+const bufCache = {};
+function audioBuffer(k) {
+  if (bufCache[k]) return bufCache[k];
+  const s = getSource(k), b = ctx.createBuffer(2, s.L.length, s.sr);
+  b.copyToChannel(s.L, 0); b.copyToChannel(s.R, 1);
+  return (bufCache[k] = b);
+}
+function startSource() { srcNode = ctx.createBufferSource(); srcNode.buffer = audioBuffer(curKey); srcNode.loop = true; srcNode.connect(procIn); srcNode.start(); }
+function stopSource() { if (srcNode) { try { srcNode.stop(); } catch (e) {} srcNode.disconnect(); srcNode = null; } }
+async function togglePlay() {
+  try {
+    if (playing) { stopSource(); playing = false; trail = []; }
+    else { await ensureCtx(); await ctx.resume(); liveRing = makeRing(ctx.sampleRate); startSource(); playing = true; }
+    status('');
+  } catch (e) { status('Could not start audio (' + e.message + '). Please reload the page and try again.'); playing = false; }
+  $('#play').textContent = playing ? '■ Stop' : '▶ Play';
+  $('#play2').textContent = playing ? '■' : '▶';
+  $('#mode').textContent = playing ? 'Live' : 'Preview';
+  $('#mode').classList.toggle('live', playing);
+  
+}
+function onMeter(e) {
+  const a = e.data;
+  if (!liveRing) return;
+  for (let k = 0; k < 4; k++) { const o = k * 5; push(liveRing, a[o], a[o + 1], a[o + 2], a[o + 4]);
+    const x = P.topology === 'fb' ? toDb(a[o]) : a[o + 3];
+    if (x > -70) trail.push([x, x - a[o + 2] + P.makeup]); }
+  if (trail.length > 28) trail = trail.slice(-28);
+  live.gr = a[17];
+}
+function sendParams() { if (post) post(coreParams()); }
+
+/* ---------- controls ---------- */
+const toSlider = (c, v) => c.log ? Math.round(1000 * Math.log(v / c.min) / Math.log(c.max / c.min)) : v;
+const fromSlider = (c, s) => c.log ? c.min * Math.pow(c.max / c.min, s / 1000) : +s;
+function buildControls() {
+  const root = $('#groups');
+  GROUPS.forEach((gr) => {
+    const fs = document.createElement('fieldset');
+    fs.innerHTML = `<legend><b>${gr.jp}</b><span class="eyebrow">${gr.en}</span></legend>`;
+    gr.keys.forEach((k) => {
+      const row = document.createElement('div'); row.className = 'ctl'; row.dataset.k = k;
+      if (CTRL[k]) {
+        const c = CTRL[k];
+        row.innerHTML = `<label for="c-${k}"><span class="jp">${c.jp}</span><span class="en">${c.en}</span></label><output id="v-${k}" for="c-${k}"></output>
+          <input type="range" id="c-${k}" min="${c.log ? 0 : c.min}" max="${c.log ? 1000 : c.max}" step="${c.log ? 1 : c.step}">`;
+        row.querySelector('input').addEventListener('input', (e) => { P[k] = fromSlider(c, e.target.value); paramChanged(k); });
+      } else {
+        const s = SEGS[k];
+        row.innerHTML = `<label><span class="jp">${s.jp}</span><span class="en">${s.en}</span></label><span></span>
+          <div class="seg" role="group" aria-label="${s.jp}">${s.opts.map(([v, t]) => `<button type="button" id="s-${k}-${v}" data-v="${v}">${t}</button>`).join('')}</div>`;
+        row.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { P[k] = b.dataset.v; paramChanged(k); }));
+      }
+      row.addEventListener('pointerdown', () => selectEx(k));
+      row.addEventListener('focusin', () => selectEx(k));
+      fs.appendChild(row);
+    });
+    root.appendChild(fs);
+  });
+}
+function syncControls() {
+  Object.keys(CTRL).forEach((k) => {
+    const c = CTRL[k], el = $('#c-' + k);
+    if (document.activeElement !== el) el.value = toSlider(c, P[k]);
+    $('#v-' + k).textContent = c.fmt(P[k]);
+  });
+  Object.keys(SEGS).forEach((k) => SEGS[k].opts.forEach(([v]) => $(`#s-${k}-${v}`).setAttribute('aria-pressed', P[k] === v)));
+  const off = { rms: P.detector !== 'rms', attack: P.element === 'opto', release: P.element === 'opto', knee: P.element === 'varimu' };
+  Object.entries(off).forEach(([k, v]) => { $('#c-' + k).disabled = v; document.querySelector(`.ctl[data-k="${k}"]`).classList.toggle('dim', v); });
+  $('#el-label').textContent = { vca: 'VCA', fet: 'FET', opto: 'opto cell', varimu: 'vari-mu tube' }[P.element];
+  $('#lg-mem').hidden = P.element !== 'opto';
+  $('#flow').dataset.topo = P.topology;
+  $('#lat').textContent = `${P.lookahead.toFixed(1)} ms`;
+}
+function snapGhost() {
+  const now = performance.now();
+  if (now - lastChange > 700 && sim && sim.key === curKey) ghost = sim;
+  lastChange = now;
+}
+function paramChanged(k) {
+  if (k) snapGhost();
+  syncControls(); sendParams(); needSim = true;
+  if (k && exKey && (k === exKey || DYN.has(exKey) || k === 'element')) renderEx();
+}
+function applyParams(o) {
+  snapGhost();
+  const bpm = getSource(curKey).bpm || 120;
+  Object.entries(o).forEach(([k, v]) => {
+    if (v === 'eighth') v = Math.round(30000 / bpm);
+    if (v === 'auto') v = Math.max(0, Math.round(stats.avg * 2) / 2);
+    P[k] = v;
+  });
+  paramChanged(); renderEx();
+}
+
+/* ---------- explanations ---------- */
+const sub = (s) => `<sub>${s}</sub>`;
+const GN = { tl: '01 Timeline', tc: '02 Transfer', hit: '03 One hit', dyn: '04 Peak/RMS', flow: '05 Flow', gm: '06 GR meter' };
+const EX = {
+  input: { jp: 'Input gain', en: 'Input gain', what: 'The level going into the compressor.',
+    body: ['In a digital compressor this does almost the same job as lowering the threshold. On fixed-threshold units such as the 1176 or LA-2A, turning up the input is exactly how you “add more compression”.',
+           'Raising the input also raises the output, so pull it back with makeup gain before comparing. In analog emulations the input level also sets how much saturation you get, but the DSP on this page is clean and adds no distortion.'],
+    typ: ['Fixed-threshold designs (1176, LA-2A style): input sets the amount, output sets the level', 'Threshold designs (FabFilter Pro-C 3 etc.): threshold sets the amount'],
+    f: `x' = x · 10${'<sup>Input/20</sup>'}`,
+    tries: [['Push in +8 dB', { input: 8 }], ['Back to 0 dB', { input: 0 }]] },
+  threshold: { jp: 'Threshold', en: 'Threshold', what: 'The line where compression starts. Gain is reduced only by the amount the detected level goes over it.',
+    body: ['Threshold decides where compression starts; ratio decides how much. The lower it goes, the quieter the sounds that get compressed, and the deeper and more frequent the GR (gain reduction).',
+           'What shapes the sound is not the number itself but how many dB of GR you get and when it moves. Set it while watching the GR lane on the timeline and the peaks crossing the dotted threshold line.'],
+    typ: ['Vocals: where peaks give 3–6 dB of GR', 'Drum bus: 2–4 dB on kick and snare hits', 'Mix bus: 1–2 dB (the needle just moves)'],
+    f: `x${sub('dB')} &gt; T:\ny${sub('dB')} = T + (x${sub('dB')} − T) / R`,
+    tries: [['T = −10 dB (peaks only)', { threshold: -10 }], ['T = −30 dB (always compressing)', { threshold: -30 }]] },
+  ratio: { jp: 'Ratio', en: 'Ratio', what: 'How much the signal above the threshold is scaled down.',
+    body: ['At 4:1, an input 8 dB over the threshold comes out only 2 dB over (GR = 6 dB). The higher the ratio, the flatter the overshoot; at ∞:1 (20:1 and up in practice) it behaves as a limiter.',
+           'Low ratio + low threshold gently evens out everything; high ratio + high threshold only hits the peaks. The same amount of GR can have a completely different character, so check the bend of the transfer curve.'],
+    typ: ['Mix bus: 1.5–2:1', 'Vocals: 2–4:1', 'Drums, bass: 4–8:1', 'Limiting: 10:1–∞'],
+    f: `GR = (x${sub('dB')} − T) · (1 − 1/R)`,
+    tries: [['1.5 : 1', { ratio: 1.5 }], ['20 : 1', { ratio: 20 }]] },
+  knee: { jp: 'Knee', en: 'Knee', what: 'How smoothly compression fades in around the threshold.',
+    body: ['With a hard knee (0 dB) the full ratio kicks in the moment the threshold is crossed. With a soft knee, across a window W centred on T, the ratio moves gradually from 1:1 to the set value along a quadratic curve.',
+           'Because the onset is blurred, GR coming and going is less noticeable and sounds more transparent. Part of why optical units (LA-2A style) sound natural is that they effectively have a very wide soft knee. The shaded area on the transfer curve is the knee.'],
+    typ: ['Transparent control: 6–12 dB', 'Punch and presence: 0–3 dB'],
+    f: `Where |2(x − T)| ≤ W:\ny = x + (1/R − 1)(x − T + W/2)² / 2W`,
+    tries: [['Hard knee 0 dB', { knee: 0 }], ['Soft knee 18 dB', { knee: 18 }]] },
+  attack: { jp: 'Attack', en: 'Attack', what: 'How fast GR moves deeper toward its target.',
+    body: ['Attack on this page is the time constant τ (time to reach about 63% of the target). With a slow attack, transients slip through before compression catches them, so the onset is emphasised and you get “punch”. A fast attack squashes the onset, pushing the sound back and making it denser.',
+           'Below a few ms, the gain wobbles within a single low-frequency cycle (20 ms at 50 Hz), reshaping the waveform itself and causing distortion. Manufacturers also define time differently (63%, 90%, reaching a fixed dB…), so “10 ms” on one unit rarely matches another. The single-snare source makes the difference obvious.'],
+    typ: ['1176 style: 20–800 µs (very fast)', 'Vocals: 3–15 ms', 'Keep drum punch: 20–40 ms', 'Mix bus: 10–30 ms'],
+    f: `g${sub('s')}[n] = α${sub('A')}·g${sub('s')}[n−1] + (1 − α${sub('A')})·g${sub('c')}[n]\nα${sub('A')} = e<sup>−1 / (τ<sub>A</sub>·f<sub>s</sub>)</sup>`,
+    tries: [['Switch to single snare', null, 'snare'], ['0.1 ms (squash)', { attack: 0.1 }], ['30 ms (let through)', { attack: 30 }]] },
+  release: { jp: 'Release', en: 'Release', what: 'How fast GR returns to zero after the input drops below the threshold.',
+    body: ['A fast release lets GR recover quickly, raising the average level and bringing the sound forward. Too fast, and it follows the low-frequency waveform and distorts, and the GR movement is heard as “pumping” (listen to the pad in the loop).',
+           'With a slow release, GR never fully recovers before the next note, so the sound stays held down and flat. Set it so GR has just recovered right before the next beat, and the compression breathes with the song.'],
+    typ: ['Vocals: 80–300 ms', 'Drum bus: 50–150 ms', 'Mix bus: 100–600 ms'],
+    f: `g${sub('c')} &lt; g${sub('s')}(GR getting shallower): use α${sub('R')} \n→ separate coefficients for attack and release (branching smoother)`,
+    tries: [['30 ms (pumping)', { release: 30 }], ['Match an eighth note', { release: 'eighth' }], ['1200 ms (held down)', { release: 1200 }]] },
+  detector: { jp: 'Detector', en: 'Detector', what: 'What the sidechain measures as “level”.',
+    body: ['Peak looks at the instantaneous amplitude, so it reacts to transients immediately. RMS averages the squared amplitude over time — an energy measure that moves more like perceived loudness.',
+           'At the same threshold, RMS buries short peaks in the average, so transients pass more easily and GR is shallower and smoother.'],
+    typ: ['Peak control, transient control: Peak', 'Natural control of vocals and buses: RMS (5–50 ms)'],
+    f: `Peak: x = max(|L|, |R|)   ← stereo link\nRMS : m[n] = α·m[n−1] + (1−α)·x²,  x = √m`,
+    tries: [['Peak', { detector: 'peak' }], ['RMS 50 ms', { detector: 'rms', rms: 50 }]] },
+  rms: { jp: 'RMS window', en: 'RMS window', what: 'The averaging time for RMS detection.',
+    body: ['Shorter gets closer to Peak; longer reacts only to the slow average level.',
+           'A longer window sounds a bit like a slower attack, but it works in a different place. The RMS window is about what the compressor sees (detection); attack is about how fast it follows what it sees (ballistics). Inactive when Peak is selected.'],
+    typ: ['5–10 ms: fast, close to Peak', '30–80 ms: closer to loudness'],
+    f: `α = e<sup>−1 / (window·f<sub>s</sub>)</sup>`,
+    tries: [['RMS 5 ms', { detector: 'rms', rms: 5 }], ['RMS 80 ms', { detector: 'rms', rms: 80 }]] },
+  topology: { jp: 'Topology', en: 'Topology', what: 'Whether the sidechain signal is taken before or after the gain element.',
+    body: ['Feed-forward (FF) detects the input, so the ratio is exactly what the static curve says. Most modern VCA and digital compressors work this way.',
+           'Feedback (FB) detects the compressed output. The deeper the GR, the lower the detected level, so it regulates itself: the effective ratio is gentler and the action smoother. Many vintage units such as the LA-2A and Fairchild 660 are built this way. Play in FB and you will see the dot ride above the static line.'],
+    typ: ['Accurate peak control: FF', 'Vintage-style grip and naturalness: FB'],
+    f: `FF: detect ← x[n] (input)\nFB: detect ← y[n−1] (output one sample ago)`,
+    tries: [['Feed-forward', { topology: 'ff' }], ['Feedback', { topology: 'fb' }]] },
+  lookahead: { jp: 'Lookahead', en: 'Lookahead', what: 'Delays only the audio so the sidechain can “see a little into the future”.',
+    body: ['However fast the attack, gain only moves after it sees the input, so the first few samples of a transient slip through. Lookahead delays the main audio by a few ms and starts GR before the transient arrives.',
+           'This is how mastering limiters stop peaks without overshoot. The cost is latency, which the DAW lines up with other tracks using plugin delay compensation (PDC).'],
+    typ: ['Limiters: 1–5 ms', 'Regular compression: 0 ms (usually off)'],
+    f: `y[n] = x[n − D] · g[n]\nD = lookahead · f${sub('s')}   ← reported to the host as latency`,
+    tries: [['0 ms', { lookahead: 0 }], ['5 ms + attack 2 ms', { lookahead: 5, attack: 2 }]] },
+  makeup: { jp: 'Makeup', en: 'Makeup gain', what: 'Brings the level lost to compression back up at the output.',
+    body: ['A compressor turns peaks down, so on its own everything gets quieter. Bringing the peaks back to where they were with makeup raises the average level, and the sound feels denser.',
+           'Always match levels when comparing. Our ears tend to prefer the louder version even by 1 dB, so you end up judging loudness instead of compression. The basic move is to toggle bypass and find where both feel equally loud.'],
+    typ: ['Start around the average GR', 'Where bypass on/off feel equally loud'],
+    f: `g = 10<sup>(−g<sub>s</sub> + M) / 20</sup>`,
+    tries: [['0 dB', { makeup: 0 }], ['Match the average GR', { makeup: 'auto' }]] },
+  mix: { jp: 'Mix', en: 'Dry / Wet', what: 'The blend between the compressed (wet) and original (dry) signal.',
+    body: ['This is parallel (New York) compression. The wet signal is squashed hard for density and sustain while the dry keeps its transients. Blend them and the quiet details come up without losing the attack.',
+           'Mixing inside the plugin, unlike a parallel send in the DAW, avoids phase problems from lookahead or other delays (the dry path is delayed by the same amount).'],
+    typ: ['NY compression: 20–50% wet + heavy compression', 'Normal: 100%'],
+    f: `y = mix · (x · g · M) + (1 − mix) · x`,
+    tries: [['NY parallel settings', { threshold: -36, ratio: 10, knee: 0, attack: 1, release: 60, mix: 35, makeup: 10 }], ['Back to 100%', { mix: 100 }]] },
+};
+const ELX = {
+  vca: { jp: 'VCA (voltage-controlled amplifier)', en: 'Gain element · VCA', what: 'A transistor circuit that turns the gain down by an exact number of dB for a given control voltage.',
+    body: ['The circuit uses the exponential relationship between a transistor’s current and voltage, so moving the control voltage by a fixed amount changes the gain by a fixed number of dB. Whatever the sidechain calculates becomes the gain change almost exactly, which makes it the “accurate” compressor that does what the settings say.',
+           'Digital multiplication works the same way, so VCA mode behaves as an ideal VCA: no added distortion, and attack and release follow the settings exactly. Use it as the reference when comparing the other elements.'],
+    typ: ['SSL-style bus compressors, dbx 160, API 2500', 'When you want precise peak control and full say over the timing'],
+    f: `y = x · 10<sup>−GR/20</sup>
+no distortion / attack and release follow the settings`,
+    tries: [['Squash peaks with a fast attack', { element: 'vca', threshold: -22, ratio: 8, knee: 0, attack: 0.2, release: 60, makeup: 7 }], ['Same settings, switch to FET', { element: 'fet' }]] },
+  fet: { jp: 'FET', en: 'Gain element · FET', what: 'A field-effect transistor used as a voltage-controlled resistor, bleeding signal to ground in a voltage divider.',
+    body: ['The voltage on a FET’s gate changes the resistance between drain and source. Placed on the ground side of a voltage divider, a lower resistance sends more signal to ground and the level drops. Because it is driven electrically and directly, it reacts extremely fast, with attack times of tens of microseconds.',
+           'The FET’s resistance also depends slightly on the audio voltage across it, so the waveform is bent a little and harmonics grow as gain reduction gets deeper. In this mode, even- and odd-order distortion increases with the amount of GR. Push 10 dB or more of GR and switch against VCA to hear it.'],
+    typ: ['1176 style: attack 20–800 µs, release 50 ms–1.1 s', 'When you want vocals, bass or drums to jump forward'],
+    f: `u = w + a₂·w²        even order (FET asymmetry)
+y = tanh(d·u) / d    odd order (d and a₂ rise with GR)`,
+    tries: [['1176-style preset', PR('1176')], ['Deeper GR (T −34 dB)', { threshold: -34 }], ['Back to VCA to compare', { element: 'vca' }]] },
+  opto: { jp: 'Optical (opto)', en: 'Gain element · Opto', what: 'A light source paired with a cell whose resistance drops when light hits it (a CdS cell); the brightness of the light sets the gain.',
+    body: ['The sidechain lights up an electroluminescent panel. The CdS cell (photoresistor) facing it drops in resistance, and the voltage divider bleeds signal to ground. Because the control goes electricity → light → resistance, the timing is set by the cell’s chemistry. That is why there are no attack or release knobs; they are disabled in this mode too.',
+           'A CdS cell recovers in two stages: roughly the first 50% comes back in about 60 ms, and the rest takes 0.5–5 seconds. On top of that it has a “memory”: the longer and harder it has been lit, the longer the slow stage gets. The dotted line in the GR lane of the timeline shows that memory. On single snare hits the memory barely builds and GR recovers quickly; push the dense loop hard and the memory builds until the GR seems to stick.'],
+    typ: ['LA-2A style: attack ≈10 ms, release ≈60 ms (50%) → 0.5–5 s (full)', 'Vocals: 3–6 dB of GR. Beyond 10 dB the memory stretches the release to seconds'],
+    f: `fast half g<sub>F</sub>: attack 10 ms / release 60 ms
+slow half g<sub>S</sub>: attack 30 ms / release 0.5 s + 4.5 s × memory
+GR = 0.5·g<sub>F</sub> + 0.5·g<sub>S</sub>
+memory → min(1, GR/12)   charge τ 1.5 s / discharge τ 4 s`,
+    tries: [['LA-2A-style preset', PR('la2a')], ['Watch the two-stage release on snare', null, 'snare'], ['Push the loop hard to build memory', { threshold: -36 }, 'loop']] },
+  varimu: { jp: 'Variable-mu (tube)', en: 'Gain element · Variable-mu', what: 'A remote-cutoff tube whose bias is shifted so that the tube’s own gain goes down.',
+    body: ['The sidechain voltage pushes the tube’s bias (grid voltage) deeper, which lowers the tube’s gain (mu). Because the gain falls along a gentle curve, compression is very light at low levels and gets stronger as the level rises. The ratio is not fixed; it rises with level.',
+           'In this mode compression starts 6 dB below the threshold, and the static curve approaches the set ratio as the overshoot grows. The knee is built into the element, so the knee control is disabled. Switch against VCA in the transfer curve and you will see one wide arc with no corner. Tube-style even-order harmonics are added as well.'],
+    typ: ['Fairchild 660/670 style, Manley Vari-Mu', 'Mix bus and mastering: 1–3 dB of GR to pull everything together'],
+    f: `over = x − T + 6
+GR = (1 − 1/R) · over² / (over + 12)
+quadratic for small overshoot, approaches ratio R for large overshoot`,
+    tries: [['Fairchild-style preset', PR('fairchild')], ['Compare the transfer curve with VCA', { element: 'vca' }], ['Back to vari-mu', { element: 'varimu' }]] },
+};
+
+/* additions for the study note: what you hear, and which graph to watch */
+const EXT = {
+  input: { snd: 'The more you push in, the deeper the compression and the denser, more up-front the sound. The output rises too, so watch the level difference when comparing.',
+    see: [['tl', 'The grey input area rises and more of it crosses the dashed T line'], ['dyn', 'Input peak and RMS rise together; the output gap (dynamics) shrinks']] },
+  threshold: { snd: 'Lower it and quieter sounds get held down too, so level differences even out and the sound feels tighter. Too low and the life and depth go out of it.',
+    see: [['tl', 'The dashed T line drops and the red GR peaks get more frequent and deeper'], ['tc', 'The knee point moves left and the flattened part gets longer'], ['dyn', 'The output gap between peak and RMS shrinks']] },
+  ratio: { snd: 'Low ratios even things out naturally; high ratios flatten the peaks into a “held-down” sound. From 20:1 up it behaves as a limiter.',
+    see: [['tc', 'Right of the knee the slope lies down to 1/R (4:1: 4 dB in, 1 dB out)'], ['tl', 'GR peaks get deeper and the top of the blue output line evens out'], ['hit', 'The top of the waveform is shaved flat']] },
+  knee: { snd: 'A soft knee hides the moment compression starts and sounds transparent. A hard knee makes the onset audible and the sound more defined.',
+    see: [['tc', 'The corner rounds off across the shaded band (width = knee)'], ['tl', 'GR starts shallow a little below T']] },
+  attack: { snd: 'Slow attack lets the onset through for “punch”. Fast attack rounds off the onset, pushing the sound back and making it denser. Below a few ms the low end starts to distort.',
+    see: [['hit', 'From 0 ms to τA, does the blue output pass at nearly the height of the grey input, or is it cut from the start?'], ['tl', 'How steeply each GR peak rises']] },
+  release: { snd: 'Fast release recovers quickly, raising the average level and bringing the sound forward, but pumping comes easily. Slow release holds everything down and sounds flat.',
+    see: [['hit', 'How the red GR slopes back to zero on the right'], ['tl', 'Whether GR gets back near zero before the next hit'], ['gm', 'When stopped: max and average close together means it never recovers']] },
+  detector: { snd: 'Peak reacts sharply to onsets and controls transients. RMS follows perceived loudness smoothly and lets onsets through more easily.',
+    see: [['hit', 'Use “Peak / RMS” to overlay how GR rises in each'], ['tl', 'With RMS the GR peaks get rounder and shallower']] },
+  rms: { snd: 'Shorter reacts sharply, close to Peak; longer reacts only to slow loudness changes and compresses more gently.',
+    see: [['hit', 'GR rises later and rounder'], ['tl', 'Small GR wiggles disappear and the curve smooths out']] },
+  topology: { snd: 'FF does exactly what the settings say and suits peak control. FB regulates itself, gripping smoothly with a vintage-style naturalness.',
+    see: [['flow', 'Whether the red sidechain is taken from the input or the output'], ['tc', 'While playing in FB, the red dots ride above the line: the effective ratio is gentler'], ['hit', 'Use “FF / FB” to compare how deep GR goes']] },
+  lookahead: { snd: 'Peaks are stopped cleanly, right from the first sample, but some attack is lost and everything is delayed (latency).',
+    see: [['hit', 'The blue output appears later than the input, and GR has already started when it does'], ['gm', 'The latency reading goes up']] },
+  makeup: { snd: 'Bringing the level back raises the average and the sound feels denser. Too much and “louder sounds better” fools your judgement.',
+    see: [['dyn', 'The output bar and line move up and down; match the input RMS for a fair comparison'], ['tc', 'The whole curve shifts up or down']] },
+  mix: { snd: 'Dry onsets plus wet density: the tails and quiet details come up without losing the attack (parallel compression).',
+    see: [['hit', 'Even with heavy compression, the original transient returns at the top of the output'], ['dyn', 'The peak barely moves while the RMS rises']] },
+  vca: { snd: 'Clean and exactly as set: no colour, timing follows the knobs. The reference for comparing the other elements.',
+    see: [['hit', 'Use “All 4 elements” to overlay GR and waveform with the same settings'], ['tc', 'A corner exactly as the knee setting says']] },
+  fet: { snd: 'Very fast and aggressive. The deeper the GR, the more harmonics (distortion), so the sound jumps forward.',
+    see: [['hit', 'With deep GR the top of the output waveform rounds off into saturation'], ['dyn', 'At the same GR, peaks drop more than with VCA and the gap shrinks']] },
+  opto: { snd: 'Slow and smooth, recovering in two stages, so it sounds natural. Keep pushing it and the cell “remembers”, so GR sticks.',
+    see: [['hit', 'GR recovery slows down halfway: a two-stage curve'], ['tl', 'The higher the black dotted memory line, the slower GR recovers']] },
+  varimu: { snd: 'Very light on quiet sounds and stronger on loud ones, pulling things together. Tube even harmonics add weight and warmth.',
+    see: [['tc', 'One wide arc with no corner: the ratio rises with level'], ['hit', 'Use “All 4 elements” to compare depth and shape against VCA']] },
+};
+Object.entries(EXT).forEach(([k, v]) => Object.assign(EX[k] || ELX[k], v));
+EX.detector.tries.push(['Overlay Peak / RMS', null, null, 'det']);
+EX.topology.tries.push(['Overlay FF / FB', null, null, 'topo']);
+ELX.vca.tries.push(['Overlay all four elements', null, null, 'el']);
+const GUIDE = {
+  tl: { jp: 'Level and GR over time', en: 'Timeline',
+    axes: 'Horizontal: time (3 s). Top: level (dBFS). Bottom: gain reduction (the further down, the deeper the compression).',
+    read: ['Grey fill: what goes into the compressor (input peak)', 'Blue line: what comes out (output peak, including makeup)', 'Dashed T: the threshold. Where the grey crosses it, the red below grows', 'Red fill: how many dB are being taken off at that moment', '(Opto only) black dotted line: the cell’s memory, 0–1'],
+    snd: ['Deep red peaks = heavy control. Sharp peaks that recover fast = tighter hits. Slow, big swings = pumping', 'Red never returning to zero = always held down, flat and pushed back', 'Big grey–blue gap at the top and small at the bottom = only loud parts are being evened out'],
+    tip: 'While playing, the right edge is “now”. When stopped, the first 3 s are rendered offline through the same DSP and recalculated instantly as you move a control.' },
+  tc: { jp: 'Transfer curve (static)', en: 'Transfer curve',
+    axes: 'Horizontal: input level. Vertical: output level (dB). The dotted diagonal is 1:1 (doing nothing).',
+    read: ['Blue line: what each input level comes out as with these settings', 'Vertical dashed T: where compression starts; the line lies down to the right of it', 'Slope on the right = 1/ratio. At 4:1, 4 dB more input gives only 1 dB more output', 'Shaded band: the knee (where the onset is rounded off)', 'Red dots (while playing): the real operating point, pulled off the line by timing and FB', 'Thin dashed line: the settings before your last change'],
+    snd: ['Close to 1:1 = natural. Lying down early and hard = peaks flattened, a “squashed” sound', 'Sharp corner = you hear it kick in. Round corner = transparent', 'The whole line moving up or down is makeup (level only)'],
+    tip: 'The static curve answers for slowly changing sounds. Real audio adds timing, so read it together with graphs 01 and 03.' },
+  hit: { jp: 'One hit, zoomed in', en: 'Single hit',
+    axes: 'Horizontal: time, with the onset at 0 ms. Top: waveform (amplitude). Bottom: GR. The loudest hit in the first 3 s is picked automatically.',
+    read: ['Grey: input waveform', 'Blue: output waveform', '0 ms to τA: with a slow attack the output passes at nearly the input’s height (the transient survives)', 'Red below: how fast GR rises (attack) and returns to the right (release)', 'Dashed: output outline and GR before your last change', 'Compare: overlays the GR and output outline with only the design changed (thick line = current setting)'],
+    snd: ['Spiky top kept = strong punch and attack', 'Top cut down, little difference to the tail = round, dense, pushed back', 'The waveform itself rounding off (FET, vari-mu) = added harmonics'],
+    tip: 'Attack is easiest to see with the “Single snare hits” source.' },
+  dyn: { jp: 'Peak vs average', en: 'Peak / RMS',
+    axes: 'Left: input. Right: output. Bar height = RMS (average level, close to perceived loudness); line = peak (instantaneous maximum). Calculated over the first 3 s.',
+    read: ['The gap between peak and RMS (crest factor) = how much life and transient the sound has', 'Smaller gap on the output = the dynamics have been compressed', 'Output RMS above input RMS = it sounds louder (match before judging)', 'Dashed “before”: the output before your last change'],
+    snd: ['Big gap = lively, punchy, with space', 'Small gap = dense, flat, stuck to the front', 'A gap of about 8 dB or less is heavy compression (typical of loud finished masters)'],
+    tip: 'To judge compression without being fooled by loudness, match the output RMS to the input RMS, then toggle bypass.' },
+  flow: { jp: 'Signal flow', en: 'Signal flow',
+    axes: 'Top row: the path the audio takes. Bottom row (red): the sidechain, which carries no audio and only works out how much to turn down.',
+    read: ['Detector: what is measured as level (Peak / RMS)', 'Gain computer: T, R and knee set the target GR', 'Ballistics: attack and release smooth the movement', '× (gain element): the part that actually turns the level down — VCA, FET, opto, tube', 'FF detects the input, FB detects the output (the red line moves)'],
+    snd: ['Same T and R, but a different detector, ballistics or element changes how it grips and how it colours'],
+    tip: 'Click a block to open the explanation for that part.' },
+  gm: { jp: 'GR meter', en: 'GR meter',
+    axes: 'Grows from right to left = amount of GR (dB).',
+    read: ['While playing: red = current GR, black tick = recent peak hold', 'When stopped: red = max GR over 3 s, black tick = average GR', 'Numbers: max / average GR, input and output peak (dBFS), latency'],
+    snd: ['Bar moving with the music = it breathes', 'Parked deep and not moving = held down'],
+    tip: '' },
+};
+const DYN = new Set(['threshold', 'ratio', 'knee', 'release', 'makeup']);
+let exKey = 'element', guideKey = 'tl', tab = 'ex', guideOpen = null;
+
+function setWatch(list) {
+  const ks = new Set((list || []).map((s) => s[0]));
+  $$('.card').forEach((c) => c.classList.toggle('watch', ks.has(c.dataset.g)));
+}
+function selectEx(k) { if (exKey === k) { if (isPC() && tab !== 'ex') setTab('ex'); return; } exKey = k; renderEx(); if (isPC()) setTab('ex'); }
+function renderEx() {
+  const e = exKey === 'element' ? ELX[P.element] : EX[exKey]; if (!e) return;
+  const offNote = P.element === 'opto' && (exKey === 'attack' || exKey === 'release') ? 'Disabled in opto mode. The optical cell itself sets the timing (see the gain element notes).'
+    : P.element === 'varimu' && exKey === 'knee' ? 'Disabled in vari-mu mode. The tube itself has a very wide knee.' : '';
+  let extra = '';
+  if (exKey === 'threshold' || exKey === 'ratio' || exKey === 'knee') {
+    const x = -6, y = CompCore.curve(x, P.threshold, P.ratio, P.knee, P.element), x2 = P.threshold - 6, y2 = CompCore.curve(x2, P.threshold, P.ratio, P.knee, P.element);
+    extra = `<div class="calc">With these settings: input −6.0 dB → output ${neg(y)} dB (GR ${(x - y).toFixed(1)} dB) / input ${neg(x2)} dB → GR ${(x2 - y2).toFixed(1)} dB</div>`;
+  }
+  let typ = e.typ.slice();
+  if (exKey === 'release') {
+    const s = getSource(curKey), bpm = s.bpm || 120, q = 60000 / bpm;
+    typ.unshift(`Current source (${bpm} BPM${s.bpm ? '' : ', assumed'}): quarter note = ${Math.round(q)} ms, eighth note = ${Math.round(q / 2)} ms`);
+  }
+  const ex = $('#ex');
+  ex.innerHTML = `<p class="eyebrow">${e.en}</p><h3>${e.jp}</h3><p class="what">${e.what}</p>${offNote ? `<p class="off">${offNote}</p>` : ''}
+    <h4>What you hear<span class="eyebrow">Sound</span></h4><div class="snd">${e.snd}</div>
+    <h4>Where to look<span class="eyebrow">Watch</span></h4><ul class="see">${e.see.map(([g, t]) => `<li><button type="button" data-g="${g}">${GN[g]}</button><span>${t}</span></li>`).join('')}</ul>
+    ${e.tries.length ? `<h4>Listen &amp; compare<span class="eyebrow">Try</span></h4><div class="tries">${e.tries.map((t, i) => `<button class="btn" type="button" data-i="${i}">${t[0]}</button>`).join('')}</div>` : ''}
+    <h4>How it works<span class="eyebrow">Inside</span></h4>${e.body.map((t) => `<p>${t}</p>`).join('')}
+    <h4>Typical settings<span class="eyebrow">Typical</span></h4><ul>${typ.map((t) => `<li>${t}</li>`).join('')}</ul>
+    <details class="dsp"><summary>In the DSP (formula)</summary><div class="formula">${e.f}</div>${extra}</details>`;
+  if (extra && (exKey === 'threshold' || exKey === 'ratio' || exKey === 'knee')) ex.querySelector('details').open = true;
+  ex.querySelectorAll('.tries .btn').forEach((b) => b.addEventListener('click', () => {
+    const t = e.tries[+b.dataset.i];
+    if (t[2]) { $('#src').value = t[2]; switchSource(t[2]); }
+    if (t[1]) applyParams(t[1]);
+    if (t[3]) { $('#cmp').value = t[3]; needCmp = true; focusCard('hit'); }
+  }));
+  ex.querySelectorAll('.see button').forEach((b) => b.addEventListener('click', () => focusCard(b.dataset.g)));
+  $$('.ctl').forEach((r) => r.classList.toggle('on', r.dataset.k === exKey));
+  $$('.flow .blk').forEach((b) => b.classList.toggle('on', b.dataset.k === exKey || (exKey === 'release' && b.dataset.k === 'attack') || ((exKey === 'ratio' || exKey === 'knee') && b.dataset.k === 'threshold') || ((exKey === 'rms' || exKey === 'topology') && b.dataset.k === 'detector')));
+  setWatch(e.see);
+  placeEx();
+}
+function focusCard(g) {
+  const c = document.querySelector(`.card[data-g="${g}"]`); if (!c) return;
+  if (!isPC()) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  c.animate([{ background: 'var(--hl)' }, { background: 'var(--page)' }], { duration: 900 });
+}
+function renderGuide() {
+  const d = GUIDE[guideKey];
+  $('#guide').innerHTML = `<p class="eyebrow">How to read · ${d.en}</p><h3>${d.jp}</h3><p class="what">${d.axes}</p>
+    <h4>Lines and colours<span class="eyebrow">Legend</span></h4><ul>${d.read.map((t) => `<li>${t}</li>`).join('')}</ul>
+    <h4>What the shape sounds like<span class="eyebrow">Shape → Sound</span></h4><ul>${d.snd.map((t) => `<li>${t}</li>`).join('')}</ul>
+    ${d.tip ? `<p class="fine" style="margin-top:10px">${d.tip}</p>` : ''}
+    ${isPC() ? `<h4>Other graphs</h4><div class="tries">${Object.keys(GUIDE).filter((k) => k !== guideKey).map((k) => `<button class="btn" type="button" data-g="${k}">${GN[k]}</button>`).join('')}</div>` : ''}`;
+  $('#guide').querySelectorAll('.tries .btn').forEach((b) => b.addEventListener('click', () => { guideKey = b.dataset.g; renderGuide(); focusCard(guideKey); }));
+}
+function renderMethods() {
+  const rows = [
+    ['vca', 'VCA', 'A transistor circuit turns the gain down by a set number of dB per volt', 'As set', 'None (clean)', 'Corner as set by the knee', 'Peak control, buses, precise control'],
+    ['fet', 'FET', 'A FET used as a variable resistor bleeds signal to ground', 'Very fast (µs range)', 'More harmonics as GR deepens', 'As set by the knee', 'Bringing vocals, bass and drums forward'],
+    ['opto', 'Opto', 'Light and a CdS cell change the resistance', 'Fixed: ≈10 ms in, two-stage release + memory', 'None in this model', 'As set by the knee', 'Smoothing vocals and bass naturally'],
+    ['varimu', 'Vari-mu', 'Tube bias lowers the tube’s own gain', 'As set (moves gently)', 'Even harmonics (always a little)', 'One wide arc with no corner', 'Glue on the mix bus and master'],
+  ];
+  $('#methods').innerHTML = `<p class="eyebrow">Compare the designs</p><h3>How the main designs differ</h3>
+    <p class="what">With the same threshold, ratio, attack and release, “what does the turning down” and “what it listens to” still change how it grips and how it sounds. “Compare” on each row overlays them on graph 03.</p>
+    <h4>Gain element: what does the turning down</h4>
+    <div class="mt">${rows.map((r) => `<div class="r"><b>${r[1]}</b><dl><dt>How</dt><dd>${r[2]}</dd><dt>Timing</dt><dd>${r[3]}</dd><dt>Colour</dt><dd>${r[4]}</dd><dt>Curve</dt><dd>${r[5]}</dd><dt>Good for</dt><dd>${r[6]}</dd></dl><button class="btn" type="button" data-set="element:${r[0]}" data-cmp="el">Use this and compare</button></div>`).join('')}</div>
+    <h4>Topology: where it listens</h4>
+    <div class="mt">
+      <div class="r"><b>FF</b><dl><dt>Detects</dt><dd>The input (before the element)</dd><dt>Character</dt><dd>Exactly follows the static curve; easy to manage by numbers</dd><dt>Examples</dt><dd>Most modern VCA and digital compressors</dd></dl><button class="btn" type="button" data-set="topology:ff" data-cmp="topo">FF and compare</button></div>
+      <div class="r"><b>FB</b><dl><dt>Detects</dt><dd>The output (after the element)</dd><dt>Character</dt><dd>Self-regulating, gentler effective ratio; smooth grip</dd><dt>Examples</dt><dd>LA-2A, Fairchild 660 and many vintage units</dd></dl><button class="btn" type="button" data-set="topology:fb" data-cmp="topo">FB and compare</button></div>
+    </div>
+    <h4>Detector: what counts as level</h4>
+    <div class="mt">
+      <div class="r"><b>Peak</b><dl><dt>Measures</dt><dd>Instantaneous amplitude</dd><dt>Character</dt><dd>Reacts to transients at once; for peak control</dd></dl><button class="btn" type="button" data-set="detector:peak" data-cmp="det">Peak and compare</button></div>
+      <div class="r"><b>RMS</b><dl><dt>Measures</dt><dd>Average energy over a window</dd><dt>Character</dt><dd>Close to perceived loudness, smooth; lets onsets through</dd></dl><button class="btn" type="button" data-set="detector:rms" data-cmp="det">RMS and compare</button></div>
+    </div>
+    <p class="fine">Each mode is a simplified teaching model of the element’s behaviour. Models of specific classic units are covered on a separate page.</p>`;
+  $('#methods').querySelectorAll('[data-set]').forEach((b) => b.addEventListener('click', () => {
+    const [k, v] = b.dataset.set.split(':'); applyParams({ [k]: v }); exKey = k === 'element' ? 'element' : k; renderEx();
+    $('#cmp').value = b.dataset.cmp; needCmp = true; focusCard('hit');
+  }));
+}
+function setTab(t) {
+  tab = t;
+  $$('.tabs button').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === t));
+  ['ex', 'guide', 'methods', 'about'].forEach((k) => { $('#' + k).hidden = isPC() ? k !== t : false; });
+  $$('.how').forEach((b) => b.setAttribute('aria-expanded', isPC() ? (t === 'guide' && b.dataset.g === guideKey) : (guideOpen === b.dataset.g)));
+  $('#nbody').scrollTop = 0;
+}
+
+/* ---------- PC／スマホでの配置 ---------- */
+const nbody = $('#nbody');
+function placeEx() {
+  const ex = $('#ex');
+  if (isPC()) { if (ex.parentNode !== nbody) { nbody.insertBefore(ex, nbody.firstChild); } ex.setAttribute('data-home', ''); ex.classList.remove('inline-pane'); return; }
+  const row = document.querySelector(`.ctl[data-k="${exKey}"]`);
+  ex.removeAttribute('data-home'); ex.classList.add('inline-pane'); ex.hidden = false;
+  if (row && row.nextSibling !== ex) row.parentNode.insertBefore(ex, row.nextSibling);
+}
+function placeGuide() {
+  const gd = $('#guide');
+  if (isPC()) { if (gd.parentNode !== nbody) nbody.insertBefore(gd, $('#methods')); gd.setAttribute('data-home', ''); gd.classList.remove('inline-pane'); return; }
+  if (!guideOpen) { gd.setAttribute('data-home', ''); if (gd.parentNode !== nbody) nbody.insertBefore(gd, $('#methods')); return; }
+  const card = document.querySelector(`.card[data-g="${guideOpen}"]`);
+  gd.removeAttribute('data-home'); gd.classList.add('inline-pane'); gd.hidden = false;
+  card.parentNode.insertBefore(gd, card.nextSibling);
+}
+function layout() {
+  placeEx(); placeGuide(); setTab(isPC() ? tab : 'ex');
+  renderGuide();
+}
+$$('.how').forEach((b) => b.addEventListener('click', () => {
+  const g = b.dataset.g; guideKey = g;
+  if (isPC()) { renderGuide(); setTab('guide'); }
+  else { guideOpen = guideOpen === g ? null : g; renderGuide(); placeGuide(); setTab('ex'); }
+}));
+$$('.tabs button').forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
+mq.addEventListener ? mq.addEventListener('change', layout) : mq.addListener(layout);
+
+/* ---------- source switching ---------- */
+function switchSource(k) {
+  curKey = k; needSim = true; ghost = null;
+  if (playing) { stopSource(); startSource(); liveRing = makeRing(ctx.sampleRate); trail = []; }
+  if (exKey === 'release') renderEx();
+}
+
+/* ---------- drawing ---------- */
+const cv = { tl: $('#tl'), tc: $('#tc'), hit: $('#hit'), dyn: $('#dyn'), gm: $('#gm'), mini: $('#mini') };
+function tok() {
+  const cs = getComputedStyle(document.documentElement), g = (n) => cs.getPropertyValue(n).trim();
+  return { ink: g('--ink'), muted: g('--muted'), grid: g('--rule'), line: g('--line'), blue: g('--blue'), red: g('--red'), sig: g('--pencil'), page: g('--page'), mono: g('--mono') };
+}
+function fit(c) {
+  const p = c.parentElement, dpr = window.devicePixelRatio || 1, w = Math.max(10, p.clientWidth), h = Math.max(10, p.clientHeight);
+  if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+  const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  return { w, h, g };
+}
+const visible = (c) => c.offsetParent !== null && c.parentElement.clientHeight > 0;
+const ringNow = () => (playing && liveRing ? liveRing : sim && sim.ring);
+const stats = { max: 0, avg: 0, inPk: 0, outPk: 0 };
+function computeStats(r) {
+  let mx = 0, sum = 0, ip = 0, op = 0;
+  for (let i = 0; i < r.n; i++) { const g = r.gr[i]; if (g > mx) mx = g; sum += g; if (r.inp[i] > ip) ip = r.inp[i]; if (r.out[i] > op) op = r.out[i]; }
+  stats.max = mx; stats.avg = sum / r.n; stats.inPk = ip; stats.outPk = op;
+}
+function hline(g, x0, x1, y) { g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); }
+
+function drawTimeline(t, r) {
+  const { w, h, g } = fit(cv.tl);
+  const padL = 34, padR = 20, top1 = 6, avail = h - top1 - 8, h1 = Math.round(avail * 0.64), top2 = top1 + h1 + 18, h2 = h - top2 - 4;
+  const lo = -48, hi = 6, Y = (d) => top1 + (1 - (Math.max(lo, Math.min(hi, d)) - lo) / (hi - lo)) * h1;
+  const GRM = 24, Yg = (v) => top2 + Math.min(v, GRM) / GRM * h2;
+  g.font = `10px ${t.mono}`; g.lineWidth = 1; g.textAlign = 'right'; g.textBaseline = 'middle';
+  for (let d = 0; d >= -48; d -= 12) { const y = Math.round(Y(d)) + 0.5; g.strokeStyle = t.grid; hline(g, padL, w - padR, y); g.fillStyle = t.muted; g.fillText(d === 0 ? '0' : neg(d, 0), padL - 5, y); }
+  for (let d = 0; d <= 24; d += 6) { const y = Math.round(Yg(d)) + 0.5; g.strokeStyle = t.grid; hline(g, padL, w - padR, y); if (d % 12 === 0 || h2 > 70) { g.fillStyle = t.muted; g.fillText(d === 0 ? '0' : neg(-d, 0), padL - 5, y); } }
+  g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fillStyle = t.muted;
+  g.fillText('LEVEL dBFS', padL + 4, top1 + 10); g.fillText('GR dB', padL + 4, top2 - 5);
+  if (!r) return;
+  const n = r.n, X = (j) => padL + j / (n - 1) * (w - padL - padR), idx = (j) => (r.w + j) % n;
+  g.beginPath(); g.moveTo(X(0), Y(lo));
+  for (let j = 0; j < n; j++) g.lineTo(X(j), Y(toDb(r.inp[idx(j)])));
+  g.lineTo(X(n - 1), Y(lo)); g.closePath(); g.globalAlpha = 0.6; g.fillStyle = t.sig; g.fill(); g.globalAlpha = 1;
+  g.beginPath();
+  for (let j = 0; j < n; j++) { const y = Y(toDb(r.out[idx(j)])); j ? g.lineTo(X(j), y) : g.moveTo(X(j), y); }
+  g.strokeStyle = t.blue; g.lineWidth = 1.4; g.stroke();
+  const ty = Math.round(Y(P.threshold)) + 0.5;
+  g.setLineDash([5, 4]); g.strokeStyle = t.ink; g.lineWidth = 1; hline(g, padL, w - padR, ty); g.setLineDash([]);
+  g.fillStyle = t.ink; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText('T', w - padR + 5, ty);
+  g.beginPath(); g.moveTo(X(0), top2);
+  for (let j = 0; j < n; j++) g.lineTo(X(j), Yg(r.gr[idx(j)]));
+  g.lineTo(X(n - 1), top2); g.closePath(); g.globalAlpha = 0.85; g.fillStyle = t.red; g.fill(); g.globalAlpha = 1;
+  if (P.element === 'opto') {
+    g.beginPath();
+    for (let j = 0; j < n; j++) { const y = top2 + r.mem[idx(j)] * h2; j ? g.lineTo(X(j), y) : g.moveTo(X(j), y); }
+    g.setLineDash([2, 3]); g.strokeStyle = t.ink; g.lineWidth = 1.4; g.stroke(); g.setLineDash([]); g.lineWidth = 1;
+  }
+  g.textAlign = 'right'; g.textBaseline = 'alphabetic'; g.fillStyle = t.muted;
+  g.fillText(playing ? '← 3 s ago   now →' : '0 s → 3 s (first 3 s, rendered)', w - padR, top2 - 5);
+}
+function drawTransfer(t) {
+  const { w, h, g } = fit(cv.tc);
+  const lo = -60, hi = 6, padL = 30, padB = 22, padT = 6, padR = 8;
+  const s = Math.max(40, Math.min(w - padL - padR, h - padT - padB)), ox = padL + Math.max(0, (w - padL - padR - s) / 2), oy = padT;
+  const X = (d) => ox + (d - lo) / (hi - lo) * s, Y = (d) => oy + (1 - (d - lo) / (hi - lo)) * s, bot = oy + s;
+  const T = P.threshold, R = P.ratio, W = P.element === 'varimu' ? 0 : P.knee;
+  g.font = `10px ${t.mono}`; g.lineWidth = 1;
+  if (W > 0) { g.fillStyle = t.red; g.globalAlpha = 0.09; g.fillRect(X(T - W / 2), oy, X(T + W / 2) - X(T - W / 2), s); g.globalAlpha = 1; }
+  for (let d = -60; d <= 0; d += 12) {
+    const x = Math.round(X(d)) + 0.5, y = Math.round(Y(d)) + 0.5; g.strokeStyle = t.grid;
+    g.beginPath(); g.moveTo(x, oy); g.lineTo(x, bot); g.stroke(); hline(g, ox, ox + s, y);
+    g.fillStyle = t.muted; g.textAlign = 'center'; g.textBaseline = 'top'; g.fillText(d === 0 ? '0' : neg(d, 0), x, bot + 4);
+    g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText(d === 0 ? '0' : neg(d, 0), ox - 4, y);
+  }
+  g.strokeStyle = t.line; g.strokeRect(ox + 0.5, oy + 0.5, s - 1, s - 1);
+  g.setLineDash([3, 4]); g.strokeStyle = t.muted; g.beginPath(); g.moveTo(X(lo), Y(lo)); g.lineTo(X(hi), Y(hi)); g.stroke();
+  g.strokeStyle = t.ink; g.beginPath(); g.moveTo(X(T), oy); g.lineTo(X(T), bot); g.stroke(); g.setLineDash([]);
+  g.fillStyle = t.ink; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText('T', X(T) + 4, oy + 3);
+  g.save(); g.beginPath(); g.rect(ox, oy, s, s); g.clip();
+  const curvePath = (q) => { g.beginPath(); const Wq = q.element === 'varimu' ? 0 : q.knee; for (let d = lo; d <= hi; d += 0.25) { const y = Y(CompCore.curve(d, q.threshold, q.ratio, Wq, q.element) + q.makeup); d === lo ? g.moveTo(X(d), y) : g.lineTo(X(d), y); } };
+  if (ghost && $('#ghost').checked) { curvePath(ghost.P); g.setLineDash([4, 3]); g.strokeStyle = t.muted; g.lineWidth = 1.2; g.stroke(); g.setLineDash([]); }
+  curvePath(P); g.strokeStyle = t.blue; g.lineWidth = 2.2; g.stroke();
+  if (playing) trail.forEach(([x, y], i) => { g.globalAlpha = (i + 1) / trail.length; g.fillStyle = t.red; g.beginPath(); g.arc(X(x), Y(y), i === trail.length - 1 ? 4.5 : 2.2, 0, Math.PI * 2); g.fill(); });
+  g.globalAlpha = 1; g.restore();
+  g.fillStyle = t.muted; g.textAlign = 'right'; g.textBaseline = 'alphabetic'; g.fillText('input dB →', ox + s - 4, bot - 5);
+  g.textAlign = 'left'; g.fillText('↑ output dB', ox + 5, oy + 13);
+}
+function envAt(arr, i0, i1) { let mn = 1e9, mx = -1e9; for (let i = i0; i < i1; i++) { const v = arr[i]; if (v < mn) mn = v; if (v > mx) mx = v; } return [mn, mx]; }
+function drawHit(t) {
+  const { w, h, g } = fit(cv.hit); const d = sim; if (!d) return;
+  const sr = d.sr, on = d.hit.onset, ms0 = -10, ms1 = 390;
+  const padL = 30, padR = 8, top = 4, gap = 16, avail = h - top - 16 - gap, hw = Math.round(avail * 0.6), gtop = top + hw + gap, gh = h - gtop - 16;
+  const X = (ms) => padL + (ms - ms0) / (ms1 - ms0) * (w - padL - padR), S = (ms) => Math.max(0, Math.min(d.N - 1, on + Math.round(ms * sr / 1000)));
+  const cmp = cmpData && cmpData.mode ? cmpData : null;
+  /* amplitude scale */
+  let A = 0; for (let i = S(ms0); i < S(ms1); i++) A = Math.max(A, Math.abs(d.inW[i]), Math.abs(d.outW[i]));
+  A = Math.max(0.05, A) * 1.05;
+  const mid = top + hw / 2, Ya = (v) => mid - v / A * hw / 2;
+  let gmx = Math.max(d.st.hitGr, ghost ? ghost.st.hitGr : 0); if (cmp) cmp.list.forEach((c) => gmx = Math.max(gmx, c.d.st.hitGr));
+  const GM = Math.max(6, Math.ceil((gmx + 1) / 3) * 3), Yg = (v) => gtop + Math.min(v, GM) / GM * gh;
+  g.font = `10px ${t.mono}`; g.lineWidth = 1;
+  for (let ms = 0; ms <= 350; ms += 50) { const x = Math.round(X(ms)) + 0.5; g.strokeStyle = t.grid; g.beginPath(); g.moveTo(x, top); g.lineTo(x, gtop + gh); g.stroke(); g.fillStyle = t.muted; g.textAlign = 'center'; g.textBaseline = 'top'; if (ms % 100 === 0 || w > 420) g.fillText(ms + (ms === 0 ? '' : ''), x, gtop + gh + 3); }
+  g.textAlign = 'right'; g.fillText('ms', w - padR, gtop + gh + 3);
+  g.strokeStyle = t.grid; hline(g, padL, w - padR, Math.round(mid) + 0.5);
+  for (let v = 0; v <= GM; v += GM / 2) { const y = Math.round(Yg(v)) + 0.5; hline(g, padL, w - padR, y); g.fillStyle = t.muted; g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText(v === 0 ? '0' : '−' + v, padL - 4, y); }
+  g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fillStyle = t.muted; g.fillText('GR dB', padL + 3, gtop - 4);
+  const px0 = Math.ceil(X(ms0)), px1 = Math.floor(X(ms1)), msOf = (px) => ms0 + (px - padL) / (w - padL - padR) * (ms1 - ms0);
+  const envLine = (arr, upperOnly) => { g.beginPath(); for (let px = px0; px <= px1; px++) { const [mn, mx] = envAt(arr, S(msOf(px)), Math.max(S(msOf(px)) + 1, S(msOf(px + 1)))); const v = upperOnly ? Math.max(Math.abs(mn), mx) : mx; px === px0 ? g.moveTo(px, Ya(v)) : g.lineTo(px, Ya(v)); } };
+  const grLine = (arr) => { g.beginPath(); for (let px = px0; px <= px1; px++) { const k = Math.floor(S(msOf(px)) / FINE); const y = Yg(arr[k] || 0); px === px0 ? g.moveTo(px, y) : g.lineTo(px, y); } };
+  /* input waveform */
+  g.fillStyle = t.sig; g.globalAlpha = cmp ? 0.35 : 0.55;
+  for (let px = px0; px <= px1; px++) { const [mn, mx] = envAt(d.inW, S(msOf(px)), Math.max(S(msOf(px)) + 1, S(msOf(px + 1)))); g.fillRect(px, Ya(mx), 1, Math.max(1, Ya(mn) - Ya(mx))); }
+  g.globalAlpha = 1;
+  if (cmp) {
+    const sty = [[t.blue, []], [t.red, []], [t.ink, [5, 3]], [t.red, [2, 3]]];
+    cmp.list.forEach((c, i) => {
+      g.strokeStyle = sty[i][0]; g.setLineDash(sty[i][1]); g.lineWidth = c.cur ? 2.2 : 1.2;
+      envLine(c.d.outW, true); g.stroke(); grLine(c.d.grF); g.stroke();
+    });
+    g.setLineDash([]); g.lineWidth = 1;
+    g.font = `11px ${t.mono}`; let lx = padL + 4;
+    cmp.list.forEach((c, i) => { g.strokeStyle = sty[i][0]; g.setLineDash(sty[i][1]); g.lineWidth = c.cur ? 2.2 : 1.2; hline(g, lx, lx + 16, top + 8); g.setLineDash([]); g.fillStyle = t.ink; g.textBaseline = 'middle'; g.textAlign = 'left'; const lb = c.t + (c.cur ? '＊' : ''); g.fillText(lb, lx + 20, top + 8); lx += 28 + g.measureText(lb).width; });
+    g.lineWidth = 1;
+  } else {
+    g.fillStyle = t.blue;
+    for (let px = px0; px <= px1; px++) { const [mn, mx] = envAt(d.outW, S(msOf(px)), Math.max(S(msOf(px)) + 1, S(msOf(px + 1)))); g.fillRect(px, Ya(mx), 1, Math.max(1, Ya(mn) - Ya(mx))); }
+    g.beginPath(); g.moveTo(px0, gtop);
+    for (let px = px0; px <= px1; px++) { const k = Math.floor(S(msOf(px)) / FINE); g.lineTo(px, Yg(d.grF[k] || 0)); }
+    g.lineTo(px1, gtop); g.closePath(); g.globalAlpha = 0.85; g.fillStyle = t.red; g.fill(); g.globalAlpha = 1;
+    if (ghost && $('#ghost').checked && ghost.N === d.N) {
+      const save = d.hit.onset; g.setLineDash([4, 3]); g.strokeStyle = t.ink; g.lineWidth = 1.1;
+      const S2 = S; // same onset (同じ音源)
+      envLine(ghost.outW, true); g.stroke(); grLine(ghost.grF); g.stroke(); g.setLineDash([]); g.lineWidth = 1;
+      void save; void S2;
+    }
+  }
+  /* markers */
+  g.strokeStyle = t.ink; g.setLineDash([2, 2]); g.beginPath(); g.moveTo(Math.round(X(0)) + 0.5, top); g.lineTo(Math.round(X(0)) + 0.5, gtop + gh); g.stroke();
+  g.fillStyle = t.ink; g.textAlign = 'left'; g.textBaseline = 'top'; g.font = `10px ${t.mono}`;
+  if (!cmp) g.fillText('onset', X(0) + 3, top + 1);
+  if (P.element !== 'opto' && P.attack <= 360 && !cmp) {
+    const xa = Math.round(X(P.attack)) + 0.5; g.strokeStyle = t.red; g.beginPath(); g.moveTo(xa, top + 14); g.lineTo(xa, gtop + gh); g.stroke();
+    g.fillStyle = t.red; g.fillText('τA', Math.min(xa + 3, w - 22), top + 14);
+  }
+  if (P.lookahead > 0 && !cmp) { const xl = Math.round(X(P.lookahead)) + 0.5; g.strokeStyle = t.blue; g.beginPath(); g.moveTo(xl, top); g.lineTo(xl, top + hw); g.stroke(); g.fillStyle = t.blue; g.textAlign = 'left'; g.fillText('delay', xl + 3, top + hw - 12); }
+  g.setLineDash([]);
+  if (!cmp) { g.textAlign = 'right'; g.textBaseline = 'alphabetic'; g.fillStyle = t.red; g.fillText(`max GR on this hit ${d.st.hitGr.toFixed(1)} dB`, w - padR, gtop - 4); }
+}
+function drawDyn(t) {
+  const { w, h, g } = fit(cv.dyn); const d = sim; if (!d) return;
+  const s = d.st, gs = ghost && $('#ghost').checked ? ghost.st : null;
+  const lo = -42, hi = 6, padL = 28, padR = 8, top = 8, bot = h - 44, Y = (v) => top + (1 - (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo)) * (bot - top);
+  g.font = `10px ${t.mono}`; g.lineWidth = 1;
+  for (let v = 0; v >= lo; v -= 6) { const y = Math.round(Y(v)) + 0.5; g.strokeStyle = t.grid; hline(g, padL, w - padR, y); if (v % 12 === 0) { g.fillStyle = t.muted; g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillText(v === 0 ? '0' : neg(v, 0), padL - 4, y); } }
+  const cw = (w - padL - padR) / 2, bw = Math.min(46, cw * 0.38);
+  const col = (i, pk, rms, fill, label, gpk, grms) => {
+    const cx = padL + cw * (i + 0.5), x0 = cx - bw / 2 - 8;
+    g.fillStyle = fill; g.fillRect(x0, Y(rms), bw, bot - Y(rms));
+    g.strokeStyle = t.ink; g.lineWidth = 2; hline(g, x0 - 3, x0 + bw + 3, Math.round(Y(pk)) + 0.5); g.lineWidth = 1;
+    /* bracket: crest */
+    const bx = x0 + bw + 8; g.strokeStyle = t.ink; g.beginPath(); g.moveTo(bx - 3, Y(pk)); g.lineTo(bx, Y(pk)); g.lineTo(bx, Y(rms)); g.lineTo(bx - 3, Y(rms)); g.stroke();
+    g.fillStyle = t.ink; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText((pk - rms).toFixed(1), bx + 3, (Y(pk) + Y(rms)) / 2);
+    if (gpk != null) { g.setLineDash([3, 3]); g.strokeStyle = t.ink; hline(g, x0 - 5, x0 + bw + 5, Math.round(Y(gpk)) + 0.5); hline(g, x0 - 5, x0 + bw + 5, Math.round(Y(grms)) + 0.5); g.setLineDash([]); g.fillStyle = t.muted; g.textAlign = 'right'; g.fillText('before', x0 - 6, Y(grms)); }
+    g.fillStyle = t.ink; g.textAlign = 'center'; g.textBaseline = 'top'; g.font = `11px ${getComputedStyle(document.body).fontFamily}`;
+    g.fillText(label, cx - 8, bot + 3); g.font = `10px ${t.mono}`; g.fillStyle = t.muted;
+    g.fillText(`Pk ${neg(pk)}`, cx - 8, bot + 17); g.fillText(`RMS ${neg(rms)}`, cx - 8, bot + 29);
+  };
+  col(0, s.inPk, s.inRms, t.sig, 'Input', null, null);
+  col(1, s.outPk, s.outRms, t.blue, P.bypass ? 'Output (bypassed)' : 'Output', gs ? gs.outPk : null, gs ? gs.outRms : null);
+  g.fillStyle = t.muted; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText('dBFS', 2, 0);
+}
+function drawMeter(t) {
+  const { w, h, g } = fit(cv.gm);
+  const MAX = 20, x0 = 6, x1 = w - 6, X = (v) => x1 - Math.min(v, MAX) / MAX * (x1 - x0), top = 2, bh = Math.max(10, Math.min(18, h - 18));
+  g.fillStyle = t.grid; g.fillRect(x0, top, x1 - x0, bh);
+  let v;
+  if (playing) { v = live.gr; const now = performance.now(); if (v >= live.hold || now - live.holdT > 1200) { live.hold = v; live.holdT = now; } }
+  else v = stats.max;
+  g.fillStyle = t.red; g.fillRect(X(v), top, x1 - X(v), bh);
+  const mark = playing ? live.hold : stats.avg;
+  g.fillStyle = t.ink; g.fillRect(Math.round(X(mark)) - 1, top - 2, 2, bh + 4);
+  g.font = `9.5px ${t.mono}`; g.textAlign = 'center'; g.textBaseline = 'top';
+  [0, 1, 3, 6, 10, 15, 20].forEach((d) => { const x = Math.round(X(d)) + 0.5; g.strokeStyle = t.muted; g.beginPath(); g.moveTo(x, top + bh); g.lineTo(x, top + bh + 3); g.stroke(); g.fillStyle = t.muted; g.fillText(d === 0 ? '0' : '−' + d, x, top + bh + 4); });
+}
+function drawMini(t, r) {
+  const { w, h, g } = fit(cv.mini); if (!r) return;
+  const n = r.n, X = (j) => j / (n - 1) * w, idx = (j) => (r.w + j) % n, h1 = h * 0.55, lo = -48;
+  const Y = (d) => (1 - (Math.max(lo, Math.min(0, d)) - lo) / -lo) * h1;
+  g.beginPath(); for (let j = 0; j < n; j++) { const y = Y(toDb(r.out[idx(j)])); j ? g.lineTo(X(j), y) : g.moveTo(X(j), y); } g.strokeStyle = t.blue; g.lineWidth = 1.2; g.stroke();
+  g.setLineDash([3, 3]); g.strokeStyle = t.ink; g.lineWidth = 1; hline(g, 0, w, Math.round(Y(P.threshold)) + 0.5); g.setLineDash([]);
+  const t2 = h1 + 3, h2 = h - t2;
+  g.beginPath(); g.moveTo(0, t2); for (let j = 0; j < n; j++) g.lineTo(X(j), t2 + Math.min(r.gr[idx(j)], 18) / 18 * h2); g.lineTo(w, t2); g.closePath(); g.fillStyle = t.red; g.fill();
+  g.font = `10px ${t.mono}`; const lb = `GR max ${stats.max.toFixed(1)} / avg ${stats.avg.toFixed(1)} dB`, tw = g.measureText(lb).width; g.fillStyle = t.page; g.fillRect(w - tw - 6, h - 14, tw + 6, 14); g.fillStyle = t.ink; g.textAlign = 'right'; g.textBaseline = 'bottom'; g.fillText(lb, w - 2, h - 1);
+}
+let lastRo = '';
+function updateReadouts() {
+  const s = [stats.max.toFixed(1), stats.avg.toFixed(1), stats.inPk > 1e-6 ? neg(toDb(stats.inPk)) : '−∞', stats.outPk > 1e-6 ? neg(toDb(stats.outPk)) : '−∞', playing].join('|');
+  if (s === lastRo) return; lastRo = s;
+  $('#ro-max').textContent = stats.max > 0.05 ? '−' + stats.max.toFixed(1) : '0.0';
+  $('#ro-avg').textContent = stats.avg > 0.05 ? '−' + stats.avg.toFixed(1) : '0.0';
+  $('#ro-in').textContent = stats.inPk > 1e-6 ? neg(toDb(stats.inPk)) : '−∞';
+  $('#ro-out').textContent = stats.outPk > 1e-6 ? neg(toDb(stats.outPk)) : '−∞';
+}
+
+/* ---------- いまの音の変化（グラフから自動で読み取る所見） ---------- */
+function renderObs() {
+  const d = sim; if (!d) return;
+  const s = d.st, L = [];
+  if (P.bypass) L.push('<li><b>Bypassed</b>The output is the dry signal. The GR shown is what it would do.</li>');
+  const lvl = s.grAvg < 0.5 ? 'barely doing anything' : s.grAvg < 2 ? 'light (gentle levelling)' : s.grAvg < 5 ? 'moderate (clearly working)' : 'heavy (the sound clearly changes)';
+  L.push(`<li><b>Amount</b><span class="d">avg GR ${s.grAvg.toFixed(1)} dB / max ${s.grMax.toFixed(1)} dB</span> — ${lvl}</li>`);
+  const ci = s.inPk - s.inRms, co = s.outPk - s.outRms, dc = co - ci;
+  L.push(`<li><b>Dynamics</b><span class="d">peak–average gap ${ci.toFixed(1)} → ${co.toFixed(1)} dB (${sgn(dc)})</span> — ${dc < -3 ? 'much smaller: even, dense sound' : dc < -1 ? 'a little smaller: more together' : dc > 1 ? 'larger: onsets are emphasised' : 'about the same: the dynamics are kept'}</li>`);
+  if (s.hitGr > 1 && P.element !== 'opto') {
+    const r = s.earlyRatio;
+    L.push(`<li><b>Onset</b>${r < 0.35 ? 'GR can’t catch the first few ms, so the transient gets through (punch kept)' : r < 0.7 ? 'compression starts partway into the onset, rounding the top a little' : 'compressed from the very first moment: the attack is rounded and pushed back'}${P.mix < 100 ? ' (wet path; the ' + Math.round(100 - P.mix) + '% dry onset is kept)' : ''}</li>`);
+  } else if (P.element === 'opto' && s.hitGr > 1) {
+    L.push(`<li><b>Opto cell</b>max memory ${s.memMax.toFixed(2)} — ${s.memMax > 0.5 ? 'memory has built up, so GR is slow to recover (sticking)' : 'little memory; it recovers naturally in two stages'}</li>`);
+  }
+  if (s.grMax > 1) {
+    if (s.grMin > 1) L.push(`<li><b>Recovery</b>GR never gets back near zero (min ${s.grMin.toFixed(1)} dB) — always held down, tends to sound flat</li>`);
+    else if (P.element !== 'opto' && P.release < 70 && s.grAvg > 2) L.push('<li><b>Recovery</b>A fast release makes GR swing a lot — watch for pumping and low-end distortion</li>');
+    else L.push('<li><b>Recovery</b>GR gets back near zero between hits — it breathes with the music</li>');
+  }
+  const dl = s.outRms - s.inRms;
+  if (!P.bypass && Math.abs(dl) >= 1) L.push(`<li><b>Level</b><span class="d">average ${sgn(dl)} dB</span> — ${dl > 0 ? 'louder after processing. Lower the makeup to compare fairly' : 'quieter after processing. Raise the makeup to compare fairly'}</li>`);
+  if (P.element === 'fet' && s.grMax > 6) L.push('<li><b>Colour</b>A FET adds more harmonics as GR deepens — forward, edgy texture</li>');
+  if (P.element === 'varimu') L.push('<li><b>Colour</b>Tube even harmonics are always added a little — weight and warmth</li>');
+  if (ghost && $('#ghost').checked && ghost.key === d.key) {
+    const g = ghost.st, a = s.grAvg - g.grAvg, b = (s.outPk - s.outRms) - (g.outPk - g.outRms), c = s.outRms - g.outRms;
+    if (Math.abs(a) > 0.05 || Math.abs(b) > 0.05 || Math.abs(c) > 0.05)
+      L.push(`<li class="ghost"><b>vs before</b><span class="d">avg GR ${sgn(a)} / gap ${sgn(b)} / output RMS ${sgn(c)} dB</span></li>`);
+  }
+  $('#obs').innerHTML = `<h3>What the sound is doing<span class="eyebrow">first 3 s</span></h3><ul>${L.join('')}</ul>`;
+}
+
+function frame() {
+  if (needSim) { simulate(); needSim = false; renderObs(); }
+  if (needCmp) { computeCmp(); }
+  const t = tok(), r = ringNow();
+  if (r) computeStats(r);
+  if (visible(cv.tl)) drawTimeline(t, r);
+  if (visible(cv.tc)) drawTransfer(t);
+  if (visible(cv.hit)) drawHit(t);
+  if (visible(cv.dyn)) drawDyn(t);
+  if (visible(cv.gm)) drawMeter(t);
+  if (visible(cv.mini)) drawMini(t, r);
+  updateReadouts();
+  requestAnimationFrame(frame);
+}
+
+/* ---------- wiring ---------- */
+buildControls();
+const psel = $('#preset');
+psel.innerHTML = '<option value="" disabled>Preset</option>' + PRESETS.map(([k, n]) => `<option value="${k}">${n}</option>`).join('');
+psel.value = 'default';
+psel.addEventListener('change', () => { const p = PRESETS.find((x) => x[0] === psel.value); if (p) applyParams({ ...DEFAULTS, ...p[2] }); });
+$('#play').addEventListener('click', togglePlay);
+$('#play2').addEventListener('click', togglePlay);
+const spaceSkip = (t) => t.isContentEditable || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' ||
+  (t.tagName === 'INPUT' && !['range', 'checkbox', 'radio', 'button', 'file'].includes(t.type));
+document.addEventListener('keydown', (e) => {
+  if (e.code !== 'Space' || e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (spaceSkip(e.target)) return;
+  e.preventDefault(); if (e.repeat) return; togglePlay();
+});
+document.addEventListener('keyup', (e) => { if (e.code === 'Space' && !spaceSkip(e.target)) e.preventDefault(); });
+$('#src').addEventListener('change', (e) => switchSource(e.target.value));
+const toggleBypass = () => {
+  P.bypass = !P.bypass;
+  ['#bypass', '#bypass2'].forEach((s) => $(s).setAttribute('aria-pressed', P.bypass));
+  $('#bypass').textContent = P.bypass ? 'Bypassed' : 'Bypass';
+  paramChanged();
+};
+$('#bypass').addEventListener('click', toggleBypass);
+$('#bypass2').addEventListener('click', toggleBypass);
+$('#ghost').addEventListener('change', () => renderObs());
+$('#cmp').addEventListener('change', () => { needCmp = true; });
+$('#file').addEventListener('change', async (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    status('Loading…'); await ensureCtx();
+    const buf = await ctx.decodeAudioData(await f.arrayBuffer());
+    const L = buf.getChannelData(0).slice(), R = (buf.numberOfChannels > 1 ? buf.getChannelData(1) : buf.getChannelData(0)).slice();
+    sources.file = { L, R, sr: buf.sampleRate, bpm: null, name: f.name }; delete bufCache.file;
+    let opt = $('#src').querySelector('option[value="file"]');
+    if (!opt) { opt = document.createElement('option'); opt.value = 'file'; $('#src').appendChild(opt); }
+    opt.textContent = 'Loaded: ' + f.name; $('#src').value = 'file'; switchSource('file');
+    status('');
+  } catch (err) { status('Could not read this format. Please try WAV, MP3, AAC or similar.'); }
+});
+$$('.flow .blk').forEach((b) => {
+  b.addEventListener('click', () => selectEx(b.dataset.k));
+  b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectEx(b.dataset.k); } });
+});
+syncControls(); renderMethods(); renderEx(); layout();
+requestAnimationFrame(frame);
+window.__csn = { P, get sim() { return sim; }, runSim, coreParams };
+})();
+</script>
+</body>
+</html>
