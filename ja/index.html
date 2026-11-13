@@ -106,6 +106,7 @@ a.app:hover::after{border-color:var(--line)}
 @media (max-width:820px){.after{grid-template-columns:1fr}}
 .foot{margin-top:60px;padding-top:16px;border-top:3px double var(--ink);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px;text-align:center}
 .foot p{margin:0 auto;max-width:80ch}
+.foot .copy{margin-top:8px;padding-top:10px;border-top:1px dotted var(--muted);color:var(--ink);font-size:12.5px}
 .colophon{font-family:var(--serif);letter-spacing:.2em;color:var(--ink)}
 @media (max-width:560px){body{font-size:15px}.toc{padding:16px 16px}.toc small{display:none}.ask{padding:16px 16px 16px 20px}.links a{padding:9px 14px}}
 </style>
@@ -137,6 +138,16 @@ a.app:hover::after{border-color:var(--line)}
         <p>このEQを触ると、自分に必要なEQが分かる。専用パネルと回路を持つアナログEQ 9 機種を、ボタン一つで普通のEQバンドに展開して、名機EQの正体を確かめられます。ゼロレイテンシー／アナログ／リニアフェイズ、ダイナミックEQ、M/S、トランジェント／ボディ、レゾナンスサプレッサーも搭載。画面のどこにマウスを置いても解説が出ます。</p>
         <ul><li>Pultec EQP-1A・Neve 1073・SSL 4000・API 550A・Manley Massive Passive・Maag EQ4 などを参考にしたアナログモデル</li><li>アナログモデルを最大 24 バンドに展開、展開後もパネルで操作可能</li><li>参照カーブ C：音声ファイルをドロップして平均的な周波数バランスを表示</li><li>用途別・アナログタイプ別プリセット、配色 15 種</li><li>macOS 11 以降（Apple Silicon / Intel）。Windows 10 / 11 版は実機未検証</li></ul>
         <span class="go">無料で入手 →</span>
+      </div>
+    </a>
+    <a class="app" href="https://github.com/kazufumi01/EQAnatomyLab2/releases/tag/v0.2.1-beta">
+      <img src="https://kazufumi01.github.io/assets/eqa2-main.png" alt="EQ Anatomy Lab 2 β：デジタルEQ特化型の画面" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">VST3 / AU plug-in <span class="beta">無料ベータ</span></p>
+        <h3>EQ Anatomy Lab 2 β — プラグイン（デジタルEQ特化型）</h3>
+        <p>アナログEQモデルを持たない、デジタルEQの機能に絞った版です。ゼロレイテンシー／アナログ／リニアフェイズ、ダイナミックEQ、M/S、トランジェント／ボディ、レゾナンスサプレッサーを、軽い画面で扱えます。1.0 と同時にインストールできます。</p>
+        <ul><li>最新は 0.2.1（Tube サチュレーターのノイズを修正）</li><li>macOS 11 以降（Apple Silicon / Intel）。Windows 10 / 11 版は実機未検証</li><li>未公証のため初回のみ警告が出ます（手順はダウンロードページに）</li></ul>
+        <span class="go">無料ベータを入手 →</span>
       </div>
     </a>
     <a class="app" href="https://github.com/kazufumi01/CompAnatomyLab2/releases/latest">
@@ -342,14 +353,14 @@ a.app:hover::after{border-color:var(--line)}
       </div>
     </a>
   </div>
-  <aside class="ask"><h3>授業で使ってくださる方へ</h3><p>ラボはすべて無料・広告なしで続けています。曲の再生とお気に入り登録、ページのシェアがいちばんの応援です。</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Spotify で再生 ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music でお気に入り ↗</a></li></ul></aside>
+  <aside class="ask"><h3>学習で使ってくださる方へ</h3><p>ラボはすべて無料・広告なしで続けています。曲の再生とお気に入り登録、ページのシェアがいちばんの応援です。</p><ul class="links"><li><a class="main" href="https://open.spotify.com/artist/30PV2gqUbDDwvuWtKaok0x" target="_blank" rel="noopener">Spotify で再生 ↗</a></li><li><a href="https://music.apple.com/us/artist/johan-plus-kei/519360150" target="_blank" rel="noopener">Apple Music でお気に入り ↗</a></li></ul></aside>
 
   <header class="chap" id="tools"><span class="n">付録</span><h2>ユーティリティ</h2><p class="sub">作曲シリーズ Songcraft Lab</p></header>
   <p class="note">メロディ・コード・ベース・ドラムを順に作り、MIDIでDAWに持ち込む作曲練習のシリーズです。曲データは同じサイト内のアプリ同士で受け渡せます。</p>
   <div class="tools">
+    <a class="tool" href="https://kazufumi01.github.io/songcraft/key-finder.html"><img src="https://kazufumi01.github.io/songcraft/key-finder.png" alt="Key Finder" loading="lazy"><span class="tv">No.0</span><b>Key Finder</b><span class="td">メロディのキーを6つの方法で順に判別する練習。</span></a>
     <a class="tool" href="https://kazufumi01.github.io/songcraft/first-song.html"><img src="https://kazufumi01.github.io/songcraft/first-song.png" alt="First Song" loading="lazy"><span class="tv">Vol.1</span><b>First Song</b><span class="td">キーとコード進行を選び、ベース・メロディ・ドラムを足して8小節を完成。MIDIで書き出し。</span></a>
     <a class="tool" href="https://kazufumi01.github.io/songcraft/hum-to-song.html"><img src="https://kazufumi01.github.io/songcraft/hum-to-song.png" alt="Hum to Song" loading="lazy"><span class="tv">Vol.2</span><b>Hum to Song</b><span class="td">鼻歌を録音してMIDIにし、キーを特定してコードを付ける。</span></a>
-    <a class="tool" href="https://kazufumi01.github.io/songcraft/key-finder.html"><img src="https://kazufumi01.github.io/songcraft/key-finder.png" alt="Key Finder" loading="lazy"><span class="tv">Vol.2 module</span><b>Key Finder</b><span class="td">メロディのキーを6つの方法で順に判別する練習。</span></a>
     <a class="tool" href="https://kazufumi01.github.io/songcraft/call-response.html"><img src="https://kazufumi01.github.io/songcraft/call-response.png" alt="Call & Response" loading="lazy"><span class="tv">Vol.3</span><b>Call & Response</b><span class="td">2小節の問いと答えを2往復して8小節を作る。</span></a>
     <a class="tool" href="https://kazufumi01.github.io/songcraft/riff-lab.html"><img src="https://kazufumi01.github.io/songcraft/riff-lab.png" alt="Riff Lab" loading="lazy"><span class="tv">Vol.4</span><b>Riff Lab</b><span class="td">リフを作り、ループ耐久テスト、ベースとドラム、メロディを乗せる。</span></a>
   </div>
@@ -383,6 +394,7 @@ a.app:hover::after{border-color:var(--line)}
     <p class="colophon">Audio Anatomy Labs</p>
     <p>制作：Kazufumi（Johan Plus Kei）。日本のプロデューサー、ミックスエンジニア、音楽テクノロジー講師です。内容と解説は自分で書き、制作には AI コーディングツール（Claude）を使っています。</p>
     <p>ラボの DSP は学習用の実装で、特定の機材やプラグインを再現するものではありません。製品名は各社の商標です。</p>
+    <p class="copy">© 2026 Johan Plus Kei. All rights reserved.<br>ラボ・スタディノート・プラグイン・作曲アプリ・解説文・画像・楽曲は無料で公開していますが、著作権その他の権利は Johan Plus Kei に帰属します。個人の学習や授業での利用、リンクの共有は歓迎します。無断での転載・再配布・販売はご遠慮ください。各プラグインの利用条件は同梱の使用許諾をご覧ください。</p>
   </footer>
 </div>
 </body>

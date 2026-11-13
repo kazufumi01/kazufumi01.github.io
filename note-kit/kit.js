@@ -56,6 +56,7 @@
   ab.innerHTML = '<p class="eyebrow">About</p><h3>' + (ja ? 'このページについて' : 'About this page') + '</h3>' + (C.lead ? '<p class="nk-lead">' + C.lead + '</p>' : '') +
     '<p>' + (ja ? 'PCでは一画面にグラフ・操作・解説を並べ、スマホでは縦にスクロールして読むノートとして使えます。DSPと機能は旧版と同じです。' : 'On desktop the graphs, controls and notes fit on one screen; on a phone it reads as a scrolling notebook. The DSP and features are the same as the previous version.') + '</p>';
   $$(C.about || '').forEach(function (el) { ab.appendChild(el); });
+  var cp = document.createElement('p'); cp.className = 'nk-copy'; cp.innerHTML = '© 2026 Johan Plus Kei. All rights reserved. ' + (ja ? '無料で公開していますが、著作権その他の権利は Johan Plus Kei に帰属します。学習・授業での利用やリンクの共有は歓迎します。無断での転載・再配布・販売はご遠慮ください。' : 'Free to use, but the copyright and all other rights belong to Johan Plus Kei. Study, classroom use and sharing links are welcome; please do not republish, redistribute or sell without permission.'); ab.appendChild(cp);
   body.appendChild(ab); panes.push({ el: ab, label: ja ? 'このページ' : 'About' });
   var cur = 0;
   function setTab(i) {
