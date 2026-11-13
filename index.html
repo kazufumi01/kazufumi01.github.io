@@ -15,6 +15,8 @@
 <meta property="og:image" content="https://kazufumi01.github.io/comp-lab/en/ogp.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://kazufumi01.github.io/">
+<link rel="alternate" hreflang="en" href="https://kazufumi01.github.io/">
+<link rel="alternate" hreflang="ja" href="https://kazufumi01.github.io/ja/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;700;800&display=swap">
@@ -71,6 +73,10 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
 .links a.main:hover{color:var(--on-accent);opacity:.9}
 .music.one{grid-template-columns:1fr}
 @media (max-width:760px){.music{grid-template-columns:1fr}}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:32px 0 0}
+.jump a{font-size:14px;font-weight:700;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--panel)}
+.jump a:hover{border-color:var(--accent);color:var(--accent)}
+.note{color:var(--muted);font-size:15px;max-width:80ch;margin:-4px 0 16px}
 .foot{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 .foot p{margin:0;max-width:80ch}
 </style>
@@ -79,7 +85,7 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
 <div class="wrap">
   <header class="top">
     <p class="eyebrow">Johan Plus Kei · Audio Anatomy Labs</p>
-    <a class="lang" href="https://jpk.seesaa.net/article/521891797.html" hreflang="ja" lang="ja">日本語</a>
+    <a class="lang" href="https://kazufumi01.github.io/ja/" hreflang="ja" lang="ja">日本語</a>
   </header>
 
   <section>
@@ -89,7 +95,9 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
     <ul class="facts"><li>Web Audio · AudioWorklet</li><li>Live graphs</li><li>Headphones recommended</li></ul>
   </section>
 
-  <h2>Labs</h2>
+    <nav class="jump"><a href="#labs">Browser labs</a><a href="#plugins">VST3 / AU plug-ins</a><a href="#about">Music &amp; support</a></nav>
+
+  <h2 id="labs">Browser labs — open and play, nothing to install</h2>
   <div class="apps">
     <a class="app" href="https://kazufumi01.github.io/comp-lab/en/">
       <img src="https://kazufumi01.github.io/comp-lab/en/ogp.png" alt="Compressor Anatomy Lab: transfer curve with the live operating point" loading="lazy">
@@ -161,26 +169,11 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
         <span class="go">Open the lab →</span>
       </div>
     </a>
-    <a class="app" href="https://github.com/kazufumi01/DelayBasicsLab/releases/latest">
-      <img src="https://kazufumi01.github.io/assets/ogp-delay-basics-lab-plugin.png" alt="Delay Basics Lab VST/AU plug-in, limited-time free beta: echo timeline" loading="lazy">
-      <div class="body">
-        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free beta · limited time</span></p>
-        <h3>Delay Basics Lab — plug-in</h3>
-        <p>The Delay Basics Lab as a VST3 / AU plug-in for your DAW: the same seven presets, echo timeline and lessons, in Japanese and English.</p>
-        <ul><li>macOS 11+ (Apple Silicon / Intel): manual zip or .pkg installer</li><li>Windows 10 / 11: builds, but not yet tested on a real machine</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
-        <span class="go">Get the free beta →</span>
-      </div>
-    </a>
-    <a class="app" href="https://github.com/kazufumi01/EQAnatomyLab/releases/latest">
-      <img src="https://kazufumi01.github.io/assets/ogp-eq-anatomy-lab-plugin.png" alt="EQ Anatomy Lab VST/AU plug-in: see and hear what your EQ is doing" loading="lazy">
-      <div class="body">
-        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free beta · limited time</span></p>
-        <h3>EQ Anatomy Lab — plug-in</h3>
-        <p>An EQ you can see and hear. Watch the phase move, audition the pre-ringing, solo Mid or Side, and split transients from body, with 22 hands-on lessons and an ear-training game built in.</p>
-        <ul><li>6 bands, all dynamic-capable, with a per-band saturator and delta listening</li><li>macOS 11+ (Apple Silicon / Intel); Windows 10 / 11 builds but is untested on real hardware</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
-        <span class="go">Get the free beta →</span>
-      </div>
-    </a>
+  </div>
+
+  <h2 id="plugins">VST3 / AU plug-ins — free downloads for your DAW</h2>
+  <p class="note">macOS 11+ (Apple Silicon / Intel) is tested in Ableton Live. Windows 10 / 11 builds are made automatically but are untested on real hardware. Each download page has install steps in English and Japanese.</p>
+  <div class="apps">
     <a class="app" href="https://github.com/kazufumi01/EQAnatomyLab2/releases/latest">
       <img src="https://kazufumi01.github.io/assets/eqa2-analog.png" alt="EQ Anatomy Lab 2 VST/AU plug-in: an analog EQ model panel expanded into ordinary EQ bands on the graph" loading="lazy">
       <div class="body">
@@ -201,6 +194,30 @@ h2{font-size:13px;font-family:var(--font-mono);font-weight:500;letter-spacing:.1
         <span class="go">Get it free →</span>
       </div>
     </a>
+    <a class="app" href="https://github.com/kazufumi01/DelayBasicsLab/releases/latest">
+      <img src="https://kazufumi01.github.io/assets/ogp-delay-basics-lab-plugin.png" alt="Delay Basics Lab VST/AU plug-in, limited-time free beta: echo timeline" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free beta · limited time</span></p>
+        <h3>Delay Basics Lab — plug-in</h3>
+        <p>The Delay Basics Lab as a VST3 / AU plug-in for your DAW: the same seven presets, echo timeline and lessons, in Japanese and English.</p>
+        <ul><li>macOS 11+ (Apple Silicon / Intel): manual zip or .pkg installer</li><li>Windows 10 / 11: builds, but not yet tested on a real machine</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
+        <span class="go">Get the free beta →</span>
+      </div>
+    </a>
+    <a class="app" href="https://github.com/kazufumi01/EQAnatomyLab/releases/latest">
+      <img src="https://kazufumi01.github.io/assets/ogp-eq-anatomy-lab-plugin.png" alt="EQ Anatomy Lab VST/AU plug-in: see and hear what your EQ is doing" loading="lazy">
+      <div class="body">
+        <p class="eyebrow">VST3 / AU plug-in <span class="beta">Free beta · limited time</span></p>
+        <h3>EQ Anatomy Lab — plug-in (previous)</h3>
+        <p>The first EQ plug-in, superseded by EQ Anatomy Lab 2 but still available. An EQ you can see and hear. Watch the phase move, audition the pre-ringing, solo Mid or Side, and split transients from body, with 22 hands-on lessons and an ear-training game built in.</p>
+        <ul><li>6 bands, all dynamic-capable, with a per-band saturator and delta listening</li><li>macOS 11+ (Apple Silicon / Intel); Windows 10 / 11 builds but is untested on real hardware</li><li>Not notarized, so there is a one-time warning (see the download page)</li></ul>
+        <span class="go">Get the free beta →</span>
+      </div>
+    </a>
+  </div>
+
+  <h2 id="about">Music &amp; support</h2>
+  <div class="apps">
     <div class="app">
       <img src="https://kazufumi01.github.io/assets/ogp-music.png" alt="Johan Plus Kei: Spotify, Apple Music, X, Instagram" loading="lazy">
       <div class="body">
