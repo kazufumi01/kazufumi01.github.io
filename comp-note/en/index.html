@@ -181,6 +181,28 @@ details.dsp summary{cursor:pointer;font-family:var(--serif);font-size:12.5px;mar
 .fine{font-size:11.5px;color:var(--muted)}
 .inline-pane{border:1px solid var(--line);border-left:3px solid var(--red);background:var(--page);padding:10px 12px;margin:4px 0 8px}
 
+/* ---------- right column: darker kraft + accents ---------- */
+:root{--kraft:#e2d2b0;--kraft-line:#c4ad82}
+.nb{background:var(--kraft);border-color:var(--kraft-line)}
+.tabs{border-bottom-color:var(--kraft-line)}
+.tabs button{border-right-color:var(--kraft-line);color:#5d5246}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--on)}
+.nbody .pane h4{border-bottom-color:var(--kraft-line)}
+.pane .snd{background:var(--page);border-left:3px solid var(--ink)}
+.see li{border-bottom-color:var(--kraft-line)}
+.see button{background:var(--page)}
+.formula{background:var(--page)}
+.obs{background:var(--blue);border-color:var(--blue);color:#f3ecdc}
+.obs h3 .eyebrow{color:#c3cfdd}
+.obs li::before{background:#f3ecdc}
+.obs .ghost{color:#f2d38f}
+.trybox{background:var(--red);color:var(--on);padding:8px 10px 10px;margin:8px 0 6px;border-radius:2px}
+.tryh{margin:0 0 6px!important;font-family:var(--serif);font-weight:700;font-size:14px;letter-spacing:.04em}
+.tryh span{display:block;font-family:var(--ui);font-weight:400;font-size:11px;opacity:.85;letter-spacing:0}
+.trybox .tries .btn{background:var(--page);border-color:var(--page);color:var(--ink);font-weight:700}
+.trybox .tries .btn:hover{background:var(--ink);border-color:var(--ink);color:var(--on)}
+.inline-pane{background:var(--kraft)!important;border-color:var(--kraft-line)!important}
+
 /* ---------- mobile sticky monitor ---------- */
 .mon{display:none}
 
@@ -1039,9 +1061,9 @@ function renderEx() {
   }
   const ex = $('#ex');
   ex.innerHTML = `<p class="eyebrow">${e.en}</p><h3>${e.jp}</h3><p class="what">${e.what}</p>${offNote ? `<p class="off">${offNote}</p>` : ''}
+    ${e.tries.length ? `<div class="trybox"><p class="tryh">▶ Listen &amp; compare<span>Each button changes the settings so you can check the difference by ear and on the graphs</span></p><div class="tries">${e.tries.map((t, i) => `<button class="btn" type="button" data-i="${i}">${t[0]}</button>`).join('')}</div></div>` : ''}
     <h4>What you hear<span class="eyebrow">Sound</span></h4><div class="snd">${e.snd}</div>
     <h4>Where to look<span class="eyebrow">Watch</span></h4><ul class="see">${e.see.map(([g, t]) => `<li><button type="button" data-g="${g}">${GN[g]}</button><span>${t}</span></li>`).join('')}</ul>
-    ${e.tries.length ? `<h4>Listen &amp; compare<span class="eyebrow">Try</span></h4><div class="tries">${e.tries.map((t, i) => `<button class="btn" type="button" data-i="${i}">${t[0]}</button>`).join('')}</div>` : ''}
     <h4>How it works<span class="eyebrow">Inside</span></h4>${e.body.map((t) => `<p>${t}</p>`).join('')}
     <h4>Typical settings<span class="eyebrow">Typical</span></h4><ul>${typ.map((t) => `<li>${t}</li>`).join('')}</ul>
     <details class="dsp"><summary>In the DSP (formula)</summary><div class="formula">${e.f}</div>${extra}</details>`;
