@@ -91,6 +91,19 @@
     pane.__nkBusy = false;
   }
   if (panes[0]) { var p0 = panes[0].el; lift(p0); new MutationObserver(function () { lift(p0); }).observe(p0, { childList: true, subtree: false }); }
+
+  /* ---- いまの音の変化 ---- */
+  if (C.key && window.NK_OBS && window.NK_OBS[C.key]) {
+    var ob = document.createElement('section'); ob.className = 'nk-obs'; ob.setAttribute('aria-live', 'polite');
+    notes.insertBefore(ob, tabs); var last = '';
+    var upd = function () {
+      var L = null; try { L = window.NK_OBS[C.key](ja); } catch (e) { L = null; }
+      if (!L || !L.length) { ob.hidden = true; return; } ob.hidden = false;
+      var h = '<h3>' + (ja ? 'いまの音の変化' : 'What the sound is doing') + '<span>' + (ja ? '画面の数値から' : 'from the readings') + '</span></h3><ul>' + L.map(function (x) { return '<li><b>' + x[0] + '</b>' + x[1] + '</li>'; }).join('') + '</ul>';
+      if (h !== last) { ob.innerHTML = h; last = h; }
+    };
+    setInterval(upd, 500); document.addEventListener('input', function () { setTimeout(upd, 60); }, true); document.addEventListener('click', function () { setTimeout(upd, 120); }, true); upd();
+  }
   /* ---- canvas sizes follow the card on PC ---- */
   window.NK_H = function (cv, h) {
     if (!mq.matches) return h; var w = cv.parentElement;

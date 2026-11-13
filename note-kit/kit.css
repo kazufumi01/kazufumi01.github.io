@@ -80,3 +80,11 @@ html.nk h1,html.nk h2,html.nk h3{font-family:var(--nk-serif);letter-spacing:.03e
 html.nk body{padding:0!important}
 .nk-mounted{max-width:none!important;margin:0!important;padding:0!important;border-radius:0!important;background:transparent!important;color:var(--nk-ink)!important}
 @media (min-width:1100px) and (min-height:660px){.nk-mounted{display:flex!important;flex-direction:column;flex:1;min-height:0}}
+.nk-obs{flex:none;background:var(--nk-blue);color:#f3ecdc;padding:8px 12px;border-bottom:1px solid var(--nk-kline);max-height:42%;overflow:auto}
+.nk-obs h3{font-family:var(--nk-serif);font-size:13px;margin:0;display:flex;justify-content:space-between;gap:8px;align-items:baseline;color:#f3ecdc}
+.nk-obs h3 span{font-family:var(--nk-mono);font-size:10px;letter-spacing:.08em;color:#c3cfdd;font-weight:400}
+.nk-obs ul{margin:4px 0 0;padding:0;list-style:none}
+.nk-obs li{padding:2px 0 2px 12px;position:relative;font-size:12px;line-height:1.55}
+.nk-obs li::before{content:"";position:absolute;left:0;top:.75em;width:5px;height:1px;background:#f3ecdc}
+.nk-obs b{margin-right:6px}
+@media not all and (min-width:1100px) and (min-height:660px){.nk-obs{order:-1;max-height:none;border:1px solid var(--nk-blue)}.nk-notes>.nk-obs{display:block}}
