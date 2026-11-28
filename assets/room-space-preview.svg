@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+<defs><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#d8d2c8" stroke-width="1"/></pattern></defs>
+<rect width="1200" height="630" fill="#f2efe8"/><rect width="1200" height="630" fill="url(#grid)"/>
+<text x="70" y="90" fill="#252923" font-family="Arial,sans-serif" font-size="23" letter-spacing="4">ROOM ACOUSTIC MODELING</text>
+<text x="70" y="158" fill="#252923" font-family="Arial,sans-serif" font-size="62" font-weight="700">Room / Space</text>
+<text x="72" y="202" fill="#647066" font-family="Arial,sans-serif" font-size="22">Shape the room. Hear the difference.</text>
+<path d="M255 270V522H780V270" fill="#e7e3d9" stroke="#303832" stroke-width="12" stroke-linejoin="round"/>
+<path d="M255 270H780" stroke="#303832" stroke-width="12"/>
+<rect x="350" y="330" width="180" height="90" rx="12" fill="#c6b9a3" stroke="#736955" stroke-width="5" transform="rotate(-8 440 375)"/>
+<rect x="590" y="445" width="115" height="48" rx="8" fill="#d0c8ba" stroke="#736955" stroke-width="5"/>
+<circle cx="305" cy="465" r="22" fill="#df7758"/><path d="M305 465L402 387" stroke="#df7758" stroke-width="5"/>
+<circle cx="727" cy="330" r="18" fill="#5b9d8b"/><circle cx="748" cy="345" r="8" fill="#5b9d8b"/>
+<path d="M327 438Q475 288 710 320M330 492Q520 552 720 354" fill="none" stroke="#5b9d8b" stroke-width="4" stroke-dasharray="10 10"/>
+<text x="840" y="320" fill="#df7758" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="2">SOURCE</text>
+<text x="840" y="365" fill="#5b9d8b" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="2">STEREO MIC</text>
+<text x="840" y="440" fill="#252923" font-family="Arial,sans-serif" font-size="25">Furniture · materials</text>
+<text x="840" y="480" fill="#252923" font-family="Arial,sans-serif" font-size="25">Reflections · room modes</text>
+<text x="840" y="520" fill="#252923" font-family="Arial,sans-serif" font-size="25">Listen in English / 日本語</text>
+</svg>

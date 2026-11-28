@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1116">
+  <title>Room / Space — Acoustic Modeling</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#room" aria-label="Room Space home">
+        <span class="brand-mark"><i></i><i></i><i></i></span>
+        <span><strong>ROOM<span class="brand-slash">/</span>SPACE</strong><small>ACOUSTIC MODELING</small></span>
+      </a>
+      <div class="topbar-center"><span class="status-dot"></span> LOCAL SESSION <span class="divider">/</span> <span id="sceneTitle">Untitled room</span></div>
+      <div class="top-actions">
+        <select id="languageSelect" class="language-select" aria-label="Language"><option value="en">EN</option><option value="ja">日本語</option></select>
+        <button class="button quiet" id="loadSceneBtn" title="Load a scene JSON">Open</button>
+        <input id="loadSceneInput" type="file" accept="application/json,.json" hidden>
+        <button class="button quiet" id="saveSceneBtn">Save scene</button>
+        <button class="button accent" id="exportBtn"><span class="download-icon">↓</span> Export RIR</button>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <aside class="sidebar">
+        <div class="side-heading"><span>SCENE SETUP</span><span class="tiny-chip">01</span></div>
+        <section class="side-section">
+          <div class="section-title"><span class="section-glyph">▦</span> ROOM DIMENSIONS <span class="unit-label">METRES</span></div>
+          <div class="dimension-grid">
+            <label><span>WIDTH</span><div class="unit-input"><input id="dimX" type="number" min="2" max="30" step="0.1" value="6.0"><em>m</em></div></label>
+            <label><span>DEPTH</span><div class="unit-input"><input id="dimY" type="number" min="2" max="40" step="0.1" value="8.0"><em>m</em></div></label>
+            <label><span>HEIGHT</span><div class="unit-input"><input id="dimZ" type="number" min="2" max="12" step="0.1" value="3.0"><em>m</em></div></label>
+          </div>
+        </section>
+
+        <section class="side-section">
+          <div class="section-title"><span class="section-glyph">⌂</span> ROOM PRESET & SHAPE</div>
+          <label class="field-label" for="roomPreset">Room preset</label>
+          <select id="roomPreset" class="wide-select"><option value="custom">Custom room</option><option value="living">Living room</option><option value="bedroom">Bedroom</option><option value="kitchen">Kitchen</option><option value="bathroom">Bathroom</option><option value="washitsu">Japanese room</option></select>
+          <label class="field-label top-gap" for="roomShape">Plan shape</label>
+          <select id="roomShape" class="wide-select"><option value="rect">Rectangular</option><option value="lShape">L-shaped</option></select>
+          <div class="shape-note">An L-shaped outline with approximate blocking; modes still use the bounding rectangle.</div>
+        </section>
+
+        <section class="side-section surfaces-section">
+          <div class="section-title"><span class="section-glyph">◫</span> SURFACES <span class="unit-label">6 PLANES</span></div>
+          <div id="surfaceList" class="surface-list"></div>
+        </section>
+
+        <section class="side-section objects-section">
+          <div class="section-title"><span class="section-glyph">▰</span> FURNITURE & OBJECTS <span id="objectCount" class="unit-label">0 ITEMS</span></div>
+          <div class="add-object-row"><select id="objectType" aria-label="Object to add"><option value="sofa">Sofa</option><option value="bed">Bed</option><option value="bookcase">Bookcase</option><option value="wardrobe">Wardrobe</option><option value="clothes">Clothes rack</option><option value="curtain">Curtain</option><option value="rug">Rug</option><option value="desk">Desk</option><option value="absorber">Absorber board</option><option value="diffuser">Diffuser panel</option><option value="windowOpen">Open window</option><option value="windowGlass">Glass window</option><option value="plant">Houseplant</option><option value="cushion">Cushion</option><option value="diningTable">Dining table</option><option value="cabinet">Cabinet</option></select><button id="addObjectBtn" class="button small add-object-btn">+ ADD</button></div>
+          <div id="objectList" class="object-list"><div class="object-list-empty">No objects in this room</div></div>
+          <div class="object-note"><span class="info-mark">i</span><span>Box approximation for placement and path blocking. Not a 3D mesh solver.</span></div>
+        </section>
+
+        <section class="side-section solver-section">
+          <div class="section-title"><span class="section-glyph">⌁</span> SOLVER</div>
+          <label class="field-label" for="reflectionOrder">Image-source order <span id="orderValue" class="field-value">4</span></label>
+          <input id="reflectionOrder" class="range-control" type="range" min="0" max="8" value="4">
+          <div class="range-scale"><span>FAST</span><span>HIGHER DETAIL</span></div>
+          <label class="field-label top-gap" for="modeLimit">Modal analysis limit <span id="modeValue" class="field-value">250 Hz</span></label>
+          <input id="modeLimit" class="range-control" type="range" min="100" max="500" step="25" value="250">
+          <div class="solver-note"><span class="info-mark">i</span><span>Material values are illustrative starting points. Replace them with measured data when available.</span></div>
+        </section>
+
+        <section class="side-section medium-section">
+          <div class="section-title"><span class="section-glyph">≈</span> UNDERWATER COMMUNICATION DEMO</div>
+          <label class="underwater-toggle"><input id="underwaterDemo" type="checkbox"><span>Underwater call demo</span></label>
+          <div class="solver-note"><span class="info-mark">i</span><span>Applies water sound speed and a band-limited hydrophone/communication-device color to conversation playback. This is a listening illustration, not a diver or underwater propagation simulator.</span></div>
+        </section>
+
+        <div class="sidebar-footer"><span class="local-lock">◈</span> Scene data stays in this browser<br><span class="muted-line">No account or upload required</span></div>
+      </aside>
+
+      <main class="workspace">
+        <div class="workspace-header">
+          <div>
+            <div class="eyebrow">ROOM ACOUSTICS <span>/</span> REFERENCE MODEL</div>
+            <h1>Build a room. Place the mic.</h1>
+            <p class="subhead">Explore how geometry and surface absorption shape the impulse response.</p>
+          </div>
+          <div class="workspace-tools">
+            <button class="button small quiet" id="resetBtn" title="Restore the example room">Reset scene</button>
+            <button class="button small quiet" id="snapshotBtn"><span class="compare-icon">⇄</span> <span id="snapshotButtonLabel">Save scene A</span></button>
+          </div>
+        </div>
+
+        <div class="tabbar" role="tablist" aria-label="Workspace views">
+          <button class="tab active" role="tab" aria-selected="true" data-view="room"><span>01</span> ROOM</button>
+          <button class="tab" role="tab" aria-selected="false" data-view="placement"><span>02</span> PLACEMENT</button>
+          <button class="tab" role="tab" aria-selected="false" data-view="response"><span>03</span> RESPONSE</button>
+          <div class="tabbar-right"><span id="calcStatus" class="calc-status"><i></i> READY TO SIMULATE</span></div>
+        </div>
+
+        <section id="roomView" class="view-panel active-view">
+          <div class="visual-card">
+            <div class="card-topline">
+              <div><span class="card-kicker">PLAN VIEW</span><span class="card-title">Room & placement</span></div>
+              <div class="legend"><span><i class="legend-source"></i> SOURCE</span><span><i class="legend-mic"></i> MICROPHONE</span><span><i class="legend-ray"></i> REFLECTION PATH</span></div>
+            </div>
+            <div class="canvas-wrap"><canvas id="roomCanvas" aria-label="Interactive room plan. Drag the source or microphone to reposition it."></canvas><div id="canvasTooltip" class="canvas-tooltip"></div></div>
+            <div class="visual-foot"><span><kbd>DRAG</kbd> S/M to move · arrow tip to turn · selected furniture knob to rotate</span><span id="planReadout">6.0 × 8.0 m · Z 1.5 m</span></div>
+          </div>
+          <div class="analysis-card">
+            <div class="analysis-head"><div><span class="card-kicker">IMPULSE RESPONSE</span><span class="card-title">Early energy over time</span></div><div class="plot-legend"><span><i></i> ENERGY</span><span class="plot-axis-label">0 — 500 ms</span></div></div>
+            <canvas id="etcCanvas" class="plot-canvas" aria-label="Early reflection energy plot"></canvas>
+          </div>
+        </section>
+
+        <section id="placementView" class="view-panel">
+          <div class="visual-card placement-card">
+            <div class="card-topline"><div><span class="card-kicker">SOURCE / RECEIVER</span><span class="card-title">Position and distance</span></div><span class="tiny-chip">TOP VIEW · Z-UP</span></div>
+            <div class="canvas-wrap"><canvas id="placementCanvas" aria-label="Interactive source and microphone placement"></canvas></div>
+            <div class="visual-foot"><span><kbd>DRAG</kbd> handles or use numeric coordinates</span><span id="distanceReadout">DISTANCE —</span></div>
+          </div>
+          <div class="info-strip"><span class="info-mark">i</span><span>Azimuth 0° points toward +Y (top of plan). Beam width is the full angle at −6 dB; 360° is omnidirectional. Directionality changes image-path levels, not room-mode frequencies.</span></div>
+        </section>
+
+        <section id="responseView" class="view-panel">
+          <div class="analysis-card response-card">
+            <div class="analysis-head"><div><span class="card-kicker">ROOM RESPONSE</span><span class="card-title">Frequency and decay</span></div><div class="plot-legend"><span><i></i> MODE DENSITY</span><span class="plot-axis-label">31 Hz — 500 Hz</span></div></div>
+            <canvas id="modeCanvas" class="plot-canvas tall-plot" aria-label="Room mode frequency plot"></canvas>
+            <div id="modeList" class="mode-list"></div>
+          </div>
+          <div class="analysis-card response-card">
+            <div class="analysis-head"><div><span class="card-kicker">DECAY ESTIMATE</span><span class="card-title">Sabine reference T60</span></div><span class="tiny-chip">DIFFUSE-FIELD APPROXIMATION</span></div>
+            <canvas id="decayCanvas" class="plot-canvas decay-plot" aria-label="Frequency-dependent decay estimate"></canvas>
+          </div>
+          <div class="info-strip"><span class="info-mark">i</span><span>Rectangular rigid-wall mode frequencies are analytical. T60 uses a diffuse-field Sabine estimate from entered absorption; it is a reference, not a measured-room prediction.</span></div>
+        </section>
+
+        <div class="bottom-bar">
+          <div class="audio-readout"><span class="audio-pulse" id="audioPulse"></span><div class="audio-readout-info"><b id="audioLabel">ROOM AUDITION</b><small id="audioMeta">Conversation sample · Japanese</small><label id="directControlWrap" class="direct-control"><span><span>REVERB</span><b id="directBalanceValue">50%</b><span>DIRECT</span></span><input id="directBalance" type="range" min="0" max="100" value="50" aria-label="Direct to reverberant balance"></label></div></div>
+          <div class="transport-controls"><select id="sampleSelect" class="sample-select" aria-label="Listening sample"><option value="conversation-ja">Conversation · Japanese</option><option value="conversation-en">Conversation · English</option><option value="rir">Impulse response</option></select><label class="loop-toggle" title="Loop playback"><input id="loopPlayback" type="checkbox"><span>LOOP</span></label><button id="playBtn" class="play-button" aria-label="Play sample through room"><span class="play-triangle">▶</span></button><button id="stopBtn" class="stop-button" aria-label="Stop playback"><span></span></button><span class="space-hint"><kbd>SPACE</kbd></span></div>
+          <button id="simulateBtn" class="button accent simulate-button"><span class="spark">✳</span> SIMULATE ROOM</button>
+        </div>
+      </main>
+
+      <aside class="inspector">
+        <div class="inspector-heading"><span>PLACEMENT</span><span class="tiny-chip">XYZ</span></div>
+        <section class="object-card source-card">
+          <div class="object-header"><span class="object-icon source-icon">S</span><div><b>SOURCE</b><small id="sourcePatternLabel">OMNIDIRECTIONAL</small></div><span class="object-state">●</span></div>
+          <div class="coord-grid">
+            <label><span>X</span><div><input id="srcX" type="number" step="0.05" value="3.00"><em>m</em></div></label>
+            <label><span>Y</span><div><input id="srcY" type="number" step="0.05" value="2.00"><em>m</em></div></label>
+            <label><span>Z</span><div><input id="srcZ" type="number" step="0.05" value="1.50"><em>m</em></div></label>
+          </div>
+          <div class="position-sliders"><label>X <input id="srcXRange" type="range" min="0" max="6" step="0.01" value="3"></label><label>Y <input id="srcYRange" type="range" min="0" max="8" step="0.01" value="2"></label></div>
+          <div class="beam-controls"><label><span>AZIMUTH <b id="srcAzValue">0°</b></span><input id="srcAzimuth" type="range" min="0" max="359" value="0"></label><label><span>BEAM WIDTH <b id="srcWidthValue">360°</b></span><input id="srcBeamWidth" type="range" min="30" max="360" step="5" value="360"></label></div>
+        </section>
+        <section class="object-card mic-card">
+          <div class="object-header"><span class="object-icon mic-icon">M</span><div><b>MICROPHONE</b><small id="receiverPatternLabel">OMNIDIRECTIONAL</small></div><span class="object-state">●</span></div>
+          <div class="coord-grid">
+            <label><span>X</span><div><input id="micX" type="number" step="0.05" value="3.00"><em>m</em></div></label>
+            <label><span>Y</span><div><input id="micY" type="number" step="0.05" value="6.00"><em>m</em></div></label>
+            <label><span>Z</span><div><input id="micZ" type="number" step="0.05" value="1.50"><em>m</em></div></label>
+          </div>
+          <div class="position-sliders"><label>X <input id="micXRange" type="range" min="0" max="6" step="0.01" value="3"></label><label>Y <input id="micYRange" type="range" min="0" max="8" step="0.01" value="6"></label></div>
+          <div class="beam-controls"><label><span>AZIMUTH <b id="micAzValue">180°</b></span><input id="micAzimuth" type="range" min="0" max="359" value="180"></label><label><span>BEAM WIDTH <b id="micWidthValue">360°</b></span><input id="micBeamWidth" type="range" min="30" max="360" step="5" value="360"></label></div>
+          <div class="stereo-controls"><label><input id="micStereoEnabled" type="checkbox" checked> Stereo pair</label><label><span>Spacing <b id="micSpacingValue">0.20 m</b></span><input id="micSpacing" type="range" min="0.10" max="0.80" step="0.01" value="0.20"></label></div>
+        </section>
+
+        <section id="objectProperties" class="object-card selected-object-card" hidden>
+          <div class="object-header"><span class="object-icon item-icon">▰</span><div><b id="selectedObjectName">OBJECT</b><small>SELECTED · BOX APPROXIMATION</small></div><button id="deleteObjectBtn" class="delete-object" aria-label="Remove selected object">×</button></div>
+          <div class="object-prop-grid">
+            <label><span>X</span><input id="objX" type="number" step="0.05"></label><label><span>Y</span><input id="objY" type="number" step="0.05"></label><label><span>Z</span><input id="objZ" type="number" step="0.05"></label>
+            <label><span>WIDTH</span><input id="objW" type="number" min="0.1" step="0.05"></label><label><span>DEPTH</span><input id="objD" type="number" min="0.1" step="0.05"></label><label><span>HEIGHT</span><input id="objH" type="number" min="0.05" step="0.05"></label>
+            <label class="rotation-field"><span>ROTATION</span><div><input id="objRot" type="number" min="-180" max="180" step="5"><em>°</em></div></label>
+          </div>
+        </section>
+
+        <div class="inspector-heading metrics-heading"><span>ROOM METRICS</span><span class="live-label"><i></i> LIVE</span></div>
+        <div class="metric-card"><div class="metric-line"><span>VOLUME</span><b id="volumeMetric">144.0 <small>m³</small></b></div><div class="metric-line"><span>SOURCE → MIC</span><b id="distanceMetric">4.00 <small>m</small></b></div><div class="metric-line"><span>DIRECT ARRIVAL</span><b id="arrivalMetric">11.7 <small>ms</small></b></div><div class="metric-line"><span>IMAGE PATHS</span><b id="pathMetric">129</b></div></div>
+        <div class="t60-card"><div class="t60-head"><span>EST. RT60 @ 1 kHz</span><span class="estimate-pill">ESTIMATE</span></div><div class="t60-value"><strong id="t60Metric">—</strong><span>sec</span></div><div class="t60-track"><i id="t60Bar"></i></div><div class="t60-caption">Sabine diffuse-field reference</div></div>
+
+        <section class="compare-box"><div class="compare-head"><span>SCENES A–D</span><button id="clearCompare" class="text-button" hidden>Clear all</button></div><div id="compareContent" class="snapshot-list"></div></section>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      </aside>
+
+      <aside class="help-panel">
+        <div class="inspector-heading"><span>EXPLANATION</span><span class="tiny-chip">LIVE</span></div>
+        <section class="parameter-guide-section">
+          <div class="section-title"><span class="section-glyph">?</span> WHAT CHANGES IN THE SOUND?</div>
+          <b id="parameterGuideTitle" class="parameter-guide-title">Choose a control</b>
+          <p id="parameterGuideText" class="parameter-guide-text">Move or focus a parameter to see how it changes the sound.</p>
+        </section>
+        <section class="help-card"><b>PLAYBACK</b><p>Press Space to play or stop the selected sample. Enable Loop to repeat it.</p><small>Keyboard shortcuts are inactive while editing a field.</small></section>
+        <section class="help-card"><b>HOW TO READ THE RESPONSE</b><p>Direct sound arrives first. Wall reflections follow, then the room’s diffuse decay.</p><p>Use the direct/reverb slider to compare the dry voice with the room-colored voice.</p></section>
+        <section class="help-card"><b>MODEL NOTE</b><p>Levels and decay are approximate. Listen for relative changes when moving controls; this is not a calibrated room measurement.</p></section>
+      </aside>
+    </div>
+  </div>
+  <script src="sample-audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
