@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@600;700&display=swap">
 <link rel="stylesheet" href="/note-kit/kit.css">
-<link rel="stylesheet" href="/mix-balance-note/app.css?v=2">
+<link rel="stylesheet" href="/mix-balance-note/app.css?v=5">
 </head>
 <body>
 <div id="app-root">
@@ -47,10 +47,10 @@
     <button type="button" id="mbl-blind" class="mbl-toggle" aria-pressed="false">Blind</button>
   </div>
 
-  <!-- Graph 1: Target Gate -->
+  <!-- Graph 1 + Console Strips directly underneath VU meters -->
   <section id="card-gate">
     <div class="mbl-card-head">
-      <h2>1. Target Gate <span class="mbl-badge">4x VU + Target Band</span></h2>
+      <h2>1. Console &amp; Target Gate <span class="mbl-badge">4x VU + Channel Strips</span></h2>
       <div class="legend mbl-legend">
         <span><i style="background:#2d8a4e"></i>In Target (OK)</span>
         <span><i style="background:#a5472a"></i>Peak / Error</span>
@@ -58,7 +58,97 @@
       </div>
     </div>
     <canvas id="cv-gate"></canvas>
-    <p class="note">Displays 4 mechanical VU meters alongside the selected reference meter (LUFS-M, VU, RMS, or Peak) and its target tolerance gate.</p>
+    <div class="mbl-strips">
+      <!-- CH 1 Kick -->
+      <div class="mbl-ch">
+        <div class="mbl-ch-top"><span class="mbl-ch-name"><span id="mbl-led-0" class="mbl-led"></span>1 KICK</span><div class="mbl-sm" style="width:auto;"><button type="button" id="mbl-s-0" data-solo="false" style="padding:2px 6px;">S</button><button type="button" id="mbl-m-0" data-mute="false" style="padding:2px 6px;">M</button></div></div>
+        <div class="mbl-ch-body">
+          <div id="mbl-gw-0" class="mbl-gain-col active">
+            <span class="mbl-ch-lbl">IN GAIN</span>
+            <div id="mbl-g-0" class="mbl-knob" role="slider" aria-label="Kick Input Gain" aria-valuemin="-18" aria-valuemax="18" aria-valuenow="0" title="Drag to adjust / Double-click for 0 dB">
+              <svg viewBox="0 0 46 46"><path d="M 10.3 35.7 A 18 18 0 1 1 35.7 35.7" fill="none" stroke="#d2c6af" stroke-width="2.5" stroke-linecap="round"/><path id="mbl-ka-0" d="" fill="none" stroke="#a5472a" stroke-width="2.5" stroke-linecap="round"/><circle cx="23" cy="23" r="13.5" fill="#f8f3e8" stroke="#5d5246" stroke-width="1.5"/><g id="mbl-kp-0"><line x1="23" y1="23" x2="23" y2="11.5" stroke="#a5472a" stroke-width="2.2" stroke-linecap="round"/></g></svg>
+            </div>
+            <span id="mbl-gv-0" class="mbl-ch-val">+0.0dB</span>
+          </div>
+          <div id="mbl-fw-0" class="mbl-fader-col">
+            <span class="mbl-ch-lbl">FADER</span>
+            <div id="mbl-f-0" class="mbl-fader-track" role="slider" aria-label="Kick Main Fader" aria-valuemin="-24" aria-valuemax="12" aria-valuenow="0" title="Drag to adjust / Double-click for 0 dB">
+              <div class="mbl-fader-ticks"><span style="top:8%"></span><span style="top:23%"></span><span class="zero" style="top:38.67%"></span><span style="top:56%"></span><span style="top:74%"></span><span style="top:92%"></span></div>
+              <div class="mbl-fader-slot"></div>
+              <div id="mbl-fc-0" class="mbl-fader-cap" style="top:38.67%"></div>
+            </div>
+            <span id="mbl-fv-0" class="mbl-ch-val">+0.0dB</span>
+          </div>
+        </div>
+      </div>
+      <!-- CH 2 Bass -->
+      <div class="mbl-ch">
+        <div class="mbl-ch-top"><span class="mbl-ch-name"><span id="mbl-led-1" class="mbl-led"></span>2 BASS</span><div class="mbl-sm" style="width:auto;"><button type="button" id="mbl-s-1" data-solo="false" style="padding:2px 6px;">S</button><button type="button" id="mbl-m-1" data-mute="false" style="padding:2px 6px;">M</button></div></div>
+        <div class="mbl-ch-body">
+          <div id="mbl-gw-1" class="mbl-gain-col active">
+            <span class="mbl-ch-lbl">IN GAIN</span>
+            <div id="mbl-g-1" class="mbl-knob" role="slider" aria-label="Bass Input Gain" aria-valuemin="-18" aria-valuemax="18" aria-valuenow="0" title="Drag to adjust / Double-click for 0 dB">
+              <svg viewBox="0 0 46 46"><path d="M 10.3 35.7 A 18 18 0 1 1 35.7 35.7" fill="none" stroke="#d2c6af" stroke-width="2.5" stroke-linecap="round"/><path id="mbl-ka-1" d="" fill="none" stroke="#a5472a" stroke-width="2.5" stroke-linecap="round"/><circle cx="23" cy="23" r="13.5" fill="#f8f3e8" stroke="#5d5246" stroke-width="1.5"/><g id="mbl-kp-1"><line x1="23" y1="23" x2="23" y2="11.5" stroke="#a5472a" stroke-width="2.2" stroke-linecap="round"/></g></svg>
+            </div>
+            <span id="mbl-gv-1" class="mbl-ch-val">+0.0dB</span>
+          </div>
+          <div id="mbl-fw-1" class="mbl-fader-col">
+            <span class="mbl-ch-lbl">FADER</span>
+            <div id="mbl-f-1" class="mbl-fader-track" role="slider" aria-label="Bass Main Fader" aria-valuemin="-24" aria-valuemax="12" aria-valuenow="0" title="Drag to adjust / Double-click for 0 dB">
+              <div class="mbl-fader-ticks"><span style="top:8%"></span><span style="top:23%"></span><span class="zero" style="top:38.67%"></span><span style="top:56%"></span><span style="top:74%"></span><span style="top:92%"></span></div>
+              <div class="mbl-fader-slot"></div>
+              <div id="mbl-fc-1" class="mbl-fader-cap" style="top:38.67%"></div>
+            </div>
+            <span id="mbl-fv-1" class="mbl-ch-val">+0.0dB</span>
+          </div>
+        </div>
+      </div>
+      <!-- CH 3 Snare -->
+      <div class="mbl-ch">
+        <div class="mbl-ch-top"><span class="mbl-ch-name"><span id="mbl-led-2" class="mbl-led"></span>3 SNARE</span><div class="mbl-sm" style="width:auto;"><button type="button" id="mbl-s-2" data-solo="false" style="padding:2px 6px;">S</button><button type="button" id="mbl-m-2" data-mute="false" style="padding:2px 6px;">M</button></div></div>
+        <div class="mbl-ch-body">
+          <div id="mbl-gw-2" class="mbl-gain-col active">
+            <span class="mbl-ch-lbl">IN GAIN</span>
+            <div id="mbl-g-2" class="mbl-knob" role="slider" aria-label="Snare Input Gain" aria-valuemin="-18" aria-valuemax="18" aria-valuenow="0" title="Drag to adjust / Double-click for 0 dB">
+              <svg viewBox="0 0 46 46"><path d="M 10.3 35.7 A 18 18 0 1 1 35.7 35.7" fill="none" stroke="#d2c6af" stroke-width="2.5" stroke-linecap="round"/><path id="mbl-ka-2" d="" fill="none" stroke="#a5472a" stroke-width="2.5" stroke-linecap="round"/><circle cx="23" cy="23" r="13.5" fill="#f8f3e8" stroke="#5d5246" stroke-width="1.5"/><g id="mbl-kp-2"><line x1="23" y1="23" x2="23" y2="11.5" stroke="#a5472a" stroke-width="2.2" stroke-linecap="round"/></g></svg>
+            </div>
+            <span id="mbl-gv-2" class="mbl-ch-val">+0.0dB</span>
+          </div>
+          <div id="mbl-fw-2" class="mbl-fader-col">
+            <span class="mbl-ch-lbl">FADER</span>
+            <div id="mbl-f-2" class="mbl-fader-track" role="slider" aria-label="Snare Main Fader" aria-valuemin="-24" aria-valuemax="12" aria-valuenow="0" title="Drag to adjust / Double-click for 0 dB">
+              <div class="mbl-fader-ticks"><span style="top:8%"></span><span style="top:23%"></span><span class="zero" style="top:38.67%"></span><span style="top:56%"></span><span style="top:74%"></span><span style="top:92%"></span></div>
+              <div class="mbl-fader-slot"></div>
+              <div id="mbl-fc-2" class="mbl-fader-cap" style="top:38.67%"></div>
+            </div>
+            <span id="mbl-fv-2" class="mbl-ch-val">+0.0dB</span>
+          </div>
+        </div>
+      </div>
+      <!-- CH 4 Vocal -->
+      <div class="mbl-ch">
+        <div class="mbl-ch-top"><span class="mbl-ch-name"><span id="mbl-led-3" class="mbl-led"></span>4 VOCAL</span><div class="mbl-sm" style="width:auto;"><button type="button" id="mbl-s-3" data-solo="false" style="padding:2px 6px;">S</button><button type="button" id="mbl-m-3" data-mute="false" style="padding:2px 6px;">M</button></div></div>
+        <div class="mbl-ch-body">
+          <div id="mbl-gw-3" class="mbl-gain-col active">
+            <span class="mbl-ch-lbl">IN GAIN</span>
+            <div id="mbl-g-3" class="mbl-knob" role="slider" aria-label="Vocal Input Gain" aria-valuemin="-18" aria-valuemax="18" aria-valuenow="0" title="Drag to adjust / Double-click for 0 dB">
+              <svg viewBox="0 0 46 46"><path d="M 10.3 35.7 A 18 18 0 1 1 35.7 35.7" fill="none" stroke="#d2c6af" stroke-width="2.5" stroke-linecap="round"/><path id="mbl-ka-3" d="" fill="none" stroke="#a5472a" stroke-width="2.5" stroke-linecap="round"/><circle cx="23" cy="23" r="13.5" fill="#f8f3e8" stroke="#5d5246" stroke-width="1.5"/><g id="mbl-kp-3"><line x1="23" y1="23" x2="23" y2="11.5" stroke="#a5472a" stroke-width="2.2" stroke-linecap="round"/></g></svg>
+            </div>
+            <span id="mbl-gv-3" class="mbl-ch-val">+0.0dB</span>
+          </div>
+          <div id="mbl-fw-3" class="mbl-fader-col">
+            <span class="mbl-ch-lbl">FADER</span>
+            <div id="mbl-f-3" class="mbl-fader-track" role="slider" aria-label="Vocal Main Fader" aria-valuemin="-24" aria-valuemax="12" aria-valuenow="0" title="Drag to adjust / Double-click for 0 dB">
+              <div class="mbl-fader-ticks"><span style="top:8%"></span><span style="top:23%"></span><span class="zero" style="top:38.67%"></span><span style="top:56%"></span><span style="top:74%"></span><span style="top:92%"></span></div>
+              <div class="mbl-fader-slot"></div>
+              <div id="mbl-fc-3" class="mbl-fader-cap" style="top:38.67%"></div>
+            </div>
+            <span id="mbl-fv-3" class="mbl-ch-val">+0.0dB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="note">Displays 4 mechanical VU meters alongside the target gate, with each channel's rotary Input Gain knob and long-throw Main Fader directly beneath.</p>
   </section>
 
   <!-- Graph 2: Anchor Delta -->
@@ -89,86 +179,8 @@
     <p class="note">Overlays Peak, RMS, LUFS-M and VU across all 4 tracks to reveal Crest Factor (Peak − RMS) differences.</p>
   </section>
 
-  <!-- Controls Column -->
+  <!-- Master / Trainer Controls Column -->
   <div id="mbl-ctrls" class="mbl-ctrls-wrap">
-    <div class="mbl-sec">
-      <div class="mbl-sec-title"><span>4-Ch Mixer</span><span>−16 LUFS-M Ref</span></div>
-      <div class="mbl-strips">
-        <!-- CH 1 Kick -->
-        <div class="mbl-ch">
-          <div class="mbl-ch-name">KICK</div>
-          <div id="mbl-gw-0" class="mbl-ch-gain-wrap active">
-            <span class="mbl-ch-lbl"><span id="mbl-led-0" class="mbl-led"></span>IN GAIN</span>
-            <input id="mbl-g-0" class="mbl-hslider" type="range" min="-18" max="18" step="0.1" value="0" aria-label="Kick Input Gain">
-            <span id="mbl-gv-0" class="mbl-ch-val">+0.0dB</span>
-          </div>
-          <div class="mbl-sm">
-            <button type="button" id="mbl-s-0" data-solo="false">S</button>
-            <button type="button" id="mbl-m-0" data-mute="false">M</button>
-          </div>
-          <div id="mbl-fw-0" class="mbl-fader-wrap">
-            <span class="mbl-ch-lbl">FADER</span>
-            <div class="mbl-vslider-box"><input id="mbl-f-0" class="mbl-vslider" type="range" min="-24" max="12" step="0.1" value="0" aria-label="Kick Main Fader"></div>
-            <span id="mbl-fv-0" class="mbl-ch-val">+0.0dB</span>
-          </div>
-        </div>
-        <!-- CH 2 Bass -->
-        <div class="mbl-ch">
-          <div class="mbl-ch-name">BASS</div>
-          <div id="mbl-gw-1" class="mbl-ch-gain-wrap active">
-            <span class="mbl-ch-lbl"><span id="mbl-led-1" class="mbl-led"></span>IN GAIN</span>
-            <input id="mbl-g-1" class="mbl-hslider" type="range" min="-18" max="18" step="0.1" value="0" aria-label="Bass Input Gain">
-            <span id="mbl-gv-1" class="mbl-ch-val">+0.0dB</span>
-          </div>
-          <div class="mbl-sm">
-            <button type="button" id="mbl-s-1" data-solo="false">S</button>
-            <button type="button" id="mbl-m-1" data-mute="false">M</button>
-          </div>
-          <div id="mbl-fw-1" class="mbl-fader-wrap">
-            <span class="mbl-ch-lbl">FADER</span>
-            <div class="mbl-vslider-box"><input id="mbl-f-1" class="mbl-vslider" type="range" min="-24" max="12" step="0.1" value="0" aria-label="Bass Main Fader"></div>
-            <span id="mbl-fv-1" class="mbl-ch-val">+0.0dB</span>
-          </div>
-        </div>
-        <!-- CH 3 Snare -->
-        <div class="mbl-ch">
-          <div class="mbl-ch-name">SNARE</div>
-          <div id="mbl-gw-2" class="mbl-ch-gain-wrap active">
-            <span class="mbl-ch-lbl"><span id="mbl-led-2" class="mbl-led"></span>IN GAIN</span>
-            <input id="mbl-g-2" class="mbl-hslider" type="range" min="-18" max="18" step="0.1" value="0" aria-label="Snare Input Gain">
-            <span id="mbl-gv-2" class="mbl-ch-val">+0.0dB</span>
-          </div>
-          <div class="mbl-sm">
-            <button type="button" id="mbl-s-2" data-solo="false">S</button>
-            <button type="button" id="mbl-m-2" data-mute="false">M</button>
-          </div>
-          <div id="mbl-fw-2" class="mbl-fader-wrap">
-            <span class="mbl-ch-lbl">FADER</span>
-            <div class="mbl-vslider-box"><input id="mbl-f-2" class="mbl-vslider" type="range" min="-24" max="12" step="0.1" value="0" aria-label="Snare Main Fader"></div>
-            <span id="mbl-fv-2" class="mbl-ch-val">+0.0dB</span>
-          </div>
-        </div>
-        <!-- CH 4 Vocal -->
-        <div class="mbl-ch">
-          <div class="mbl-ch-name">VOCAL</div>
-          <div id="mbl-gw-3" class="mbl-ch-gain-wrap active">
-            <span class="mbl-ch-lbl"><span id="mbl-led-3" class="mbl-led"></span>IN GAIN</span>
-            <input id="mbl-g-3" class="mbl-hslider" type="range" min="-18" max="18" step="0.1" value="0" aria-label="Vocal Input Gain">
-            <span id="mbl-gv-3" class="mbl-ch-val">+0.0dB</span>
-          </div>
-          <div class="mbl-sm">
-            <button type="button" id="mbl-s-3" data-solo="false">S</button>
-            <button type="button" id="mbl-m-3" data-mute="false">M</button>
-          </div>
-          <div id="mbl-fw-3" class="mbl-fader-wrap">
-            <span class="mbl-ch-lbl">FADER</span>
-            <div class="mbl-vslider-box"><input id="mbl-f-3" class="mbl-vslider" type="range" min="-24" max="12" step="0.1" value="0" aria-label="Vocal Main Fader"></div>
-            <span id="mbl-fv-3" class="mbl-ch-val">+0.0dB</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="mbl-sec">
       <div class="mbl-sec-title"><span>Target Genre (STEP 2)</span><span>Tol:
         <select id="mbl-tol" class="mbl-sel" style="padding:1px 4px;font-size:10.5px;">
@@ -205,23 +217,29 @@
     </div>
 
     <div class="mbl-sec">
-      <div class="mbl-sec-title"><span>Trainer &amp; A/B Snapshots</span></div>
-      <div class="mbl-row" style="margin-bottom:4px;">
+      <div class="mbl-sec-title"><span>Trainer Actions</span></div>
+      <div class="mbl-row" style="margin-bottom:5px;">
         <button type="button" id="mbl-rand" class="mbl-btn">Randomize</button>
         <button type="button" id="mbl-autotrim" class="mbl-btn">Auto Trim</button>
       </div>
-      <div class="mbl-row" style="margin-bottom:5px;">
+      <div class="mbl-row">
         <button type="button" id="mbl-fader0" class="mbl-btn">Fader 0dB</button>
         <button type="button" id="mbl-apply-genre" class="mbl-btn">Apply Genre</button>
       </div>
-      <div class="mbl-row" style="margin-bottom:5px;">
+    </div>
+
+    <div class="mbl-sec">
+      <div class="mbl-sec-title"><span>Snapshot A / B / C</span></div>
+      <div class="mbl-row" style="margin-bottom:6px;">
         <button type="button" id="mbl-snap-0" class="mbl-btn mbl-snap-btn" aria-pressed="false">A:Empty</button>
         <button type="button" id="mbl-snap-1" class="mbl-btn mbl-snap-btn" aria-pressed="false">B:Empty</button>
         <button type="button" id="mbl-snap-2" class="mbl-btn mbl-snap-btn" aria-pressed="false">C:Empty</button>
         <button type="button" id="mbl-snap-clear" class="mbl-btn" style="flex:0 0 auto;padding:6px 8px;">×</button>
       </div>
-      <div class="mbl-row" style="margin-bottom:5px;">
+      <div class="mbl-row" style="margin-bottom:6px;">
         <button type="button" id="mbl-lmatch" class="mbl-toggle" aria-pressed="true">Loudness Match</button>
+      </div>
+      <div class="mbl-row" style="margin-bottom:6px;">
         <button type="button" id="mbl-judge" class="mbl-btn mbl-judge-btn">JUDGE</button>
       </div>
       <div id="mbl-judge-res" class="mbl-judge-res">Press JUDGE (Target ±0.8 dB)</div>
@@ -243,7 +261,7 @@
   </div>
 </div>
 
-<script src="/mix-balance-note/app.js?v=3"></script>
+<script src="/mix-balance-note/app.js?v=4"></script>
 <script>
 window.NK = {
   key: "mbl",
@@ -264,8 +282,8 @@ window.NK = {
   ],
   areas: "\"gate gate\" \"anchor matrix\"",
   cols: "1fr 1fr",
-  rows: "minmax(145px, 1.02fr) minmax(135px, 0.98fr)",
-  cw: "300px",
+  rows: "minmax(310px, 1.85fr) minmax(130px, 0.75fr)",
+  cw: "260px",
   ctrls: ["#mbl-ctrls"],
   notes: [
     { sel: "#sec-lessons", label: "Lessons" }

@@ -614,7 +614,7 @@
 
     var tol = TOLS[state.tolIdx];
     var colW = w / 4;
-    var vuH = Math.min(115, Math.max(72, h * 0.48));
+    var vuH = Math.min(82, Math.max(58, h * 0.44));
 
     for (var i = 0; i < 4; i++) {
       var x0 = i * colW + 4, cw = colW - 8;
@@ -879,6 +879,35 @@
     b.textContent = state.playing ? (JA ? '■ 停止' : '■ Stop') : (JA ? '▶ 再生' : '▶ Play');
   }
 
+  function renderKnob(idx, val) {
+    var ptr = document.getElementById('mbl-kp-' + idx);
+    var arc = document.getElementById('mbl-ka-' + idx);
+    var knob = document.getElementById('mbl-g-' + idx);
+    var norm = Math.max(-1, Math.min(1, val / 18)); // -1..+1
+    var deg = norm * 135;
+    if (ptr) ptr.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 23 23)');
+    if (arc) {
+      var r = 18, cx = 23, cy = 23;
+      var a0 = -Math.PI / 2;
+      var a1 = a0 + norm * (135 * Math.PI / 180);
+      var x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+      var x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+      var sweep = norm >= 0 ? 1 : 0;
+      arc.setAttribute('d', Math.abs(norm) < 0.01 ? '' : 'M ' + x0.toFixed(1) + ' ' + y0.toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 ' + sweep + ' ' + x1.toFixed(1) + ' ' + y1.toFixed(1));
+    }
+    if (knob) knob.setAttribute('aria-valuenow', val.toFixed(1));
+  }
+
+  function renderFader(idx, val) {
+    var cap = document.getElementById('mbl-fc-' + idx);
+    var trk = document.getElementById('mbl-f-' + idx);
+    // +12 dB -> top 8%, 0 dB -> top 38.67%, -24 dB -> top 92%
+    var norm = (12 - Math.max(-24, Math.min(12, val))) / 36;
+    var pct = 8 + norm * 84;
+    if (cap) cap.style.top = pct.toFixed(2) + '%';
+    if (trk) trk.setAttribute('aria-valuenow', val.toFixed(1));
+  }
+
   function syncUI() {
     applyAudioParams();
     updateReadings(0.016);
@@ -916,21 +945,19 @@
     // Strips
     var tol = TOLS[state.tolIdx];
     for (var i = 0; i < 4; i++) {
-      var gEl = document.getElementById('mbl-g-' + i);
       var gvEl = document.getElementById('mbl-gv-' + i);
-      var fEl = document.getElementById('mbl-f-' + i);
       var fvEl = document.getElementById('mbl-fv-' + i);
       var led = document.getElementById('mbl-led-' + i);
       var gWrap = document.getElementById('mbl-gw-' + i);
       var fWrap = document.getElementById('mbl-fw-' + i);
-      if (gEl) gEl.value = state.inGain[i];
+      renderKnob(i, state.inGain[i]);
       if (gvEl) gvEl.textContent = (state.inGain[i] >= 0 ? '+' : '') + state.inGain[i].toFixed(1) + 'dB';
-      if (fEl) fEl.value = state.fader[i];
+      renderFader(i, state.fader[i]);
       if (fvEl) fvEl.textContent = (state.fader[i] >= 0 ? '+' : '') + state.fader[i].toFixed(1) + 'dB';
       if (gWrap) gWrap.classList.toggle('active', state.stage === 0);
       if (fWrap) fWrap.classList.toggle('active', state.stage === 1);
       if (led) {
-        var ok = Math.abs(getActiveValue(i) - getTargetVal(i)) <= tol;
+        var ok = Math.abs(getStableValue(i) - getTargetVal(i)) <= tol;
         led.classList.toggle('ok', ok);
       }
       var sBtn = document.getElementById('mbl-s-' + i);
@@ -1060,12 +1087,69 @@
         var fEl = document.getElementById('mbl-f-' + idx);
         var sBtn = document.getElementById('mbl-s-' + idx);
         var mBtn = document.getElementById('mbl-m-' + idx);
-        if (gEl) gEl.addEventListener('input', function () {
-          state.inGain[idx] = Number(gEl.value); state.judge = null; syncUI();
-        });
-        if (fEl) fEl.addEventListener('input', function () {
-          state.fader[idx] = Number(fEl.value); state.stage = 1; state.judge = null; syncUI();
-        });
+
+        if (gEl) {
+          var dragK = null;
+          gEl.addEventListener('pointerdown', function (e) {
+            e.preventDefault();
+            dragK = { y: e.clientY, v: state.inGain[idx] };
+            try { gEl.setPointerCapture(e.pointerId); } catch (_) {}
+          });
+          gEl.addEventListener('pointermove', function (e) {
+            if (!dragK) return;
+            var nv = dragK.v + (dragK.y - e.clientY) * 0.16;
+            state.inGain[idx] = Math.round(Math.max(-18, Math.min(18, nv)) * 10) / 10;
+            state.judge = null;
+            syncUI();
+          });
+          gEl.addEventListener('pointerup', function () { dragK = null; });
+          gEl.addEventListener('pointercancel', function () { dragK = null; });
+          gEl.addEventListener('dblclick', function () {
+            state.inGain[idx] = 0; state.judge = null; syncUI();
+          });
+          gEl.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            var nv = state.inGain[idx] + (e.deltaY < 0 ? 0.2 : -0.2);
+            state.inGain[idx] = Math.round(Math.max(-18, Math.min(18, nv)) * 10) / 10;
+            state.judge = null; syncUI();
+          }, { passive: false });
+        }
+
+        if (fEl) {
+          var dragF = false;
+          var setFromClientY = function (cy) {
+            var rect = fEl.getBoundingClientRect();
+            var topY = rect.top + rect.height * 0.08;
+            var botY = rect.top + rect.height * 0.92;
+            var norm = Math.max(0, Math.min(1, (cy - topY) / Math.max(1, botY - topY)));
+            var db = 12 - norm * 36;
+            state.fader[idx] = Math.round(db * 10) / 10;
+            state.stage = 1;
+            state.judge = null;
+            syncUI();
+          };
+          fEl.addEventListener('pointerdown', function (e) {
+            e.preventDefault();
+            dragF = true;
+            try { fEl.setPointerCapture(e.pointerId); } catch (_) {}
+            setFromClientY(e.clientY);
+          });
+          fEl.addEventListener('pointermove', function (e) {
+            if (dragF) setFromClientY(e.clientY);
+          });
+          fEl.addEventListener('pointerup', function () { dragF = false; });
+          fEl.addEventListener('pointercancel', function () { dragF = false; });
+          fEl.addEventListener('dblclick', function () {
+            state.fader[idx] = 0; state.stage = 1; state.judge = null; syncUI();
+          });
+          fEl.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            var nv = state.fader[idx] + (e.deltaY < 0 ? 0.2 : -0.2);
+            state.fader[idx] = Math.round(Math.max(-24, Math.min(12, nv)) * 10) / 10;
+            state.stage = 1; state.judge = null; syncUI();
+          }, { passive: false });
+        }
+
         if (sBtn) sBtn.addEventListener('click', function () {
           state.solo[idx] = !state.solo[idx]; syncUI();
         });

@@ -1,8 +1,8 @@
-/* Mix Balance Study Note — app-specific layout & controls inside note-kit */
-.mbl-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px;flex-wrap:wrap}
+/* Mix Balance Study Note — Console/DAW-style layout inside note-kit */
+.mbl-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 4px;flex-wrap:wrap}
 .mbl-card-head h2{margin:0;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
 .mbl-badge{font-family:var(--nk-mono);font-size:10px;letter-spacing:.08em;padding:1px 6px;border-radius:2px;background:var(--nk-hl);color:var(--nk-ink);border:1px solid var(--nk-line)}
-.mbl-legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:11px;color:var(--nk-muted)}
+.mbl-legend{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:11px;color:var(--nk-muted)}
 .mbl-legend span{display:inline-flex;align-items:center;gap:4px}
 .mbl-legend i{width:10px;height:3px;display:inline-block;border-radius:1px}
 
@@ -16,50 +16,65 @@
 .mbl-toggle{font:500 11.5px/1 var(--nk-ui);color:var(--nk-ink);background:var(--nk-page);border:1px solid var(--nk-line);border-radius:3px;padding:6px 9px;cursor:pointer}
 .mbl-toggle[aria-pressed="true"]{background:var(--nk-blue);color:var(--nk-on);border-color:var(--nk-blue)}
 
-/* Controls column */
-@media (min-width:1100px) and (max-width:1379px) and (min-height:660px){.nk-main{--nk-cw-s:288px;--nk-nw-s:310px}}
-.mbl-ctrls-wrap{display:flex;flex-direction:column;gap:4px;font-size:11px}
-.mbl-sec{border-bottom:1px solid var(--nk-rule);padding-bottom:4px}
-.mbl-sec:last-child{border-bottom:0;padding-bottom:0}
-.mbl-sec-title{font-family:var(--nk-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--nk-muted);margin:0 0 2px;display:flex;justify-content:space-between;align-items:center;gap:4px;white-space:nowrap}
-
-/* 4-channel strips */
-.mbl-strips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
-.mbl-ch{background:var(--nk-paper);border:1px solid var(--nk-line);border-radius:3px;padding:3px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
-.mbl-ch-name{font-family:var(--nk-mono);font-size:10px;font-weight:700;letter-spacing:.03em;color:var(--nk-ink);text-align:center;white-space:nowrap;width:100%}
-.mbl-ch-gain-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px;border-radius:2px;border:1px solid transparent}
-.mbl-ch-gain-wrap.active{background:var(--nk-hl);border-color:var(--nk-kline)}
-.mbl-ch-lbl{font-family:var(--nk-mono);font-size:8px;color:var(--nk-muted);white-space:nowrap}
-.mbl-ch-val{font-family:var(--nk-mono);font-size:9.5px;font-weight:600;color:var(--nk-ink);font-variant-numeric:tabular-nums}
-.mbl-hslider{width:100%;accent-color:var(--nk-red);margin:0;height:13px;cursor:pointer}
-.mbl-led{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--nk-pencil);margin-right:2px;vertical-align:middle}
+/* Console Deck: 4x VU meters directly above 4x Channel Strips */
+#card-gate{display:flex;flex-direction:column}
+#card-gate .nk-cv{flex:0 0 185px!important;min-height:185px!important}
+.mbl-strips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:6px;padding-top:6px;border-top:1px solid var(--nk-rule);flex:1;min-height:0}
+.mbl-ch{background:var(--nk-paper);border:1px solid var(--nk-line);border-radius:4px;padding:6px 6px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;user-select:none}
+.mbl-ch-top{display:flex;align-items:center;justify-content:space-between;width:100%;gap:4px}
+.mbl-ch-name{font-family:var(--nk-mono);font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--nk-ink)}
+.mbl-led{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--nk-pencil);margin-right:3px;vertical-align:middle}
 .mbl-led.ok{background:#2d8a4e}
 
-.mbl-sm{display:flex;gap:2px;width:100%}
-.mbl-sm button{flex:1;font:700 9px/1 var(--nk-mono);padding:2px 0;border:1px solid var(--nk-line);background:var(--nk-page);color:var(--nk-muted);border-radius:2px;cursor:pointer}
+.mbl-ch-body{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;align-items:center;flex:1;min-height:0}
+.mbl-gain-col{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;border-radius:3px;border:1px solid transparent}
+.mbl-gain-col.active{background:var(--nk-hl);border-color:var(--nk-kline)}
+.mbl-ch-lbl{font-family:var(--nk-mono);font-size:8.5px;color:var(--nk-muted);letter-spacing:.04em;white-space:nowrap}
+.mbl-ch-val{font-family:var(--nk-mono);font-size:10.5px;font-weight:600;color:var(--nk-ink);font-variant-numeric:tabular-nums}
+
+/* Rotary Knob */
+.mbl-knob{width:46px;height:46px;cursor:ns-resize;touch-action:none;display:flex;align-items:center;justify-content:center;position:relative}
+.mbl-knob svg{width:46px;height:46px;overflow:visible}
+
+.mbl-sm{display:flex;gap:3px;width:100%}
+.mbl-sm button{flex:1;font:700 9.5px/1 var(--nk-mono);padding:4px 0;border:1px solid var(--nk-line);background:var(--nk-page);color:var(--nk-muted);border-radius:2px;cursor:pointer}
 .mbl-sm button[data-solo="true"]{background:#d48b17;color:#fff;border-color:#b5720d}
 .mbl-sm button[data-mute="true"]{background:var(--nk-red);color:#fff;border-color:var(--nk-red)}
 
-.mbl-fader-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px;border-radius:2px;border:1px solid transparent}
-.mbl-fader-wrap.active{background:var(--nk-hl);border-color:var(--nk-kline)}
-.mbl-vslider-box{height:48px;width:22px;display:flex;align-items:center;justify-content:center}
-.mbl-vslider{width:46px;height:16px;transform:rotate(-90deg);accent-color:var(--nk-blue);cursor:pointer;margin:0}
+/* DAW/Console Long Fader */
+.mbl-fader-col{display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 2px;border-radius:3px;border:1px solid transparent;height:100%}
+.mbl-fader-col.active{background:var(--nk-hl);border-color:var(--nk-kline)}
+.mbl-fader-track{position:relative;width:36px;height:96px;cursor:ns-resize;touch-action:none;display:flex;align-items:center;justify-content:center}
+.mbl-fader-slot{position:absolute;top:6px;bottom:6px;left:50%;width:4px;margin-left:-2px;background:#2b2722;border-radius:2px;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.mbl-fader-ticks{position:absolute;top:6px;bottom:6px;left:2px;right:2px;pointer-events:none}
+.mbl-fader-ticks span{position:absolute;left:0;width:7px;height:1px;background:var(--nk-muted);opacity:.7}
+.mbl-fader-ticks span.zero{background:var(--nk-red);height:1.5px;width:10px;opacity:1}
+.mbl-fader-cap{position:absolute;left:50%;width:24px;height:14px;margin-left:-12px;margin-top:-7px;background:linear-gradient(180deg,#fdfbf7,#d9cfb9);border:1px solid #5d5246;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.28);pointer-events:none}
+.mbl-fader-cap::after{content:"";position:absolute;left:2px;right:2px;top:50%;height:1.5px;margin-top:-0.75px;background:#2b2722}
 
-/* Genre grid & console */
-.mbl-genres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
-.mbl-genres button,.mbl-btn{font:500 10px/1.1 var(--nk-ui);padding:4px 2px;border:1px solid var(--nk-line);background:var(--nk-paper);color:var(--nk-ink);border-radius:2px;cursor:pointer;text-align:center}
+/* Master / Trainer Controls Column */
+@media (min-width:1100px) and (max-width:1379px) and (min-height:660px){.nk-main{--nk-cw-s:258px;--nk-nw-s:304px}}
+.mbl-ctrls-wrap{display:flex;flex-direction:column;gap:6px;font-size:11.5px}
+.mbl-sec{border-bottom:1px solid var(--nk-rule);padding-bottom:6px}
+.mbl-sec:last-child{border-bottom:0;padding-bottom:0}
+.mbl-sec-title{font-family:var(--nk-mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--nk-muted);margin:0 0 4px;display:flex;justify-content:space-between;align-items:center;gap:4px;flex-wrap:wrap}
+
+.mbl-genres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.mbl-genres button,.mbl-btn{font:500 11px/1.15 var(--nk-ui);padding:6px 4px;border:1px solid var(--nk-line);background:var(--nk-paper);color:var(--nk-ink);border-radius:2px;cursor:pointer;text-align:center}
 .mbl-genres button[aria-pressed="true"]{background:var(--nk-blue);color:var(--nk-on);border-color:var(--nk-blue);font-weight:700}
 .mbl-btn:hover,.mbl-genres button:hover{border-color:var(--nk-ink)}
 
-.mbl-row{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.mbl-row{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .mbl-row>*{flex:1;min-width:0}
-.mbl-judge-btn{background:var(--nk-blue)!important;color:var(--nk-on)!important;border-color:var(--nk-blue)!important;font-weight:700!important;padding:5px 8px!important}
-.mbl-judge-res{font-family:var(--nk-mono);font-size:10.5px;padding:3px 6px;border-radius:2px;background:var(--nk-paper);border:1px solid var(--nk-line);text-align:center;font-weight:700}
+.mbl-judge-btn{background:var(--nk-blue)!important;color:var(--nk-on)!important;border-color:var(--nk-blue)!important;font-weight:700!important;padding:8px 10px!important}
+.mbl-judge-res{font-family:var(--nk-mono);font-size:11.5px;padding:6px 8px;border-radius:2px;background:var(--nk-paper);border:1px solid var(--nk-line);text-align:center;font-weight:700}
 .mbl-judge-res.pass{background:#e4f2e8;border-color:#2d8a4e;color:#1b5e32}
 .mbl-judge-res.retry{background:#f8e6e2;border-color:var(--nk-red);color:var(--nk-red)}
 
 .mbl-snap-btn[aria-pressed="true"]{background:var(--nk-ink)!important;color:var(--nk-on)!important;border-color:var(--nk-ink)!important;font-weight:700!important}
-.mbl-desk-tag{font-family:var(--nk-mono);font-size:10px;padding:2px 6px;border-radius:2px;border:1px solid var(--nk-line);background:var(--nk-page);color:var(--nk-ink)}
+.mbl-desk-tag{font-family:var(--nk-mono);font-size:9px;padding:1px 5px;border-radius:2px;border:1px solid var(--nk-line);background:var(--nk-page);color:var(--nk-ink);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mbl-console{flex:1 1 auto;min-width:0;font-size:11px;padding:5px 4px}
+#mbl-color{flex:0 0 auto;padding:6px 10px}
 
 /* Notes column */
 .mbl-lesson-card{border-bottom:1px dashed var(--nk-kline);padding-bottom:10px;margin-bottom:10px}
@@ -73,7 +88,7 @@
 .mbl-table tr.active{background:var(--nk-hl);font-weight:700}
 
 @media not all and (min-width:1100px) and (min-height:660px){
-  .nk-cv canvas{height:230px!important;position:static!important}
-  .mbl-vslider-box{height:68px}
-  .mbl-vslider{width:64px}
+  .nk-cv canvas{height:195px!important;position:static!important}
+  #card-gate .nk-cv{flex:none!important;min-height:195px!important}
+  .mbl-strips{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
