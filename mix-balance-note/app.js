@@ -520,6 +520,16 @@
     return r.peak;
   }
 
+  // Stable calibrated value across the full 2-bar loop (used for JUDGE & OK status so Peak never drops between hits)
+  function getStableValue(chIdx) {
+    var offset = state.inGain[chIdx] + (state.stage === 1 ? state.fader[chIdx] : 0);
+    var b = stemBase[chIdx];
+    if (state.metric === 0) return b.lufs + offset;
+    if (state.metric === 1) return b.vu + offset;
+    if (state.metric === 2) return b.rms + offset;
+    return b.peak + offset;
+  }
+
   function updateReadings(dt) {
     for (var i = 0; i < 4; i++) {
       var offset = state.inGain[i] + (state.stage === 1 ? state.fader[i] : 0);
@@ -548,7 +558,7 @@
         } else {
           // Blend instantaneous dynamics with calibrated K-weighted stem baseline
           tRms  = readings[i].rms + 0.25 * (instRms - readings[i].rms);
-          tPeak = Math.max(instPk, readings[i].peak - 12 * dt);
+          tPeak = Math.max(instPk, readings[i].peak - 1.5 * dt);
           tLufs = readings[i].lufs + 0.12 * ((b.lufs + offset) - readings[i].lufs);
           tVu   = readings[i].vu   + 0.18 * ((b.vu + offset) - readings[i].vu);
         }
@@ -608,9 +618,9 @@
 
     for (var i = 0; i < 4; i++) {
       var x0 = i * colW + 4, cw = colW - 8;
-      var cur = getActiveValue(i);
+      var cur = state.metric === 3 ? getStableValue(i) : getActiveValue(i);
       var tgt = getTargetVal(i);
-      var err = cur - tgt;
+      var err = getStableValue(i) - tgt;
       var ok = Math.abs(err) <= tol;
 
       // VU Meter Face
@@ -808,7 +818,7 @@
     var tol = TOLS[state.tolIdx];
     var maxErr = 0;
     for (var i = 0; i < 4; i++) {
-      var err = Math.abs(getActiveValue(i) - getTargetVal(i));
+      var err = Math.abs(getStableValue(i) - getTargetVal(i));
       if (err > maxErr) maxErr = err;
     }
     var score = Math.max(0, Math.min(100, Math.round(100 - Math.max(0, maxErr - tol * 0.25) * 24)));
