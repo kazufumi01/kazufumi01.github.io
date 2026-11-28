@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ja" class="nk" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ミックスバランス・スタディノート｜Mix Balance Lab</title>
+<meta name="description" content="Kick / Bass / Snare / Vocal の4トラックを「① Input Gain で同じ音量に揃え → ② Main Fader でジャンルごとの音量差を作る」実践的なミックス手順を、ブラウザ上で目と耳で学べる無料の学習アプリ。">
+<meta name="theme-color" content="#a5472a">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="Mix Balance Study Note">
+<meta property="og:title" content="ミックスバランス・スタディノート｜Mix Balance Lab">
+<meta property="og:description" content="① ゲイン揃え → ② ジャンル別フェーダーバランスを、VU・Peak・RMS・LUFS-M を見ながらブラウザで実践できる無料学習ノート。">
+<meta property="og:url" content="https://kazufumi01.github.io/mix-balance-note/">
+<meta property="og:image" content="https://kazufumi01.github.io/mix-balance-note/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@600;700&display=swap">
+<link rel="stylesheet" href="/note-kit/kit.css">
+<link rel="stylesheet" href="/mix-balance-note/app.css?v=2">
+</head>
+<body>
+<div id="app-root">
+  <!-- Transport items moved into .nk-tp -->
+  <div id="tp-items">
+    <button type="button" id="mbl-play" class="mbl-play" aria-pressed="false">▶ 再生</button>
+    <select id="mbl-var" class="mbl-sel" aria-label="4Stem パターン">
+      <option value="0">1. Pop Groove (96 BPM)</option>
+      <option value="1">2. Dance / K-Pop (116 BPM)</option>
+      <option value="2">3. R&amp;B / Neo-Soul (84 BPM)</option>
+      <option value="3">4. Rock / Indie (124 BPM)</option>
+      <option value="4">5. Hip-Hop / Trap (92 BPM)</option>
+    </select>
+    <div class="mbl-tp-grp" role="group" aria-label="練習ステップ">
+      <button type="button" data-stage="0" aria-pressed="true">STEP 1: 揃え</button>
+      <button type="button" data-stage="1" aria-pressed="false">STEP 2: ジャンル</button>
+    </div>
+    <div class="mbl-tp-grp" role="group" aria-label="基準メーター">
+      <button type="button" data-metric="0" aria-pressed="true">LUFS-M</button>
+      <button type="button" data-metric="1" aria-pressed="false">VU</button>
+      <button type="button" data-metric="2" aria-pressed="false">RMS</button>
+      <button type="button" data-metric="3" aria-pressed="false">Peak</button>
+    </div>
+    <button type="button" id="mbl-blind" class="mbl-toggle" aria-pressed="false">Blind</button>
+  </div>
+
+  <!-- Graph 1: Target Gate -->
+  <section id="card-gate">
+    <div class="mbl-card-head">
+      <h2>① Target Gate <span class="mbl-badge">4連VU ＋ ターゲット帯</span></h2>
+      <div class="legend mbl-legend">
+        <span><i style="background:#2d8a4e"></i>許容幅内 OK</span>
+        <span><i style="background:#a5472a"></i>Peak / 誤差</span>
+        <span><i style="background:#2c4a6e"></i>RMS</span>
+      </div>
+    </div>
+    <canvas id="cv-gate"></canvas>
+    <p class="note">4トラックの機械式 VU メーターと基準メーター（LUFS-M / VU / RMS / Peak）の許容幅ターゲット帯を表示します。</p>
+  </section>
+
+  <!-- Graph 2: Anchor Delta -->
+  <section id="card-anchor">
+    <div class="mbl-card-head">
+      <h2>② Anchor ΔdB <span class="mbl-badge">Kick 基準の相対差</span></h2>
+      <div class="legend mbl-legend">
+        <span><i style="background:#2c4a6e"></i>目標段差</span>
+        <span><i style="background:#2d8a4e"></i>範囲内</span>
+      </div>
+    </div>
+    <canvas id="cv-anchor"></canvas>
+    <p class="note">Kick を 0.0 dB 基準とし、Bass / Snare / Vocal が目標ジャンルの相対段差に収まっているかを表示します。</p>
+  </section>
+
+  <!-- Graph 3: Crest Matrix -->
+  <section id="card-matrix">
+    <div class="mbl-card-head">
+      <h2>③ Crest Matrix <span class="mbl-badge">4指標 横断比較</span></h2>
+      <div class="legend mbl-legend">
+        <span><i style="background:#a5472a"></i>Peak</span>
+        <span><i style="background:#2c4a6e"></i>RMS</span>
+        <span><i style="background:#b86a0c"></i>LUFS-M</span>
+        <span><i style="background:#2b2722"></i>VU換算</span>
+      </div>
+    </div>
+    <canvas id="cv-matrix"></canvas>
+    <p class="note">4つの指標を4トラック横断で折れ線表示します。アタックの強い打楽器と持続音のクレストファクター（Peak−RMS）の違いが分かります。</p>
+  </section>
+
+  <!-- Controls Column -->
+  <div id="mbl-ctrls" class="mbl-ctrls-wrap">
+    <div class="mbl-sec">
+      <div class="mbl-sec-title"><span>4ch ミキサー</span><span>−16 LUFS-M 基準</span></div>
+      <div class="mbl-strips">
+        <!-- CH 1 Kick -->
+        <div class="mbl-ch">
+          <div class="mbl-ch-name">KICK</div>
+          <div id="mbl-gw-0" class="mbl-ch-gain-wrap active">
+            <span class="mbl-ch-lbl"><span id="mbl-led-0" class="mbl-led"></span>IN GAIN</span>
+            <input id="mbl-g-0" class="mbl-hslider" type="range" min="-18" max="18" step="0.1" value="0" aria-label="Kick Input Gain">
+            <span id="mbl-gv-0" class="mbl-ch-val">+0.0dB</span>
+          </div>
+          <div class="mbl-sm">
+            <button type="button" id="mbl-s-0" data-solo="false">S</button>
+            <button type="button" id="mbl-m-0" data-mute="false">M</button>
+          </div>
+          <div id="mbl-fw-0" class="mbl-fader-wrap">
+            <span class="mbl-ch-lbl">FADER</span>
+            <div class="mbl-vslider-box"><input id="mbl-f-0" class="mbl-vslider" type="range" min="-24" max="12" step="0.1" value="0" aria-label="Kick Main Fader"></div>
+            <span id="mbl-fv-0" class="mbl-ch-val">+0.0dB</span>
+          </div>
+        </div>
+        <!-- CH 2 Bass -->
+        <div class="mbl-ch">
+          <div class="mbl-ch-name">BASS</div>
+          <div id="mbl-gw-1" class="mbl-ch-gain-wrap active">
+            <span class="mbl-ch-lbl"><span id="mbl-led-1" class="mbl-led"></span>IN GAIN</span>
+            <input id="mbl-g-1" class="mbl-hslider" type="range" min="-18" max="18" step="0.1" value="0" aria-label="Bass Input Gain">
+            <span id="mbl-gv-1" class="mbl-ch-val">+0.0dB</span>
+          </div>
+          <div class="mbl-sm">
+            <button type="button" id="mbl-s-1" data-solo="false">S</button>
+            <button type="button" id="mbl-m-1" data-mute="false">M</button>
+          </div>
+          <div id="mbl-fw-1" class="mbl-fader-wrap">
+            <span class="mbl-ch-lbl">FADER</span>
+            <div class="mbl-vslider-box"><input id="mbl-f-1" class="mbl-vslider" type="range" min="-24" max="12" step="0.1" value="0" aria-label="Bass Main Fader"></div>
+            <span id="mbl-fv-1" class="mbl-ch-val">+0.0dB</span>
+          </div>
+        </div>
+        <!-- CH 3 Snare -->
+        <div class="mbl-ch">
+          <div class="mbl-ch-name">SNARE</div>
+          <div id="mbl-gw-2" class="mbl-ch-gain-wrap active">
+            <span class="mbl-ch-lbl"><span id="mbl-led-2" class="mbl-led"></span>IN GAIN</span>
+            <input id="mbl-g-2" class="mbl-hslider" type="range" min="-18" max="18" step="0.1" value="0" aria-label="Snare Input Gain">
+            <span id="mbl-gv-2" class="mbl-ch-val">+0.0dB</span>
+          </div>
+          <div class="mbl-sm">
+            <button type="button" id="mbl-s-2" data-solo="false">S</button>
+            <button type="button" id="mbl-m-2" data-mute="false">M</button>
+          </div>
+          <div id="mbl-fw-2" class="mbl-fader-wrap">
+            <span class="mbl-ch-lbl">FADER</span>
+            <div class="mbl-vslider-box"><input id="mbl-f-2" class="mbl-vslider" type="range" min="-24" max="12" step="0.1" value="0" aria-label="Snare Main Fader"></div>
+            <span id="mbl-fv-2" class="mbl-ch-val">+0.0dB</span>
+          </div>
+        </div>
+        <!-- CH 4 Vocal -->
+        <div class="mbl-ch">
+          <div class="mbl-ch-name">VOCAL</div>
+          <div id="mbl-gw-3" class="mbl-ch-gain-wrap active">
+            <span class="mbl-ch-lbl"><span id="mbl-led-3" class="mbl-led"></span>IN GAIN</span>
+            <input id="mbl-g-3" class="mbl-hslider" type="range" min="-18" max="18" step="0.1" value="0" aria-label="Vocal Input Gain">
+            <span id="mbl-gv-3" class="mbl-ch-val">+0.0dB</span>
+          </div>
+          <div class="mbl-sm">
+            <button type="button" id="mbl-s-3" data-solo="false">S</button>
+            <button type="button" id="mbl-m-3" data-mute="false">M</button>
+          </div>
+          <div id="mbl-fw-3" class="mbl-fader-wrap">
+            <span class="mbl-ch-lbl">FADER</span>
+            <div class="mbl-vslider-box"><input id="mbl-f-3" class="mbl-vslider" type="range" min="-24" max="12" step="0.1" value="0" aria-label="Vocal Main Fader"></div>
+            <span id="mbl-fv-3" class="mbl-ch-val">+0.0dB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mbl-sec">
+      <div class="mbl-sec-title"><span>目標ジャンル（STEP 2）</span><span>許容幅:
+        <select id="mbl-tol" class="mbl-sel" style="padding:1px 4px;font-size:10.5px;">
+          <option value="0">±1.5 dB</option>
+          <option value="1" selected>±0.8 dB</option>
+          <option value="2">±0.3 dB</option>
+        </select></span>
+      </div>
+      <div class="mbl-genres">
+        <button type="button" data-genre="0" aria-pressed="true">Flat</button>
+        <button type="button" data-genre="1" aria-pressed="false">J-Pop</button>
+        <button type="button" data-genre="2" aria-pressed="false">K-Pop</button>
+        <button type="button" data-genre="3" aria-pressed="false">R&amp;B</button>
+        <button type="button" data-genre="4" aria-pressed="false">EDM</button>
+        <button type="button" data-genre="5" aria-pressed="false">Hip-Hop</button>
+        <button type="button" data-genre="6" aria-pressed="false">Rock</button>
+        <button type="button" data-genre="7" aria-pressed="false">Indie Pop</button>
+        <button type="button" data-genre="8" aria-pressed="false">Indie Rock</button>
+      </div>
+    </div>
+
+    <div class="mbl-sec">
+      <div class="mbl-sec-title"><span>Console Color</span><span id="mbl-desk-tag" class="mbl-desk-tag">Lab Reference (Bypass)</span></div>
+      <div class="mbl-row">
+        <select id="mbl-console" class="mbl-sel">
+          <option value="0">Auto（ジャンル連動）</option>
+          <option value="1">Lab Reference</option>
+          <option value="2">4K Solid-State</option>
+          <option value="3">73 Class-A</option>
+          <option value="4">US Discrete</option>
+        </select>
+        <button type="button" id="mbl-color" class="mbl-toggle" aria-pressed="false">COLOR</button>
+      </div>
+    </div>
+
+    <div class="mbl-sec">
+      <div class="mbl-sec-title"><span>トレーニング ＆ A/B 比較</span></div>
+      <div class="mbl-row" style="margin-bottom:4px;">
+        <button type="button" id="mbl-rand" class="mbl-btn">ランダム出題</button>
+        <button type="button" id="mbl-autotrim" class="mbl-btn">自動揃え</button>
+      </div>
+      <div class="mbl-row" style="margin-bottom:5px;">
+        <button type="button" id="mbl-fader0" class="mbl-btn">Fader 0dB</button>
+        <button type="button" id="mbl-apply-genre" class="mbl-btn">ジャンル一括</button>
+      </div>
+      <div class="mbl-row" style="margin-bottom:5px;">
+        <button type="button" id="mbl-snap-0" class="mbl-btn mbl-snap-btn" aria-pressed="false">A:空</button>
+        <button type="button" id="mbl-snap-1" class="mbl-btn mbl-snap-btn" aria-pressed="false">B:空</button>
+        <button type="button" id="mbl-snap-2" class="mbl-btn mbl-snap-btn" aria-pressed="false">C:空</button>
+        <button type="button" id="mbl-snap-clear" class="mbl-btn" style="flex:0 0 auto;padding:6px 8px;">×</button>
+      </div>
+      <div class="mbl-row" style="margin-bottom:5px;">
+        <button type="button" id="mbl-lmatch" class="mbl-toggle" aria-pressed="true">音量揃えて比較</button>
+        <button type="button" id="mbl-judge" class="mbl-btn mbl-judge-btn">JUDGE / 判定</button>
+      </div>
+      <div id="mbl-judge-res" class="mbl-judge-res">JUDGE で判定（目標 ±0.8 dB）</div>
+    </div>
+  </div>
+
+  <!-- Notes Panes -->
+  <section id="sec-lessons">
+    <p class="eyebrow">Lessons 01–06</p>
+    <h3>2ステップで覚えるミックスバランス</h3>
+    <div id="mbl-lessons-list"></div>
+    <h4>全9ジャンル 目標フェーダー段差（Kick = 0.0 dB）</h4>
+    <table id="mbl-genre-table" class="mbl-table"></table>
+  </section>
+
+  <div id="about-extra">
+    <p><strong>Mix Balance Lab プラグイン版（VST3 / AU / Standalone）</strong>を無料配布しています。DAW の4トラックに挿して自動連携する機能も搭載しています。</p>
+    <p><a href="https://github.com/kazufumi01/MixBalanceLab/releases/latest" target="_blank" rel="noopener">GitHub Releases からダウンロード →</a><br>
+    <a href="https://jpk.seesaa.net/article/522135443.html" target="_blank" rel="noopener">解説記事（Seesaa）を読む →</a></p>
+  </div>
+</div>
+
+<script src="/mix-balance-note/app.js?v=2"></script>
+<script>
+window.NK = {
+  key: "mbl",
+  lang: "ja",
+  mount: "#app-root",
+  title: "ミックスバランス・スタディノート",
+  sub: "Mix Balance Lab",
+  links: [
+    ["← 目次", "https://kazufumi01.github.io/ja/#notes"],
+    ["プラグイン版 (無料)", "https://github.com/kazufumi01/MixBalanceLab/releases/latest", "target=\"_blank\" rel=\"noopener\""],
+    ["解説記事", "https://jpk.seesaa.net/article/522135443.html", "target=\"_blank\" rel=\"noopener\""],
+    ["English", "./en/", "hreflang=\"en\" lang=\"en\""]
+  ],
+  transport: ["#tp-items"],
+  graphs: [
+    { sel: "#card-gate",   area: "gate",   fill: ["#cv-gate"] },
+    { sel: "#card-anchor", area: "anchor", fill: ["#cv-anchor"] },
+    { sel: "#card-matrix", area: "matrix", fill: ["#cv-matrix"] }
+  ],
+  areas: "\"gate gate\" \"anchor matrix\"",
+  cols: "1fr 1fr",
+  rows: "minmax(145px, 1.02fr) minmax(135px, 0.98fr)",
+  cw: "300px",
+  ctrls: ["#mbl-ctrls"],
+  notes: [
+    { sel: "#sec-lessons", label: "レッスン" }
+  ],
+  lead: "Kick / Bass / Snare / Vocal の4トラックを「① Input Gain で揃え → ② Main Fader でジャンル差を作る」手順を、目と耳で体感する学習ノートです。",
+  about: "#about-extra",
+  redraw: function () { if (window.MBL_REDRAW) window.MBL_REDRAW(); }
+};
+</script>
+<script src="/note-kit/kit.js"></script>
+</body>
+</html>
